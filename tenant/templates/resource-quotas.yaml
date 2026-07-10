@@ -1,0 +1,31 @@
+{{- range $namespace := include "namespaces" $ | fromYamlArray }}
+{{- range $id, $_ := $namespace.resourceQuotas }}
+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.resourceQuotaDefaults) | fromYaml }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  namespace: {{ $namespace.name }}
+spec:
+  {{- with .hard }}
+  hard: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopeSelector }}
+  scopeSelector: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopes }}
+  scopes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
