@@ -138,7 +138,7 @@ Let's update our `application-template` helper to become the following:
 ```smarty title="templates/_helpers.tpl" hl_lines="2-7 9" linenums="1"
 {{- define "application-template" -}}
   {{- "{{- /* Apply defaults */ -}}" }}
-  {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | toJson) | nindent 0 }}
+  {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
   {{- "{{- $applicationData := mustMergeOverwrite $appDefaults (deepCopy .) -}}" | nindent 0 }}
   {{- "" | nindent 0}}
 
