@@ -27,20 +27,20 @@ Each resource template will need to provide the relevant defaults to the helper 
 
 Let's update the `build-resource-data` helper in the `templates/_helpers.tpl` file to expect defaults to be provided, and to apply these to the resource's data:
 
-```smarty title="templates/_helpers.tpl" hl_lines="5-8" linenums="1"
+```smarty title="templates/_helpers.tpl" hl_lines="5 12-13" linenums="1"
 {{- define "build-resource-data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
   {{- $defaults := .defaults | default dict -}}
 
-  {{- /* Apply defaults */ -}}
-  {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) }}
-
   {{- /* If the resource data is nil, disable this resource (it is considered unwanted) */ -}}
   {{- if eq $data nil -}}
     {{- $data = dict "enabled" false -}}
   {{- end -}}
+
+  {{- /* Apply defaults */ -}}
+  {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) }}
 
   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
   {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) }}
@@ -192,21 +192,16 @@ We can do that by making the following changes to the `build-resource-data` help
 ```diff title="templates/_helpers.tpl"
 --- templates/_helpers.tpl
 +++ templates/_helpers.tpl
-@@ -12,12 +12,13 @@
-
- {{- define "build-resource-data" -}}
-   {{- /* Extract arguments */ -}}
-+  {{- $root := .root -}}
-   {{- $id := .id -}}
-   {{- $data := .data -}}
-   {{- $defaults := .defaults | default dict -}}
+@@ -23,7 +23,8 @@
+   {{- end -}}
 
    {{- /* Apply defaults */ -}}
 -  {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) }}
-+  {{- $data = mustMergeOverwrite (deepCopy $root.Values.common) (deepCopy $defaults) (deepCopy $data) }}
++  {{- $commonDefaults := $root.Values.common | default dict }}
++  {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) }}
 
-   {{- /* If the resource data is nil, disable this resource (it is considered unwanted) */ -}}
-   {{- if eq $data nil -}}
+   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
+   {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) }}
 ```
 
 We now need to update our resource templates to also pass in the root context, so that the `build-resource-data` helper can get a handle to the `common` defaults:

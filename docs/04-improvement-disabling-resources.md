@@ -22,7 +22,7 @@ For example, the following wouldn't work:
 
 ```yaml title="values-base.yaml"
 applications:
-  # I want to define defaults for `foo`, but want also want it disabled.
+  # I want to define defaults for `foo`, but also want it disabled.
   # I can't set this to `nil`, as then the defaults can't be set/used!
   foo:
     source:
