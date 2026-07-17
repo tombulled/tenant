@@ -206,23 +206,59 @@ spec:
 We can make the following change to the `files/application-template.yaml` file:
 
 ```diff title="files/application-template.yaml"
-
+--- files/application-template.yaml
++++ files/application-template.yaml
+@@ -51,5 +51,12 @@ spec:
+   sources: {{- .sources | toYaml | nindent 4 }}
+   {{- end }}
+   {{- with .syncPolicy }}
++    {{- with .syncOptionsObject }}
++      {{- $syncOptions := list }}
++      {{- range $key, $val := . }}
++        {{- $syncOptions = append $syncOptions (printf "%s=%s" (title $key) (toString $val)) }}
++      {{- end }}
++      {{- $_ := set $.syncPolicy "syncOptions" $syncOptions }}
++    {{- end }}
+   syncPolicy: {{- . | toYaml | nindent 4 }}
+   {{- end }}
 ```
 
 In the above diff, we've added the following logic:
 
-1. Foo
+1. If `.syncPolicy.syncOptionsObject` has a value, it will be used and `.syncPolicy.syncOptions` will be ignored
+2. The sync option's key (map key) will be converted to title case (e.g. `serverSideApply` -> `ServerSideApply`)
+3. The sync option's value (map value) will be converted to a string (e.g. `true` -> `"true"`)
+4. The transformed key & value are added to the list of sync options in the format `{key}={value}`
 
 To test it's working, we can template the chart using the following values:
 
 ```yaml title="values.yaml"
+applicationDefaults:
+  syncPolicy:
+    syncOptionsObject:
+      serverSideApply: true
 
+applications:
+  foo:
+    syncPolicy:
+      syncOptionsObject:
+        validate: false
 ```
 
 Which should output the following:
 
 ```yaml
-
+---
+# Source: tenant/templates/applications.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: foo
+spec:
+  syncPolicy:
+    syncOptionsObject:
+      serverSideApply: true
+      validate: false
 ```
 
 ### ApplicationSet - Generators
