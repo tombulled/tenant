@@ -1,4 +1,4 @@
-# Improvement x - Maps of Resources
+# Improvement - Maps of Resources
 
 Currently our `tenant` Helm chart supports configuring `Application` and `ApplicationSet` resources from *lists*.
 
@@ -32,10 +32,17 @@ applicationSets:
     name: bar
 ```
 
-With the above change, the Helm chart will still template out our resources as expected:
+With the above change, the Helm chart should still template out our resources as expected.
+
+We can test this using the following command:
 
 ```sh
-$ helm template .
+helm template .
+```
+
+Which should produce the following output:
+
+```yaml
 ---
 # Source: tenant/templates/applications.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -72,29 +79,64 @@ Instead, the map keys could be considered resource *IDs*, instead of resource *n
 This would enable you to freely change the application name without needing to update all occurences of the application's ID,
 and would allow you to **default the application name to its ID**.
 
-# x. Update Templates
+## Update Templates
 
 The `templates/applications.yaml` template can be updated in the following way:
 
 ```diff title="templates/applications.yaml"
-- {{- range .Values.applications -}}
-+ {{- range $id, $_ := .Values.applications -}}
-+ {{- if eq .name nil }}
-+   {{- set . "name" $id }}
-+ {{- end }}
+--- templates/applications.yaml
++++ templates/applications.yaml
+@@ -1,4 +1,7 @@
+-{{- range .Values.applications -}}
++{{- range $id, $_ := .Values.applications -}}
++{{- if eq .name nil }}
++  {{- set . "name" $id }}
++{{- end }}
+ ---
+ apiVersion: argoproj.io/v1alpha1
+ kind: Application
 ```
+
+!!!tip
+
+	You can apply the above diff using the `patch` command:
+
+	```sh
+	patch -p0 << 'EOF'
+	--- templates/applications.yaml
+	+++ templates/applications.yaml
+	@@ -1,4 +1,7 @@
+	-{{- range .Values.applications -}}
+	+{{- range $id, $_ := .Values.applications -}}
+	+{{- if eq .name nil }}
+	+  {{- set . "name" $id }}
+	+{{- end }}
+	 ---
+	 apiVersion: argoproj.io/v1alpha1
+	 kind: Application
+	EOF
+	```
+
+	You can use this approach for all diffs shown in these docs.
+	
 
 The `templates/applicationsets.yaml` template can be updated in the following way:
 
 ```diff title="templates/applicationsets.yaml"
-- {{- range .Values.applicationSets -}}
-+ {{- range $id, $_ := .Values.applicationSets -}}
-+ {{- if eq .name nil }}
-+   {{- set . "name" $id }}
-+ {{- end }}
+--- templates/applicationsets.yaml
++++ templates/applicationsets.yaml
+@@ -1,4 +1,7 @@
+-{{- range .Values.applicationSets }}
++{{- range $id, $_ := .Values.applicationSets -}}
++{{- if eq .name nil }}
++  {{- set . "name" $id }}
++{{- end }}
+ ---
+ apiVersion: argoproj.io/v1alpha1
+ kind: ApplicationSet
 ```
 
-We can then update our values to omit the explicit resource names (as these will be inferred from the resource IDs):
+We can then update our values to omit the explicit resource names (as these will be inferred from the resource IDs now):
 
 ```yaml title="values.yaml"
 applications:
@@ -106,7 +148,7 @@ applicationSets:
   bar: {}
 ```
 
-With the above changes, our `helm template` command should yield the same output as before:
+With the above changes, our `helm template` command should yield the same output as before: (note the resource names are still correct)
 
 ```sh
 $ helm template .
@@ -142,18 +184,18 @@ metadata:
 
 With these changes in place, we can now:
 
-1. Easily merge in overrides (e.g. from another values file)
+1. Easily merge in overrides (e.g. from other values files)
 2. Not repeat the application name, as it's inferred from the ID!
 
 However... if you're still a fan of the DRY principle, you'll have noticed that we made the exact same change to both of our templates - yuck!
 
 Fortunately, Helm makes it easy to reduce repetition by storing re-usable blocks of logic such as this in [Named Templates](https://helm.sh/docs/chart_template_guide/named_templates/).
 
-# x. Using a Named Template to reduce repetition
+## Using a Named Template to reduce repetition
 
 We can introduce the following new file:
 
-```yaml title="templates/_helpers.tpl"
+```smarty title="templates/_helpers.tpl"
 {{- define "build-resource-data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
@@ -172,6 +214,9 @@ We can introduce the following new file:
 We can then update our application & applicationset templates again to make use of this *helper*:
 
 ```diff title="templates/applications.yaml"
+--- templates/applications.yaml
++++ templates/applications.yaml
+@@ -1,9 +1,8 @@
  {{- range $id, $_ := .Values.applications -}}
 -{{- if eq .name nil }}
 -  {{- set . "name" $id }}
@@ -186,6 +231,8 @@ We can then update our application & applicationset templates again to make use 
 ```
 
 ```diff title="templates/applicationsets.yaml"
+--- templates/applicationsets.yaml
++++ templates/applicationsets.yaml
 @@ -1,7 +1,5 @@
  {{- range $id, $_ := .Values.applicationSets -}}
 -{{- if eq .name nil }}
@@ -202,7 +249,9 @@ We can then update our application & applicationset templates again to make use 
 +{{- end }}
 ```
 
-Now we can use `helm template` again to confirm that the chart is still working as expected.
+If you were to repeat the `helm template` again, it would confirm that the chart is still working as expected.
 
-... and yes, I realise the irony in reducing repetition by adding an indentical line to each template,
-however sometimes small amounts of repetition are ok to keep things readable. [Too much abstraction can be a bad thing!](https://grugbrain.dev/#grug-on-factring-your-code)
+!!! info
+
+	You may have noticed that we reduced repetition by adding an indentical line to each template (repetition??),
+	however sometimes small amounts of repetition are ok to keep things readable. [Too much abstraction can be a bad thing!](https://grugbrain.dev/#grug-on-factring-your-code)
