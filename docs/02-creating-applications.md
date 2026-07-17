@@ -84,9 +84,23 @@ We can then create a helper to load in the contents of this file:
 
 ```smarty title="templates/_helpers.tpl"
 {{- define "application-template" -}}
-  {{- $.Files.Get "files/application-template.yaml" -}}
+  {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
 {{- end -}}
 ```
+
+??? info
+	We pipe the contents of the file to `trim | nindent 0` for the following reasons:
+
+	1. `trim` trims any leading/trailing whitespace from the file (e.g. a trailing newline)
+	1. `nindent 0` allows us to have the line indented inside the named template, to improve readability
+
+	R.e. (2.), the following named template would also be absolutely valid: (note the indentation has been omitted)
+
+	```smarty title="templates/_helpers.tpl"
+	{{- define "application-template" -}}
+	{{ $.Files.Get "files/application-template.yaml" | trim }}
+	{{- end -}}
+	```
 
 ### Creating template for Applications
 
