@@ -80,6 +80,14 @@ $ mkdir files
 $ # Next, copy the contents of the above application template into: files/application-template.yaml
 ```
 
+We can then create a helper to load in the contents of this file:
+
+```smarty title="templates/_helpers.tpl"
+{{- define "application-template" -}}
+  {{- $.Files.Get "files/application-template.yaml" -}}
+{{- end -}}
+```
+
 ### Creating template for Applications
 
 We can now create a super simple template to create a series of `Application` resources:
@@ -89,9 +97,12 @@ We can now create a super simple template to create a series of `Application` re
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-{{ tpl ($.Files.Get "files/application-template.yaml") . }}
+{{ tpl (include "application-template" $) . }}
 {{- end -}}
 ```
+
+!!! note
+	Importantly, we use the `tpl` function to immediately template the application template using the current context (the application's values).
 
 We can quickly test that our chart is working as expected by templating it using the following command:
 
@@ -169,7 +180,7 @@ spec:
   template: {{- . | toYaml | nindent 4 }}
   {{- end }}
   templatePatch: |
-    {{- $.Files.Get "files/application-template.yaml" | nindent 4 }}
+    {{- include "application-template" $ | nindent 4 }}
 {{- end }}
 ```
 
