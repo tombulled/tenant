@@ -209,7 +209,7 @@ We can make the following change to the `files/application-template.yaml` file:
 --- files/application-template.yaml
 +++ files/application-template.yaml
 @@ -1,3 +1,4 @@
-+{{- $ := . }}
++{{- $ := . -}}
  metadata:
    name: {{ .name }}
    {{- with .namespace }}
@@ -258,7 +258,6 @@ Which should output the following:
 # Source: tenant/templates/applications.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-
 metadata:
   name: foo
 spec:
