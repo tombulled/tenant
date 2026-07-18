@@ -17,6 +17,7 @@ Current outstanding problems:
     * Templating-self for application data (for use by appsets) - e.g. tenant/cluster/cluster-type etc.
         Solution: Hacky script as "extension" (LARGE)
         Solution2: Hacky script as block at the top of application-template.yaml (LARGE)
+    * Propagating resource & application ID (for self-templating) - depends on x-git generator????
     * Merging type/cluster specific values for an app - the x-git generator (n.b. depends on templating-self)
         Solution1: this is cool functionality, but doesn't *need* to be enforced by the chart. solution 1 is remove it.
         Solution2: Implement this as an extension as is already done

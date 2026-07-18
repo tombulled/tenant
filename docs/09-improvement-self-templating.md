@@ -142,6 +142,8 @@ To achieve this we'll need to do the following:
 
 ### Propagating Resource IDs
 
+First, let's propagate the resource ID for resources
+
 ### Self-Templating Resource Data
 
 ### Self-Templating Application Data
