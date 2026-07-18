@@ -208,7 +208,12 @@ We can make the following change to the `files/application-template.yaml` file:
 ```diff title="files/application-template.yaml"
 --- files/application-template.yaml
 +++ files/application-template.yaml
-@@ -51,5 +51,12 @@ spec:
+@@ -1,3 +1,4 @@
++{{- $ := . }}
+ metadata:
+   name: {{ .name }}
+   {{- with .namespace }}
+@@ -51,5 +52,13 @@ spec:
    sources: {{- .sources | toYaml | nindent 4 }}
    {{- end }}
    {{- with .syncPolicy }}
@@ -217,6 +222,7 @@ We can make the following change to the `files/application-template.yaml` file:
 +      {{- range $key, $val := . }}
 +        {{- $syncOptions = append $syncOptions (printf "%s=%s" (title $key) (toString $val)) }}
 +      {{- end }}
++      {{- $_ := unset $.syncPolicy "syncOptionsObject" }}
 +      {{- $_ := set $.syncPolicy "syncOptions" $syncOptions }}
 +    {{- end }}
    syncPolicy: {{- . | toYaml | nindent 4 }}
@@ -252,13 +258,14 @@ Which should output the following:
 # Source: tenant/templates/applications.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
   name: foo
 spec:
   syncPolicy:
-    syncOptionsObject:
-      serverSideApply: true
-      validate: false
+    syncOptions:
+    - ServerSideApply=true
+    - Validate=false
 ```
 
 ### ApplicationSet - Generators
@@ -266,23 +273,58 @@ spec:
 We can make the following change to the `files/application-template.yaml` file:
 
 ```diff title="files/application-template.yaml"
-
+--- templates/applicationsets.yaml
++++ templates/applicationsets.yaml
+@@ -18,7 +18,13 @@ spec:
+   {{- if ne .applyNestedSelectors nil }}
+   applyNestedSelectors: {{ .applyNestedSelectors }}
+   {{- end }}
+-  generators: {{ ternary "[]" (.generators | toYaml | nindent 4) (empty .generators) }}
++  {{- if .generatorsObject }}
++  generators: {{- .generatorsObject | values | toYaml | nindent 4 }}
++  {{- else if .generators }}
++  generators: {{- .generators | toYaml | nindent 4 }}
++  {{- else }}
++  generators: []
++  {{- end }}
+   goTemplate: true
+   {{- with .goTemplateOptions }}
+   goTemplateOptions: {{- . | toYaml | nindent 4 }}
 ```
 
 In the above diff, we've added the following logic:
 
-1. Foo
+1. If `.generatorsObject` has a value, it will be used and `.generators` will be used
+1. The generator IDs (map keys) are ignored
+1. The map values are used as the list of generators
 
 To test it's working, we can template the chart using the following values:
 
 ```yaml title="values.yaml"
-
+applicationSets:
+  foo:
+    generatorsObject:
+      main:
+        git:
+          repoURL: some-repo
 ```
 
 Which should output the following:
 
 ```yaml
-
+---
+# Source: tenant/templates/applicationsets.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: foo
+spec:
+  generators:
+    - git:
+        repoURL: some-repo
+  goTemplate: true
+  templatePatch: |
+    <truncated>
 ```
 
 ### ApplicationSet - Go Template Options
@@ -290,21 +332,54 @@ Which should output the following:
 We can make the following change to the `files/application-template.yaml` file:
 
 ```diff title="files/application-template.yaml"
-
+--- templates/applicationsets.yaml
++++ templates/applicationsets.yaml
+@@ -26,8 +26,13 @@ spec:
+   generators: []
+   {{- end }}
+   goTemplate: true
+-  {{- with .goTemplateOptions }}
+-  goTemplateOptions: {{- . | toYaml | nindent 4 }}
++  {{- if .goTemplateOptionsObject }}
++  goTemplateOptions:
++    {{- range $key, $val := .goTemplateOptionsObject }}
++    - {{ printf "%s=%s" $key (toString $val) }}
++    {{- end }}
++  {{- else if .goTemplateOptions }}
++  goTemplateOptions: {{- .goTemplateOptions | toYaml | nindent 4 }}
+   {{- end }}
+   {{- with .ignoreApplicationDifferences }}
+   ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}
 ```
 
 In the above diff, we've added the following logic:
 
-1. Foo
+1. If `.goTemplateOptionsObject` has a value, it will be used and `.goTemplateOptions` will be ignored
+1. Each entry of the map is used in the format `{key}={value}`
 
 To test it's working, we can template the chart using the following values:
 
 ```yaml title="values.yaml"
-
+applicationSets:
+  foo:
+    goTemplateOptionsObject:
+      missingkey: error
 ```
 
 Which should output the following:
 
 ```yaml
-
+---
+# Source: tenant/templates/applicationsets.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: foo
+spec:
+  generators: []
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  templatePatch: |
+    <truncated>
 ```
