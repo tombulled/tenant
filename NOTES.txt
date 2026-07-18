@@ -1,7 +1,9 @@
-Current outstanding problems:
+DONE:
     * Merging app/appset values is painful due to lists (info, sources, syncOptions, generators, goTemplateOptions) - the "objects" pattern
         Solution: just update the application-template.yaml file (SMALL) <-------------
         Solution2: Implement application extensions (MEDIUM/LARGE)
+
+Current outstanding problems:
     * Can't disable apps created by an appset - generator selector (currently in root/values.yaml - done as x-git has no control over it?)
         Solution: Maybe do wrap the user's generators in a `merge` - provided merge inside merge is ok?
             > Combination-type generators (Matrix or Merge) can only be nested once.
