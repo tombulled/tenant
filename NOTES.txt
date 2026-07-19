@@ -40,6 +40,8 @@ Unsolved problems:
     * Configuring a group of applications (e.g. like roles in app-of-apps)
         Solution1: Have a pool of shared values files?
 
+    * Rename `common` to `defaults` for consistency?
+
 Next steps:
     Refactor tenant chart into a simplified version - no application extension files
         All "extension" are just updates to the application-template.yaml file (in normal helm way)
