@@ -1,18 +1,1 @@
-common:
-  metadata:
-    cluster:
-      id: "some-cluster"
 
-applicationDefaults:
-  annotations:
-    cluster-id: "{{.metadata.cluster.id}}"
-
-applicationSets:
-  foo:
-    template:
-      spec:
-        project: default
-    generators:
-      - list:
-          elements:
-            - name: foo
