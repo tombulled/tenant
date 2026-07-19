@@ -1,0 +1,137 @@
+common: {}
+  # enabled: true
+  # metadata: {}
+  # annotations: {}
+  # labels: {}
+  # name: ""
+  # namespace: {}
+
+# Defaults
+projectDefaults: {}
+namespaceDefaults: {}
+applicationDefaults: {}
+applicationSetDefaults:
+  template:
+    metadata: {}
+    spec:
+      destination: {}
+      project: default
+networkPolicyDefaults: {}
+resourceQuotaDefaults: {}
+limitRangeDefaults: {}
+
+# Resources
+projects: {}
+  # foo:
+  #   enabled: true
+  #   annotations: {}
+  #   labels: {}
+  #   name: ""
+  #   namespace: ""
+  #   finalizers: []
+  #   permitOnlyProjectScopedClusters: false
+  #   description: ""
+  #   sourceRepos: []
+  #   destinations: []
+  #   clusterResourceWhitelist: []
+  #   clusterResourceBlacklist: []
+  #   namespaceResourceBlacklist: []
+  #   namespaceResourceWhitelist: []
+  #   orphanedResources: {}
+  #   roles: []
+  #   syncWindows: []
+  #   signatureKeys: []
+  #   sourceNamespaces: []
+namespaces: {}
+  # foo:
+  #   enabled: true
+  #   annotations: {}
+  #   labels: {}
+  #   name: ""
+  #   finalizers: []
+  #   resourceQuotas:
+  #     foo:
+  #       enabled: true
+  #       annotations: {}
+  #       finalizers: []
+  #       labels: {}
+  #       name: ""
+  #       hard: {}
+  #       scopeSelector: {}
+  #       scopes: []
+  #   networkPolicies:
+  #     foo:
+  #       enabled: true
+  #       annotations: {}
+  #       finalizers: []
+  #       labels: {}
+  #       name: ""
+  #       egress: []
+  #       ingress: []
+  #       podSelector: {}
+  #       policyTypes: []
+  #   limitRanges:
+  #     foo:
+  #       enabled: true
+  #       annotations: {}
+  #       finalizers: []
+  #       labels: {}
+  #       name: ""
+  #       limits: []
+  #   extraResources:
+  #     foo:
+  #       apiVersion: storage.k8s.io/v1
+  #       kind: StorageClass
+  #       metadata:
+  #         name: local-path
+  #       provisioner: rancher.io/local-path
+  #       reclaimPolicy: Delete
+  #       volumeBindingMode: WaitForFirstConsumer
+applications: {}
+  # foo:
+  #   enabled: true
+  #   name: ""
+  #   namespace: ""
+  #   finalizers: []
+  #   annotations: {}
+  #   labels: {}
+  #   destination: {}
+  #   ignoreDifferences: {}
+  #   info: {}
+  #   project: ""
+  #   revisionHistoryLimit: ~
+  #   source: {}
+  #   sourceHydrator: {}
+  #   sources: {}
+  #   syncPolicy: {}
+  #   deletion:
+  #     cascade: true
+  #     propagationPolicy: foreground
+  #   infoObject:
+  #     artifactHub: https://artifacthub.io/
+  #   sourcesObject:
+  #     <sourceId>: {}
+applicationSets: {}
+  # foo:
+  #   enabled: true
+  #   annotations: {}
+  #   labels: {}
+  #   name: ""
+  #   namespace: ""
+  #   applyNestedSelectors: true
+  #   generators: []
+  #   goTemplateOptions: []
+  #   ignoreApplicationDifferences: []
+  #   preservedFields: {}
+  #   strategy: {}
+  #   syncPolicy: {}
+  #   template: {}
+  #   generatorsObject:
+  #     <generatorId>: {}
+  #   goTemplateOptionsObject: {}
+extraResources: {}
+  # foo:
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: IngressClass
+  #   metadata:
+  #     name: ingress-nginx

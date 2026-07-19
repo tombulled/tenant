@@ -1,0 +1,25 @@
+{{- range $namespace := include "namespaces" $ | fromYamlArray }}
+{{- range $id, $_ := $namespace.limitRanges }}
+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.limitRangeDefaults) | fromYaml }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  namespace: {{ $namespace.name }}
+spec:
+  {{- with .limits }}
+  limits: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

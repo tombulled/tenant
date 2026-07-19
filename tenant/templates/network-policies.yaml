@@ -1,0 +1,34 @@
+{{- range $namespace := include "namespaces" $ | fromYamlArray }}
+{{- range $id, $_ := $namespace.networkPolicies }}
+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.networkPolicyDefaults) | fromYaml }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  namespace: {{ $namespace.name }}
+spec:
+  {{- with .egress }}
+  egress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .ingress }}
+  ingress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if ne .podSelector nil }}
+  podSelector: {{ ternary "{}" (.podSelector | toYaml | nindent 4) (empty .podSelector) }}
+  {{- end }}
+  {{- with .policyTypes }}
+  policyTypes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,45 @@
+{{- range $id, $_ := .Values.applicationSets }}
+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
+{{ tpl (include "build-extensions" (dict "root" $ "path" "files/applicationset-extensions/*.tpl")) . }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+spec:
+  {{- if ne .applyNestedSelectors nil }}
+  applyNestedSelectors: {{ .applyNestedSelectors }}
+  {{- end }}
+  generators: {{ ternary "[]" (.generators | toYaml | nindent 4) (empty .generators) }}
+  goTemplate: true
+  {{- with .goTemplateOptions }}
+  goTemplateOptions: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .ignoreApplicationDifferences }}
+  ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .preservedFields }}
+  preservedFields: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .strategy }}
+  strategy: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .syncPolicy }}
+  syncPolicy: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .template }}
+  template: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  templatePatch: |
+    {{- include "application-template" $ | trim | nindent 4 }}
+{{- end }}
+{{- end }}
