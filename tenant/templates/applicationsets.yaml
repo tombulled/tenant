@@ -1,0 +1,70 @@
+{{- range $id, $_ := .Values.applicationSets -}}
+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+spec:
+  {{- if ne .applyNestedSelectors nil }}
+  applyNestedSelectors: {{ .applyNestedSelectors }}
+  {{- end }}
+  {{- $generators := .generators }}
+  {{- with .generatorsObject }}
+    {{- $generators = . | values }}
+  {{- end }}
+  {{- if $generators }}
+  generators:
+    {{- range $generators }}
+    {{- /* Add a match expression to the selector of all generators that filters out disabled applications */}}
+    {{- $_ := set . "selector" (.selector | default dict) }}
+    {{- $matchExpressions := .selector.matchExpressions | default list }}
+    {{- $matchExpression := (dict
+      "key" "enabled"
+      "operator" "NotIn"
+      "values" (list "false")
+    ) }}
+    {{- $matchExpressions = append $matchExpressions $matchExpression }}
+    {{- $_ := set .selector "matchExpressions" $matchExpressions }}
+    - {{ . | toYaml | indent 6 | trim }}
+    {{- end }}
+  {{- else }}
+  generators: []
+  {{- end }}
+  goTemplate: true
+  {{- if .goTemplateOptionsObject }}
+  goTemplateOptions:
+    {{- range $key, $val := .goTemplateOptionsObject }}
+    - {{ printf "%s=%s" $key (toString $val) }}
+    {{- end }}
+  {{- else if .goTemplateOptions }}
+  goTemplateOptions: {{- .goTemplateOptions | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .ignoreApplicationDifferences }}
+  ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .preservedFields }}
+  preservedFields: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .strategy }}
+  strategy: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .syncPolicy }}
+  syncPolicy: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .template }}
+  template: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  templatePatch: |
+    {{- include "application-template" $ | nindent 4 }}
+{{- end }}
+{{- end }}
