@@ -2,9 +2,7 @@
 
 ## Introduction
 
-The `tenant` Helm chart is designed to model a single "tenant" of a (optionally multi-tenanted) Kubernetes cluster, where a "tenant" is loosely defined as:
-
-> An owner of one or more namespaces that wishes to deploy their workloads
+The `tenant` Helm chart is designed to model a single "tenant" of a (optionally multi-tenanted) Kubernetes cluster.
 
 Importantly, this chart is designed to be deployed **per tenant**. This chart also functions as a powerful [App of Apps](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern-alternative).
 
