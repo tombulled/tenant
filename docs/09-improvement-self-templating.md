@@ -228,13 +228,41 @@ Unfortunately, we can't use the `tpl` function in the `application-template`.
 
 To work around this limitation, we need to implement our own Helm-like `tpl` function that only relies on the set of template functions that ArgoCD makes available to us.
 
-Unfortunately, we also can't use the `define` action either. :cry:
+Unfortunately, in lieu of a `tpl` function, the best we'll be able to do is a find-and-replace. We could implement a [nested template](https://pkg.go.dev/text/template#hdr-Nested_template_definitions) to achieve this, such as the following example:
 
-!!! info "The answer why"
+```smarty
+{{- define "template-test" -}}
+  {{- $template := . | toYaml -}}
 
-	As ArgoCD is *executing* a template (the contents of `templatePatch` in our case), we're inside of a template
+  {{- $template = replace "{{.test}}" "it-worked" $template -}}
 
-the best we'll be able to do is a simple find-and-replace.
+  {{- $template -}}
+{{- end -}}
+```
 
-To test the find-and-replace approach, 
+However, whilst Helm provides an `include` function to *capture* the output of a nested template, ArgoCD doesn't expose any such function.
+The `template` action from the `text/template` standard-library will output contents directly, and this cannot be captured (for example into a variable).
+Fortunately, all hope is not yet lost!
+
+Let's make a small tweak to the above `template-test` template:
+
+```smarty hl_lines="1 6"
+{{- block "template-test" . -}}
+  {{- $template := . | toYaml -}}
+
+  {{- $template = replace "{{.test}}" "it-worked" $template -}}
+
+  {{- $_ := mustMergeOverwrite . ($template | fromYaml) -}}
+{{- end -}}
+```
+
+The above changes the following things:
+
+1. The `block` action is used instead of `define`. The `block` action allows you to define a template and execute it in place. In this case, we're defining a function called `template-test` and immediately executing it using the current context (`.`)
+1. `mustMergeOverwrite` is used to overwrite the current context (the application data) with the output of the find-and-replace.
+1. The `template-test` nested template now outputs nothing, and instead modifies the context passed to it in place.
+
+Whilst this is great, it obviously doesn't scale. We can't have our `template-test` template do a find-and-replace for everything in this way. Instead it'd be preferable if it could mimic the `tpl` function by being completely generic, and doing its best to template *anything* it's given.
+
+Instead, we could search the application data for anything matching the regex `{{ *\\..*? *}}` (e.g. `{{.foo}}`, `{{ .foo.bar }}`, etc.). We could then hunt through the application data for the appropriate *value*, and then do a find-and-replace.
 
