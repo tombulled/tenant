@@ -54,14 +54,14 @@ spec:
   {{- with .ignoreDifferences }}
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- if .infoObject }}
+  {{- with .infoObject }}
   info:
-    {{- range $key, $val := .infoObject }}
+    {{- range $key, $val := . }}
     - name: {{ $key | snakecase | replace "_" " " | title }}
       value: {{ $val }}
     {{- end }}
-  {{- else if .info }}
-  info: {{- .info | toYaml | nindent 4 }}
+  {{- else with .info }}
+  info: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .project }}
   project: {{ . }}
@@ -75,15 +75,15 @@ spec:
   {{- with .sourceHydrator }}
   sourceHydrator: {{- . | toYaml | nindent 4}}
   {{- end }}
-  {{- if .sourcesObject }}
+  {{- with .sourcesObject }}
   sources:
-    {{- range $sourceId, $_ := .sourcesObject }}
+    {{- range $sourceId, $_ := . }}
     {{- $_ := set . "ref" (.ref | default $sourceId) }}
     {{- $_ := set . "name" (.name | default $sourceId) }}
     - {{ . | toYaml | nindent 6 | trim }}
     {{- end }}
-  {{- else if .sources }}
-  sources: {{- .sources | toYaml | nindent 4 }}
+  {{- else with .sources }}
+  sources: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .syncPolicy }}
     {{- with .syncOptionsObject }}

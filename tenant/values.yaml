@@ -1,1 +1,13 @@
+applicationDefaults:
+  annotations:
+    test: "{{.name}}"
 
+applicationSets:
+  foo:
+    template:
+      spec:
+        project: default
+    generators:
+      - list:
+          elements:
+            - name: foo
