@@ -10,15 +10,15 @@ DONE:
         Solution3: Implement generatorsDefaults - pls no
         Solution4: Make use of applicationSetDefaults to always add a default "main" generator
         Solution5: Mandate one user-defined generator per appset?
-
-Current outstanding problems:
     * Templating-self for resources - e.g. tenant/cluster/cluster-type etc.
         Solution: update build-resource-data helper (SMALL) <-------------------
     * Templating-self for application data (for use by appsets) - e.g. tenant/cluster/cluster-type etc.
         Solution: Hacky script as "extension" (LARGE)
         Solution2: Hacky script as block at the top of application-template.yaml (LARGE)
+
+Current outstanding problems:
     * Propagating resource & application ID (for self-templating) - depends on x-git generator????
-    * Merging type/cluster specific values for an app - the x-git generator (n.b. depends on templating-self)
+    * Merging type/cluster specific values for an app - the x-git generator
         Solution1: this is cool functionality, but doesn't *need* to be enforced by the chart. solution 1 is remove it.
         Solution2: Implement this as an extension as is already done
             NOTE: Instead of the extensions pattern, implement this as a helper in _appset.tpl <------------------------------------------------ (LARGE)
