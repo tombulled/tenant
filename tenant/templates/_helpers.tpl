@@ -1,6 +1,6 @@
 {{- define "application-template" -}}
   {{- "{{- /* Apply defaults */ -}}" }}
-  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.common | default dict | toJson) | nindent 0 }}
+  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.defaults | default dict | toJson) | nindent 0 }}
   {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
   {{- "{{- $_ := mustMergeOverwrite . $commonDefaults $appDefaults (deepCopy .) -}}" | nindent 0 }}
   {{- "" | nindent 0}}
@@ -21,7 +21,7 @@
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
-  {{- $commonDefaults := $root.Values.common | default dict }}
+  {{- $commonDefaults := $root.Values.defaults | default dict }}
   {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) }}
 
   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
