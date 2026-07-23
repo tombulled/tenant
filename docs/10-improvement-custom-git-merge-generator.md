@@ -473,18 +473,8 @@ extraSources:
     revision: main
 ```
 
-However, this is 
+However, implementation of this is likely best saved until a usecase demands it.
 
-WAIT, MODEL THIS AROUND A MULTI-SOURCE APPLICATION??
+## Implementing a Solution
 
-```yaml
-sources:
-  - repoURL: git@github.com:example/apps.git
-    revision: main
-    path: ...
-    valueFiles:
-      - $
-  - repoURL: git@github.com:example/foo.git
-    revision: main
-    ref: foo
-```
+Foo
