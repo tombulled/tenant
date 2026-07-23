@@ -346,7 +346,7 @@ It turns out that ArgoCD application sets can absolutely be configured to behave
 
 Let's tweak our application set to also make use of the `merge` generator:
 
-```yaml title="values.yaml"
+```yaml title="values.yaml" linenums="1" hl_lines="7-24"
 applicationSets:
   root:
     template:
@@ -373,4 +373,118 @@ applicationSets:
             - mergeKey
 ```
 
-Ok. There's a lot to unpack there, so let's dive in.
+Ok, there's a lot to unpack there, so let's dive in. These are the main things that have changed:
+
+1. We're now using a [merge generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Merge/) which contains two [git generators](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/)
+1. Override precedence is bottom-to-top: the values from a matching parameter set produced by generator 2 will take precedence over the values from the corresponding parameter set produced by generator 1. In this example, cluster-specific values will override the base values.
+1. Merging on nested values (e.g. `.path.path`) while using `goTemplate: true` is currently not supported, therefore a top-level (non-nested) `mergeKey` field gets added to the context with the value of `.path.path`.
+
+For this example, we'd then have a directory per application, with values files contained within, like this:
+
+```sh
+$ tree apps
+apps
+├── cert-manager
+│   ├── values-dev.yaml
+│   ├── values-ops.yaml
+│   ├── values-ref.yaml
+│   └── values.yaml
+└── traefik
+    ├── values-dev.yaml
+    ├── values-ops.yaml
+    ├── values-ref.yaml
+    └── values.yaml
+
+2 directories, 8 files
+```
+
+Looks very Helm-like doesn't it!
+
+We can also go one step further and propagate the directory name as the application's ID, then application names can be automatically inferred!
+
+Let's update out `ApplicationSet` to propagate the directory name as the application ID:
+
+```yaml title="values.yaml" linenums="1" hl_lines="16 24"
+applicationSets:
+  root:
+    template:
+      spec:
+        project: default
+    generators:
+      - merge:
+          generators:
+            - git:
+                 repoURL: git@github.com:example/apps.git
+                 revision: main
+                 files:
+                   - path: "*/values.yaml"
+                 values:
+                   mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
+                   id: '{{ $_ := set . "id" .path.basename }}'
+            - git:
+                repoURL: git@github.com:example/apps.git
+                revision: main
+                files:
+                  - path: "*/values-{{.metadata.cluster}}.yaml"
+                values:
+                  mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
+                  id: '{{ $_ := set . "id" .path.basename }}'
+          mergeKeys:
+            - mergeKey
+```
+
+Now, althouth this works really well, you'll notice that this is currently configured in the chart's *values*, making it hard to re-use. There's also a lot of repetition between each of the `git` generators in the `merge` generator.
+
+What would be preferable would be for us to be able to be able to provide a mechanism for users to use a git-merge generator such as this, whilst abstracting the complexity of it.
+
+Fundamentally, all a user really needs to specify is:
+
+1. A `repoURL`
+1. A `revision`
+1. An optional base path
+1. A list of file paths
+1. An optional merge key (defaults to `.path.path`)
+1. An optional ID key (defaults to `.path.basename`)
+
+As such, we could imagine our custom generator git-merge might accept config a bit like this:
+
+```yaml
+repoURL: git@github.com:example/apps.git
+revision: main
+path: "*"
+valueFiles:
+  - "values.yaml"
+  - "values-{{.metadata.cluster}}.yaml"
+```
+
+It would conceivably possible to extend this to support sourcing files from different repositories, for example like this:
+
+```yaml
+repoURL: git@github.com:example/apps.git
+revision: main
+path: "*"
+valueFiles:
+  - "$common/values.yaml"
+  - "values.yaml"
+  - "values-{{.metadata.cluster}}.yaml"
+extraSources:
+  common:
+    repoURL: git@github.com:example/common.git
+    revision: main
+```
+
+However, this is 
+
+WAIT, MODEL THIS AROUND A MULTI-SOURCE APPLICATION??
+
+```yaml
+sources:
+  - repoURL: git@github.com:example/apps.git
+    revision: main
+    path: ...
+    valueFiles:
+      - $
+  - repoURL: git@github.com:example/foo.git
+    revision: main
+    ref: foo
+```
