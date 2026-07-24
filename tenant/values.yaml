@@ -1,22 +1,9 @@
-namespaceDefaults:
-  limitRanges:
-    cpu-resource-constraint:
-        limits:
-        - default:
-            cpu: 500m
-          defaultRequest:
-            cpu: 500m
-          max:
-            cpu: "1"
-          min:
-            cpu: 100m
-          type: Container
+applications:
+  foo: {}
+  bar: {}
 
 namespaces:
   foo: {}
   bar:
-    limitRanges:
-      cpu-resource-constraint:
-        enabled: false
-  baz:
-    enabled: false
+    finalizers:
+      name: bob

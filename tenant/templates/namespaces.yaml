@@ -12,6 +12,6 @@ metadata:
   name: {{ .name }}
 {{- with .finalizers }}
 spec:
-  finalizers: {{ . | toYaml | nindent 2 }}
+  finalizers: {{- . | toYaml | nindent 4 }}
 {{- end }}
 {{- end -}}
