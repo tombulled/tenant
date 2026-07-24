@@ -890,3 +890,154 @@ You might notice that the above output doesn't look quite right :cry:
 Both applications had no idea what their `name` was!
 
 There's a small piece of gluework missing to default application name's to their ID when they get created by an application set.
+Let's update the `tenant.application.template` template to default the application's name to its `id` if a name hasn't been specified:
+
+```smarty title="templates/_helpers.tpl" hl_lines="8-10"
+{{- define "tenant.application.template" -}}
+  {{- "{{- /* Apply defaults */ -}}" }}
+  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.defaults | default dict | toJson) | nindent 0 }}
+  {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
+  {{- "{{- $_ := mustMergeOverwrite . $commonDefaults $appDefaults (deepCopy .) -}}" | nindent 0 }}
+  {{- "" | nindent 0}}
+
+  {{- "{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}" | nindent 0 }}
+  {{- "{{- $_ := set . \"name\" (.name | default .id) -}}" | nindent 0 }}
+  {{- "" | nindent 0 }}
+
+  {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
+{{- end -}}
+```
+
+With this small change in place, let's re-generate the applications using the same command:
+
+```sh
+helm template . --set defaults.metadata.cluster=dev | argocd appset generate /dev/stdin -o yaml
+```
+
+Which should now output the following:
+
+```yaml
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    name: traefik
+  spec:
+    destination:
+      name: in-cluster
+      namespace: traefik
+    project: default
+    sources:
+    - chart: traefik
+      helm:
+        ignoreMissingValueFiles: true
+        valueFiles:
+        - $values/traefik/values.yaml
+        - $values/traefik/values-dev.yaml
+      name: main
+      ref: main
+      repoURL: https://traefik.github.io/charts
+      targetRevision: 41.0.0
+    - name: values
+      ref: values
+      repoURL: git@github.com:example/values.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    name: cert-manager
+  spec:
+    destination:
+      name: in-cluster
+      namespace: cert-manager
+    project: default
+    sources:
+    - chart: cert-manager
+      helm:
+        ignoreMissingValueFiles: true
+        valueFiles:
+        - $values/cert-manager/values.yaml
+        - $values/cert-manager/values-dev.yaml
+      name: main
+      ref: main
+      repoURL: quay.io/jetstack/charts
+      targetRevision: v1.19.1
+    - name: values
+      ref: values
+      repoURL: git@github.com:example/values.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+```
+
+Success!
+
+To demonstrate the power of this, let's make the following cluster-specific changes:
+
+1. We'll use helm chart version `v1.19.2-rc1` in the `dev` cluster
+1. We'll disable the `traefik` application in the `dev` cluster
+
+Let's add some overrides for this:
+
+```sh
+$ touch cert-manager/values-dev.yaml
+$ yq e -i '.sourcesObject.main.targetRevision = ""' cert-manager/values-dev.yaml
+$ touch traefik/values-dev.yaml
+$ yq e -i '.enabled = false' traefik/values-dev.yaml
+$ tree
+.
+├── cert-manager
+│   ├── values-dev.yaml
+│   └── values.yaml
+└── traefik
+    ├── values-dev.yaml
+    └── values.yaml
+
+2 directories, 4 file
+```
+
+Now if we re-generate the list of applications, we should get the following output:
+
+```yaml hl_lines="22"
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    name: cert-manager
+  spec:
+    destination:
+      name: in-cluster
+      namespace: cert-manager
+    project: default
+    sources:
+    - chart: cert-manager
+      helm:
+        ignoreMissingValueFiles: true
+        valueFiles:
+        - $values/cert-manager/values.yaml
+        - $values/cert-manager/values-dev.yaml
+      name: main
+      ref: main
+      repoURL: quay.io/jetstack/charts
+      targetRevision: v1.19.2-rc1
+    - name: values
+      ref: values
+      repoURL: git@github.com:example/values.git
+      targetRevision: main
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+```
+
+How cool is that! The `traefik` application didn't get created, and the `cert-manager` application's chart got changed over to the dev-specific target revision :mage:
