@@ -478,3 +478,16 @@ However, implementation of this is likely best saved until a usecase demands it.
 ## Implementing a Solution
 
 Foo
+
+```yaml
+sources:
+  foo:
+    repoURL: git@github.com:example/foo.git
+    revision: main
+  bar:
+    repoURL: git@github.com:example/bar.git
+    revision: main
+valueFiles:
+  - $foo/values.yaml
+  - $bar/values.yaml
+```
