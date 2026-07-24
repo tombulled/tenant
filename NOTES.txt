@@ -15,8 +15,6 @@ DONE:
     * Templating-self for application data (for use by appsets) - e.g. tenant/cluster/cluster-type etc.
         Solution: Hacky script as "extension" (LARGE)
         Solution2: Hacky script as block at the top of application-template.yaml (LARGE)
-
-Current outstanding problems:
     * Propagating resource & application ID (for self-templating) - depends on x-git generator????
     * Merging type/cluster specific values for an app - the x-git generator
         Solution1: this is cool functionality, but doesn't *need* to be enforced by the chart. solution 1 is remove it.
@@ -25,7 +23,10 @@ Current outstanding problems:
         Solution3: Custom generator via plugin - noooo
         Solution4: customGenerators or some other field
     * Need to be able to disable application sources
- 
+    * Helpers should probably be prefixed with "tenant."
+    * Rename `common` to `defaults` for consistency?
+
+Current outstanding problems:
     * Need additional resources (appprojects, namespaces)
         Soltion: just create them (SMALL)
     * Need additional namespace-specific resources
@@ -35,13 +36,10 @@ Unsolved problems:
     * Ordering of application sources in sourcesObject (NEED TO FIX)
     * Similarities between build-resource-data and application-template
     * Application resources get run through both build-resource-data and application-template (whereas appset apps don't)
-    * Helpers should probably be prefixed with "tenant."
 
     * Per-appset defaults for applications
     * Configuring a group of applications (e.g. like roles in app-of-apps)
-        Solution1: Have a pool of shared values files?
-
-    * Rename `common` to `defaults` for consistency?
+        Solution1: Have a pool of shared values files
 
 Next steps:
     Refactor tenant chart into a simplified version - no application extension files
