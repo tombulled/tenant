@@ -387,6 +387,241 @@ spec:
 
 #### NetworkPolicy
 
+By using a combination of the [Kubernetes NetworkPolicy Reference](https://kubernetes.io/docs/reference/kubernetes-api/networking/network-policy-v1/) and `kubectl explain networkpolicy`, we can create the following template:
+
+```yaml title="templates/network-policies.yaml"
+{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" $namespace.networkPolicies "defaults" $.Values.networkPolicyDefaults) | fromYamlArray }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  namespace: {{ $namespace.name }}
+spec:
+  {{- with .egress }}
+  egress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .ingress }}
+  ingress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if ne .podSelector nil }}
+  podSelector: {{ ternary "{}" (.podSelector | toYaml | nindent 4) (empty .podSelector) }}
+  {{- end }}
+  {{- with .policyTypes }}
+  policyTypes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+```
+
+!!! warning
+	It's important to note that our `NetworkPolicy` **will only get created if the `Namespace` is also enabled**
+
+We can then test that the templating is working using the following values:
+
+```yaml title="values.yaml"
+namespaceDefaults:
+  networkPolicies:
+    default-deny-all:
+      podSelector: {}
+      policyTypes:
+        - Ingress
+        - Egress
+
+namespaces:
+  foo: {}
+  bar:
+    networkPolicies:
+      default-deny-all:
+        enabled: false
+```
+
+Templating the chart using `helm template .` should yield the following output:
+
+```yaml
+---
+# Source: tenant/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bar
+---
+# Source: tenant/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foo
+---
+# Source: tenant/templates/network-policies.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: foo
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+```
+
 #### ResourceQuota
 
+By using a combination of the [Kubernetes ResourceQuota Reference](https://kubernetes.io/docs/reference/kubernetes-api/core/resource-quota-v1/) and `kubectl explain resourcequota`, we can create the following template:
+
+```yaml title="templates/resource-quotas.yaml"
+{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" $namespace.resourceQuotas "defaults" $.Values.resourceQuotaDefaults) | fromYamlArray }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  namespace: {{ $namespace.name }}
+spec:
+  {{- with .hard }}
+  hard: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopeSelector }}
+  scopeSelector: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopes }}
+  scopes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+```
+
+!!! warning
+	It's important to note that our `ResourceQuota` **will only get created if the `Namespace` is also enabled**
+
+We can then test that the templating is working using the following values:
+
+```yaml title="values.yaml"
+namespaceDefaults:
+  resourceQuotas:
+    compute-resources:
+      hard:
+        requests.cpu: "1"
+        requests.memory: "1Gi"
+        limits.cpu: "2"
+        limits.memory: "2Gi"
+
+namespaces:
+  foo: {}
+  bar:
+    resourceQuotas:
+      compute-resources:
+        enabled: false
+```
+
+Templating the chart using `helm template .` should yield the following output:
+
+```yaml
+---
+# Source: tenant/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bar
+---
+# Source: tenant/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foo
+---
+# Source: tenant/templates/resource-quotas.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+  namespace: foo
+spec:
+  hard:
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    requests.cpu: "1"
+    requests.memory: 1Gi
+```
+
 #### Extra Resources
+
+Let's update our existing `templates/extra-resources.yaml` template to also cater for namespace-specific extra resources:
+
+```smarty title="templates/extra-resources.yaml" hl_lines="6-13"
+{{- range $id, $_ := .Values.extraResources }}
+---
+{{ tpl (. | toYaml) $.Values.defaults }}
+{{- end -}}
+
+{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
+{{- range $id, $_ := $namespace.extraResources }}
+{{- $data := tpl (. | toYaml) $.Values.defaults | fromYaml }}
+{{- $_ := mustMergeOverwrite $data (dict "metadata" (dict "namespace" $namespace.name)) }}
+---
+{{ $data | toYaml }}
+{{- end }}
+{{- end -}}
+
+```
+
+We can then test that the templating is working using the following values:
+
+```yaml title="values.yaml"
+namespaces:
+  foo:
+    extraResources:
+      default-network-policy:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        metadata:
+          name: default-deny-all
+        spec:
+          podSelector: {}
+          policyTypes:
+            - Ingress
+            - Egress
+```
+
+Templating the chart using `helm template .` should yield the following output:
+
+```yaml
+---
+# Source: tenant/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foo
+---
+# Source: tenant/templates/extra-resources.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: foo
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+```
