@@ -1,3 +1,22 @@
+{{- define "tenant.application-set.generators" -}}
+  {{- $generators := ternary (.generatorsObject | values) .generators (not (empty .generatorsObject)) -}}
+
+  {{- /* Add a match expression to the selector of all generators that filters out disabled applications */ -}}
+  {{- range $generators -}}
+      {{- $matchExpression := (dict
+        "key" "enabled"
+        "operator" "NotIn"
+        "values" (list "false")
+      ) -}}
+
+      {{- $_ := set . "selector" (.selector | default dict) -}}
+      {{- $matchExpressions := $matchExpression | append (.selector.matchExpressions | default list) -}}
+      {{- $_ := set .selector "matchExpressions" $matchExpressions -}}
+  {{- end -}}
+
+  {{- $generators | toYaml -}}
+{{- end -}}
+
 {{- range $id, $_ := .Values.applicationSets -}}
 {{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
 ---
@@ -18,36 +37,19 @@ spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
   {{- end }}
-  {{- $generators := .generators }}
-  {{- with .generatorsObject }}
-    {{- $generators = . | values }}
-  {{- end }}
-  {{- if $generators }}
-  generators:
-    {{- range $generators }}
-    {{- /* Add a match expression to the selector of all generators that filters out disabled applications */}}
-    {{- $_ := set . "selector" (.selector | default dict) }}
-    {{- $matchExpressions := .selector.matchExpressions | default list }}
-    {{- $matchExpression := (dict
-      "key" "enabled"
-      "operator" "NotIn"
-      "values" (list "false")
-    ) }}
-    {{- $matchExpressions = append $matchExpressions $matchExpression }}
-    {{- $_ := set .selector "matchExpressions" $matchExpressions }}
-    - {{ . | toYaml | indent 6 | trim }}
-    {{- end }}
+  {{- with include "tenant.application-set.generators" . | fromYamlArray }}
+  generators: {{- . | toYaml | nindent 4 }}
   {{- else }}
   generators: []
   {{- end }}
   goTemplate: true
-  {{- if .goTemplateOptionsObject }}
+  {{- with .goTemplateOptionsObject }}
   goTemplateOptions:
-    {{- range $key, $val := .goTemplateOptionsObject }}
+    {{- range $key, $val := . }}
     - {{ printf "%s=%s" $key (toString $val) }}
     {{- end }}
-  {{- else if .goTemplateOptions }}
-  goTemplateOptions: {{- .goTemplateOptions | toYaml | nindent 4 }}
+  {{- else with .goTemplateOptions }}
+  goTemplateOptions: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .ignoreApplicationDifferences }}
   ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}

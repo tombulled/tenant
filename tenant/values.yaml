@@ -31,29 +31,44 @@
 #         repoURL: https://traefik.github.io/charts
 #         targetRevision: 41.0.0
 
+# applicationSets:
+#   root:
+#     template:
+#       spec:
+#         project: default
+#     generators:
+#       - merge:
+#           generators:
+#             - git:
+#                  repoURL: git@github.com:example/apps.git
+#                  revision: main
+#                  files:
+#                    - path: "*/values.yaml"
+#                  values:
+#                    mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
+#                    id: '{{ $_ := set . "id" .path.basename }}'
+#             - git:
+#                 repoURL: git@github.com:example/apps.git
+#                 revision: main
+#                 files:
+#                   - path: "*/values-{{.metadata.cluster}}.yaml"
+#                 values:
+#                   mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
+#                   id: '{{ $_ := set . "id" .path.basename }}'
+#           mergeKeys:
+#             - mergeKey
+
 applicationSets:
-  root:
-    template:
-      spec:
-        project: default
+  foo:
+    generatorsObject:
+      foo:
+        list:
+          elements:
+            - name: foo
+            - name: bar
+    
     generators:
-      - merge:
-          generators:
-            - git:
-                 repoURL: git@github.com:example/apps.git
-                 revision: main
-                 files:
-                   - path: "*/values.yaml"
-                 values:
-                   mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
-                   id: '{{ $_ := set . "id" .path.basename }}'
-            - git:
-                repoURL: git@github.com:example/apps.git
-                revision: main
-                files:
-                  - path: "*/values-{{.metadata.cluster}}.yaml"
-                values:
-                  mergeKey: '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
-                  id: '{{ $_ := set . "id" .path.basename }}'
-          mergeKeys:
-            - mergeKey
+      - list:
+          elements:
+            - name: foo
+            - name: bar
