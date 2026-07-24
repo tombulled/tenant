@@ -1,13 +1,19 @@
-namespaces:
-  foo:
-    extraResources:
-      default-network-policy:
-        apiVersion: networking.k8s.io/v1
-        kind: NetworkPolicy
-        metadata:
-          name: default-deny-all
-        spec:
-          podSelector: {}
-          policyTypes:
-            - Ingress
-            - Egress
+defaults: {}
+
+applicationDefaults: {}
+applications: {}
+
+applicationSetDefaults: {}
+applicationSets: {}
+
+projectDefaults: {}
+projects: {}
+
+namespaceDefaults: {}
+namespaces: {}
+
+extraResources: {}
+
+limitRangeDefaults: {}
+networkPolicyDefaults: {}
+resourceQuotaDefaults: {}
