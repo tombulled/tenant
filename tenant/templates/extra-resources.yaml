@@ -1,0 +1,4 @@
+{{- range $id, $_ := .Values.extraResources }}
+---
+{{ tpl (. | toYaml) $.Values.defaults }}
+{{- end }}

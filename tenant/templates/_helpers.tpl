@@ -25,11 +25,11 @@
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
-  {{- $commonDefaults := $root.Values.defaults | default dict }}
-  {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) }}
+  {{- $commonDefaults := $root.Values.defaults | default dict -}}
+  {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) -}}
 
   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
-  {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) }}
+  {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) -}}
   {{- if $enabled -}}
     {{- /* If unspecified, default the resource's name to the resource's ID */ -}}
     {{- if eq $data.name nil -}}
@@ -42,4 +42,26 @@
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
   {{- end -}}
+{{- end -}}
+
+{{- define "tenant.resource.list" -}}
+  {{- $ := .root -}}
+  {{- $values := .values | default dict -}}
+  {{- $defaults := .defaults | default dict -}}
+
+  {{- $resourceDatas := list -}}
+
+  {{- /* Iterate over each configured resource */ -}}
+  {{- range $id, $_ := $values -}}
+    {{- /* Build the resource's data */ -}}
+    {{- $data := include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $defaults) | fromYaml -}}
+
+    {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
+    {{- if $data -}}
+      {{- $resourceDatas = append $resourceDatas $data -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Output the resource data of the enabled resources as a YAML list */ -}}
+  {{- $resourceDatas | toYaml -}}
 {{- end -}}
