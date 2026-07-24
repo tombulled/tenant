@@ -24,6 +24,7 @@ Current outstanding problems:
             NOTE: Instead of the extensions pattern, implement this as a helper in _appset.tpl <------------------------------------------------ (LARGE)
         Solution3: Custom generator via plugin - noooo
         Solution4: customGenerators or some other field
+    * Need to be able to disable application sources
  
     * Need additional resources (appprojects, namespaces)
         Soltion: just create them (SMALL)
