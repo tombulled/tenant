@@ -1,9 +1,13 @@
-applications:
-  foo: {}
-  bar: {}
-
 namespaces:
-  foo: {}
-  bar:
-    finalizers:
-      name: bob
+  foo:
+    extraResources:
+      default-network-policy:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        metadata:
+          name: default-deny-all
+        spec:
+          podSelector: {}
+          policyTypes:
+            - Ingress
+            - Egress
