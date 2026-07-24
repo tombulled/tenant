@@ -26,10 +26,12 @@
     {{- end -}}
 
     {{- /* Replace the "match" (e.g. "{{.name}}") in the template with the digged value */ -}}
-    {{- $template = replace $match (print $obj) $template -}}
+    {{- $template = replace $match (toString $obj) $template -}}
   {{- end -}}
 
-  {{- $_ := mustMergeOverwrite . ($template | fromYaml) -}}
+  {{- range $key, $val := $template | fromYaml -}}
+    {{- $_ := set $ $key $val -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $ := . -}}

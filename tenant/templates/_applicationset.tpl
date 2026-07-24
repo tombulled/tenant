@@ -36,6 +36,10 @@
     {{- $mergeKey := .mergeKey | default "path.path" -}}
     {{- $idKey := .idKey | default "path.basename" -}}
 
+    {{- if $path -}}
+      {{- $path = printf "%s/" $path -}}
+    {{- end -}}
+
     {{- if eq (len $valueFiles) 0 -}}
       {{- fail "Must provide at least one value file" -}}
     {{- end -}}
@@ -51,7 +55,7 @@
           "revision" $revision
           "files" (list
             (dict
-              "path" (printf "%s/%s" $path $valueFile)
+              "path" (printf "%s%s" $path $valueFile)
             )
           )
           "values" $values
