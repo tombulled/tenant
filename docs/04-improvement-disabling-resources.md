@@ -1,4 +1,4 @@
-# Improvement - Enabling/Disabling Resources
+# Disabling Resources
 
 ## The Problem
 
@@ -53,13 +53,13 @@ Which, when templated using `-f values-base.yaml -f values-specific.yaml`, we wo
 
 ## Implementating a Solution
 
-In the `templates/_helpers.tpl` file we currently already define a `build-resource-data` named template (helper), which currently defaults resource names to their IDs.
+In the `templates/_helpers.tpl` file we currently already define a `tenant.resource.data` named template (helper), which currently defaults resource names to their IDs.
 We can modify this helper to output no resource data for resources that are *disabled*.
 
-In the `templates/_helpers.tpl` file, let's change the `build-resource-data` helper to become:
+In the `templates/_helpers.tpl` file, let's change the `tenant.resource.data` helper to become:
 
 ```smarty title="templates/_helpers.tpl" hl_lines="6-9 11-13 21"
-{{- define "build-resource-data" -}}
+{{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
@@ -90,10 +90,9 @@ This is actually **the only change that's necessary!**. This is due to the use o
 
 For example, if we take a look at `templates/applications.yaml`:
 
-```sh
-$ cat templates/applications.yaml
+```yaml title="templates/applications.yaml" hl_lines="2"
 {{- range $id, $_ := .Values.applications -}}
-{{- with include "build-resource-data" (dict "id" $id "data" .) | fromYaml }}
+{{- with include "tenant.resource.data" (dict "id" $id "data" .) | fromYaml }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -102,7 +101,7 @@ kind: Application
 {{- end -}}
 ```
 
-You'll see that the resource only ever gets created if `build-resource-data` outputs some resource data. Nifty!
+You'll see that the resource only ever gets created if `tenant.resource.data` outputs some resource data. Nifty!
 
 ## Testing It Works
 

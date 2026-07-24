@@ -1,4 +1,4 @@
-# Improvement - Application Defaults
+# Application Defaults
 
 Consider the scenario whereby we want to apply some defaults to applications. For example, we might want all applications to share the same `project` by default, unless it gets overriden.
 
@@ -131,12 +131,12 @@ applications:
 
 In the above example, both applications should inherit the `source.repoURL`, and the `bar` application would additionally specify `source.targetRevision`.
 
-To add support for this to our chart, we can update our `application-template` helper in `templates/_helpers.tpl` to merge our resource values on top of the defaults.
+To add support for this to our chart, we can update our `tenant.application.template` helper in `templates/_helpers.tpl` to merge our resource values on top of the defaults.
 
-Let's update our `application-template` helper to become the following:
+Let's update our `tenant.application.template` helper to become the following:
 
 ```smarty title="templates/_helpers.tpl" hl_lines="2-7 9" linenums="1"
-{{- define "application-template" -}}
+{{- define "tenant.application.template" -}}
   {{- "{{- /* Apply defaults */ -}}" }}
   {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
   {{- "{{- $applicationData := mustMergeOverwrite $appDefaults (deepCopy .) -}}" | nindent 0 }}
@@ -151,28 +151,35 @@ Let's update our `application-template` helper to become the following:
 !!! warning
 	The above template contains two layers of templating, as it's a template that *creates* a template.
 
-	The `application-template` helper can be tested by creating the following file:
+	The `tenant.application.template` helper can be tested by creating the following file:
 
 	```smarty title="templates/test/application-template.tpl"
-	{{- if .Values.__test_application_template -}}
-	{{ include "application-template" $ }}
+	{{- if .Values.__test -}}
+	{{ include "tenant.application.template" $ }}
 	{{- end -}}
 	```
 
 	Which can then be templated using:
 
 	```sh
-	helm template . --show-only templates/test/application-template.tpl --set __test_application_template=true --debug 2>/dev/null
+	helm template . --show-only templates/test/application-template.tpl --set __test=true --debug 2>/dev/null
 	```
 
-	It's **strongly** recommended to test any changes to the `files/application-template.yaml` file or `application-template` helper in this way.
+	It's **strongly** recommended to test any changes to the `files/application-template.yaml` file or `tenant.application.template` helper in this way.
 
 	Tools such as [helm-unittest](https://github.com/helm-unittest/helm-unittest) exist for unit-testing Helm charts, which may also prove helpful.
 
-The lines we added to the `application-template` helper do the following things:
+	!!! tip
+		It's also possible to dump the application template using an application set resource in the following way:
+
+		```sh
+		helm template . --set-json '{"applicationSets": {"_": {}}}' | yq .spec.templatePatch
+		```
+
+The lines we added to the `tenant.application.template` helper do the following things:
 
 1. Line 2 - Just a comment that gets added to the created template for readability
-1. Line 3 - Stores the application defaults in the created template as an `$appDefaults` variable. This is done as we can't merge them upront in the `application-template` helper, as (especially in the context of an `ApplicationSet`) we don't actually know our application data yet!
+1. Line 3 - Stores the application defaults in the created template as an `$appDefaults` variable. This is done as we can't merge them upfront in the `tenant.application.template` helper, as (especially in the context of an `ApplicationSet`) we don't actually know our application data yet!
 1. Line 4 - Merges the application's data on top of the defaults. The result is stored in an `$applicationData` variable instead of modifying the source.
 1. Line 5 - A newline added between the defaults & the application template file for readability
 1. Lines 7 & 9 - As the true application data is now stored in an `$applicationData` variable, we encapsulate the application template in a `with` block, to ensure it will get templated in the correct context.

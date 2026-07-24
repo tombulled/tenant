@@ -1,4 +1,4 @@
-# Improvement - Self-Templating
+# Self-Templating
 
 The `tenant` chart is designed to be deployed once per tenant.
 
@@ -126,7 +126,7 @@ Instead, we could treat `.metadata` as a user-defined field for them to do with 
 As it'll get treated as a regular bit of resource data, you could instead implement it in the following way:
 
 ```yaml title="values.yaml"
-common:
+defaults:
   metadata:
     cluster: some-cluster
     tenant: some-tenant
@@ -189,7 +189,7 @@ Magic! :mage:
 
 ### Self-Templating Application Data
 
-Unfortunately, we can't use the `tpl` function in the `application-template`.
+Unfortunately, we can't use the `tpl` function in the `tenant.application.template`.
 
 ??? info "The long answer why..."
 
@@ -209,7 +209,7 @@ Unfortunately, we can't use the `tpl` function in the `application-template`.
     
     Now, let's circle back to Application Sets. Althout the `tenant` chart *creates* Application Sets, it's actually ArgoCD that's responsible for creating the resulting applications. It does this by generating a set of values using the application set's `generators`, and then executes both the `template` and `templatePatch` templates using these values (as we have `goTemplate` enabled).
     
-    This is important because within the `templatePatch` template (where our `application-template` gets inserted) we can only work with the set of templating functions that ArgoCD itself makes available (Helm-specific functions will not be available!). We at least know we're guaranteed at least the built-in ones the standard-library makes available.
+    This is important because within the `templatePatch` template (where our `tenant.application.template` gets inserted) we can only work with the set of templating functions that ArgoCD itself makes available (Helm-specific functions will not be available!). We at least know we're guaranteed at least the built-in ones the standard-library makes available.
     
     Fortunately, like Helm, ArgoCD also makes the `sprig` function library available (except for a select few, e.g. `env`). ArgoCD also provides a small set of custom functions which can be used (incl. `normalize` and `slugify`). ArgoCD's [Go Template](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/GoTemplate/) documentation details everything you should need to know, including [available template functions](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/GoTemplate/#available-template-functions).
     
@@ -222,7 +222,7 @@ Unfortunately, we can't use the `tpl` function in the `application-template`.
     | Helm functions            | :heavy_check_mark: |                                 |
     | ArgoCD functions          |                    | :heavy_check_mark:              |
     
-    Unfortunately, as ArgoCD doesn't expose a Helm-like `tpl` function, it's therefore not possible to use it in our `application-template` template.
+    Unfortunately, as ArgoCD doesn't expose a Helm-like `tpl` function, it's therefore not possible to use it in our `tenant.application.template` template.
 
     (However, there is [a PR open to add it!](https://github.com/argoproj/argo-cd/pull/26614))
 
@@ -309,7 +309,7 @@ Hopefully the code comments help break down exactly what this logic is doing!
 Let's **paste the above nested-template at the top of the `files/application-template.yaml` file** and then we can check everything's working using the following values:
 
 ```yaml title="values.yaml"
-common:
+defaults:
   metadata:
     cluster:
       id: "some-cluster"

@@ -1,4 +1,4 @@
-# Improvement - Resource Defaults
+# Resource Defaults
 
 In the previous guide, we implemented support for `applicationDefaults`, however what if we also wanted to do the same for a group of `ApplicationSet` resources?
 
@@ -21,14 +21,14 @@ applicationSets:
 
 ### Resource Defaults
 
-As we've already got a `build-resource-data` helper, it should be fairly trivial to update this to also apply some defaults to resources.
+As we've already got a `tenant.resource.data` helper, it should be fairly trivial to update this to also apply some defaults to resources.
 
 Each resource template will need to provide the relevant defaults to the helper (similarly to how they currently provide the resource ID & data).
 
-Let's update the `build-resource-data` helper in the `templates/_helpers.tpl` file to expect defaults to be provided, and to apply these to the resource's data:
+Let's update the `tenant.resource.data` helper in the `templates/_helpers.tpl` file to expect defaults to be provided, and to apply these to the resource's data:
 
 ```smarty title="templates/_helpers.tpl" hl_lines="5 12-13" linenums="1"
-{{- define "build-resource-data" -}}
+{{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
@@ -56,15 +56,15 @@ Let's update the `build-resource-data` helper in the `templates/_helpers.tpl` fi
 {{- end -}}
 ```
 
-We now need to update our resource templates to supply their defaults to the `build-resource-data` helper:
+We now need to update our resource templates to supply their defaults to the `tenant.resource.data` helper:
 
 ```diff title="templates/applications.yaml"
 --- templates/applications.yaml
 +++ templates/applications.yaml
 @@ -1,5 +1,5 @@
  {{- range $id, $_ := .Values.applications -}}
--{{- with include "build-resource-data" (dict "id" $id "data" .) | fromYaml }}
-+{{- with include "build-resource-data" (dict "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
+-{{- with include "tenant.resource.data" (dict "id" $id "data" .) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: Application
@@ -75,8 +75,8 @@ We now need to update our resource templates to supply their defaults to the `bu
 +++ templates/applicationsets.yaml
 @@ -1,5 +1,5 @@
  {{- range $id, $_ := .Values.applicationSets -}}
--{{- with include "build-resource-data" (dict "id" $id "data" .) | fromYaml }}
-+{{- with include "build-resource-data" (dict "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
+-{{- with include "tenant.resource.data" (dict "id" $id "data" .) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: ApplicationSet
@@ -84,9 +84,9 @@ We now need to update our resource templates to supply their defaults to the `bu
 
 !!! note
 
-	You might've spotted that we updated the `templates/applications.yaml` template to pass its defaults into the `build-resource-data` template.
+	You might've spotted that we updated the `templates/applications.yaml` template to pass its defaults into the `tenant.resource.data` template.
 
-	Whilst this might not appear necessary (as application defaults are applied by the `application-template` helper), this is being done deliberately.
+	Whilst this might not appear necessary (as application defaults are applied by the `tenant.application.template` helper), this is being done deliberately.
 
 	For example, imagine the following scenario:
 
@@ -98,7 +98,7 @@ We now need to update our resource templates to supply their defaults to the `bu
 	  foo: {}
 	```
 
-	In the above scenario, it'll be the `build-resource-data` helper that catches that the `foo` application shouldn't be created.
+	In the above scenario, it'll be the `tenant.resource.data` helper that catches that the `foo` application shouldn't be created.
 
 	This means that for `Application` resources the defaults will technically get applied twice.
 
@@ -117,7 +117,7 @@ For now, these common defaults will be most applicable to the `metadata` section
 We can conceive that common defaults could be configured in the following way:
 
 ```yaml title="values.yaml"
-common:
+defaults:
   enabled: false # Disable all resources by default
   annotations:
     owning-tenant: some-tenant
@@ -129,19 +129,19 @@ applicationSets:
   foo: {}
 ```
 
-To support this, we'll need to update **both** the `application-template` and `build-resource-data` helpers to respect the new `common` defaults.
+To support this, we'll need to update **both** the `tenant.application.template` and `tenant.resource.data` helpers to respect the new common `defaults` defaults.
 
 #### Application Template Helper
 
-First, let's update the `application-template` helper in `templates/_helpers.tpl` to also make use of `common` defaults:
+First, let's update the `tenant.application.template` helper in `templates/_helpers.tpl` to also make use of `defaults` defaults:
 
 ```diff title="templates/_helpers.tpl"
 --- templates/_helpers.tpl
 +++ templates/_helpers.tpl
 @@ -1,7 +1,8 @@
- {{- define "application-template" -}}
+ {{- define "tenant.application.template" -}}
    {{- "{{- /* Apply defaults */ -}}" }}
-+  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.common | default dict | toJson) | nindent 0 }}
++  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.defaults | default dict | toJson) | nindent 0 }}
    {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
 -  {{- "{{- $applicationData := mustMergeOverwrite $appDefaults (deepCopy .) -}}" | nindent 0 }}
 +  {{- "{{- $applicationData := mustMergeOverwrite $commonDefaults $appDefaults (deepCopy .) -}}" | nindent 0 }}
@@ -153,7 +153,7 @@ First, let's update the `application-template` helper in `templates/_helpers.tpl
 We can then test that this is working by templating the chart using the following values:
 
 ```yaml title="values.yaml"
-common:
+defaults:
   annotations:
     owning-tenant: some-tenant
 
@@ -181,13 +181,13 @@ metadata:
 spec:
 ```
 
-Here we can see that the `foo` application inherited the `annotations` block from the `common` defaults.
+Here we can see that the `foo` application inherited the `annotations` block from the common `defaults` defaults.
 
 #### Resource Data Helper
 
-We also need to update the `build-resource-data` helper to make use of the `common` defaults.
+We also need to update the `tenant.resource.data` helper to make use of the common `defaults` defaults.
 
-We can do that by making the following changes to the `build-resource-data` helper in `templates/_helpers.tpl`:
+We can do that by making the following changes to the `tenant.resource.data` helper in `templates/_helpers.tpl`:
 
 ```diff title="templates/_helpers.tpl"
 --- templates/_helpers.tpl
@@ -197,22 +197,22 @@ We can do that by making the following changes to the `build-resource-data` help
 
    {{- /* Apply defaults */ -}}
 -  {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) }}
-+  {{- $commonDefaults := $root.Values.common | default dict }}
++  {{- $commonDefaults := $root.Values.defaults | default dict }}
 +  {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) }}
 
    {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
    {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) }}
 ```
 
-We now need to update our resource templates to also pass in the root context, so that the `build-resource-data` helper can get a handle to the `common` defaults:
+We now need to update our resource templates to also pass in the root context, so that the `tenant.resource.data` helper can get a handle to the common `defaults` defaults:
 
 ```diff title="templates/applications.yaml"
 --- templates/applications.yaml
 +++ templates/applications.yaml
 @@ -1,5 +1,5 @@
  {{- range $id, $_ := .Values.applications -}}
--{{- with include "build-resource-data" (dict "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
-+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
+-{{- with include "tenant.resource.data" (dict "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationDefaults) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: Application
@@ -223,19 +223,19 @@ We now need to update our resource templates to also pass in the root context, s
 +++ templates/applicationsets.yaml
 @@ -1,5 +1,5 @@
  {{- range $id, $_ := .Values.applicationSets -}}
--{{- with include "build-resource-data" (dict "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
-+{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
+-{{- with include "tenant.resource.data" (dict "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: ApplicationSet
 ```
 
-We can now test that `common` defaults are being applied to all resources as expected.
+We can now test that common `defaults` defaults are being applied to all resources as expected.
 
 Let's template the chart using the following values:
 
 ```yaml title="values.yaml"
-common:
+defaults:
   enabled: false # Disable all resources by default
   annotations:
     owning-tenant: some-tenant

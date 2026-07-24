@@ -1,4 +1,4 @@
-# Improvement - Custom Git-Merge Generator
+# Custom Git-Merge Generator
 
 Let's imagine that we want to deploy a set of applications. For this example we'll use `cert-manager` and `traefik`.
 
@@ -473,21 +473,8 @@ extraSources:
     revision: main
 ```
 
-However, implementation of this is likely best saved until a usecase demands it.
+However, implementation of this is likely best saved until a use case demands it.
 
 ## Implementing a Solution
 
-Foo
 
-```yaml
-sources:
-  foo:
-    repoURL: git@github.com:example/foo.git
-    revision: main
-  bar:
-    repoURL: git@github.com:example/bar.git
-    revision: main
-valueFiles:
-  - $foo/values.yaml
-  - $bar/values.yaml
-```

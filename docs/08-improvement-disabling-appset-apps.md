@@ -1,4 +1,4 @@
-# Improvement - Disabling ApplicationSet Applications
+# Disabling ApplicationSet Applications
 
 The `tenant` chart currently supports disabling *resources*, for example as shown below:
 

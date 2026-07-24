@@ -83,12 +83,12 @@ $ # Next, copy the contents of the above application template into: files/applic
 We can then create a helper to load in the contents of this file:
 
 ```smarty title="templates/_helpers.tpl"
-{{- define "application-template" -}}
+{{- define "tenant.application.template" -}}
   {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
 {{- end -}}
 ```
 
-??? info
+!!! info
 	We pipe the contents of the file to `trim | nindent 0` for the following reasons:
 
 	1. `trim` trims any leading/trailing whitespace from the file (e.g. a trailing newline)
@@ -97,21 +97,24 @@ We can then create a helper to load in the contents of this file:
 	R.e. (2.), the following named template would also be absolutely valid: (note the indentation has been omitted)
 
 	```smarty title="templates/_helpers.tpl"
-	{{- define "application-template" -}}
+	{{- define "tenant.application.template" -}}
 	{{ $.Files.Get "files/application-template.yaml" | trim }}
 	{{- end -}}
 	```
 
+!!! tip
+	It's good practice to add a **chart-specific prefix** to nested template names (`tenant.` in this case), this helps disambiguate nested templates if this chart gets added as a dependency.
+
 ### Creating template for Applications
 
-We can now create a super simple template to create a series of `Application` resources:
+We can now create a simple template to create a series of `Application` resources:
 
 ```py title="templates/applications.yaml"
 {{- range .Values.applications -}}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-{{ tpl (include "application-template" $) . }}
+{{ tpl (include "tenant.application.template" $) . }}
 {{- end -}}
 ```
 
@@ -173,7 +176,11 @@ spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
   {{- end }}
-  generators: {{ ternary "[]" (.generators | toYaml | nindent 4) (empty .generators) }}
+  {{- with .generators }}
+  generators: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  generators: []
+  {{- end }}
   goTemplate: true
   {{- with .goTemplateOptions }}
   goTemplateOptions: {{- . | toYaml | nindent 4 }}
@@ -194,7 +201,7 @@ spec:
   template: {{- . | toYaml | nindent 4 }}
   {{- end }}
   templatePatch: |
-    {{- include "application-template" $ | nindent 4 }}
+    {{- include "tenant.application.template" $ | nindent 4 }}
 {{- end }}
 ```
 

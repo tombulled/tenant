@@ -1,6 +1,6 @@
-# Improvements - Objects over Lists
+# Objects over Lists
 
-So far this chart provides the ability to specify resource-specific defaults (e.g. `applicationDefaults`) or even common defaults (via `common`).
+So far this chart provides the ability to specify resource-specific defaults (e.g. `applicationDefaults`) or even common defaults (via `defaults`).
 
 As Helm is being used, it's also possible to merge overrides from multiple values files.
 

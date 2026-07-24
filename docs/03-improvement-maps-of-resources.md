@@ -1,4 +1,4 @@
-# Improvement - Maps of Resources
+# Maps of Resources
 
 Currently our `tenant` Helm chart supports configuring `Application` and `ApplicationSet` resources from *lists*.
 
@@ -81,59 +81,28 @@ and would allow you to **default the application name to its ID**.
 
 ## Update Templates
 
-The `templates/applications.yaml` template can be updated in the following way:
+Let's update the top of the `templates/applications.yaml` template in the following way:
 
-```diff title="templates/applications.yaml"
---- templates/applications.yaml
-+++ templates/applications.yaml
-@@ -1,4 +1,7 @@
--{{- range .Values.applications -}}
-+{{- range $id, $_ := .Values.applications -}}
-+{{- if eq .name nil }}
-+  {{- set . "name" $id }}
-+{{- end }}
- ---
- apiVersion: argoproj.io/v1alpha1
- kind: Application
+```yaml title="templates/applications.yaml" hl_lines="1-4"
+{{- range $id, $_ := .Values.applications -}}
+{{- if eq .name nil }}
+  {{- set . "name" $id }}
+{{- end }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 ```
 
-!!!tip
+Let's also update the top of the `templates/applicationsets.yaml` template in the following way:
 
-	You can apply the above diff using the `patch` command:
-
-	```sh
-	patch -p0 << 'EOF'
-	--- templates/applications.yaml
-	+++ templates/applications.yaml
-	@@ -1,4 +1,7 @@
-	-{{- range .Values.applications -}}
-	+{{- range $id, $_ := .Values.applications -}}
-	+{{- if eq .name nil }}
-	+  {{- set . "name" $id }}
-	+{{- end }}
-	 ---
-	 apiVersion: argoproj.io/v1alpha1
-	 kind: Application
-	EOF
-	```
-
-	You can use this approach for all diffs shown in these docs.
-	
-
-The `templates/applicationsets.yaml` template can be updated in the following way:
-
-```diff title="templates/applicationsets.yaml"
---- templates/applicationsets.yaml
-+++ templates/applicationsets.yaml
-@@ -1,4 +1,7 @@
--{{- range .Values.applicationSets }}
-+{{- range $id, $_ := .Values.applicationSets -}}
-+{{- if eq .name nil }}
-+  {{- set . "name" $id }}
-+{{- end }}
- ---
- apiVersion: argoproj.io/v1alpha1
- kind: ApplicationSet
+```yaml title="templates/applicationsets.yaml" hl_lines="1-4"
+{{- range $id, $_ := .Values.applications -}}
+{{- if eq .name nil }}
+  {{- set . "name" $id }}
+{{- end }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
 ```
 
 We can then update our values to omit the explicit resource names (as these will be inferred from the resource IDs now):
@@ -148,10 +117,9 @@ applicationSets:
   bar: {}
 ```
 
-With the above changes, our `helm template` command should yield the same output as before: (note the resource names are still correct)
+With the above changes, `helm template .` should yield the same output as before: (note the resource names are still correct)
 
-```sh
-$ helm template .
+```yaml
 ---
 # Source: tenant/templates/applications.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -196,7 +164,7 @@ Fortunately, Helm makes it easy to reduce repetition by storing re-usable blocks
 We can introduce the following new file:
 
 ```smarty title="templates/_helpers.tpl"
-{{- define "build-resource-data" -}}
+{{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
@@ -221,7 +189,7 @@ We can then update our application & applicationset templates again to make use 
 -{{- if eq .name nil }}
 -  {{- set . "name" $id }}
 -{{- end }}
-+{{- with include "build-resource-data" (dict "id" $id "data" .) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "id" $id "data" .) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: Application
@@ -238,7 +206,7 @@ We can then update our application & applicationset templates again to make use 
 -{{- if eq .name nil }}
 -  {{- set . "name" $id }}
 -{{- end }}
-+{{- with include "build-resource-data" (dict "id" $id "data" .) | fromYaml }}
++{{- with include "tenant.resource.data" (dict "id" $id "data" .) | fromYaml }}
  ---
  apiVersion: argoproj.io/v1alpha1
  kind: ApplicationSet
