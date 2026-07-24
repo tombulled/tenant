@@ -446,7 +446,7 @@ Fundamentally, all a user really needs to specify is:
 1. An optional merge key (defaults to `.path.path`)
 1. An optional ID key (defaults to `.path.basename`)
 
-As such, we could imagine our custom generator git-merge might accept config a bit like this:
+As such, we could imagine our custom git-merge generator might accept config a bit like this:
 
 ```yaml
 repoURL: git@github.com:example/apps.git
@@ -778,7 +778,7 @@ sourcesObject:
     targetRevision: 41.0.0
 ```
 
-Let's then update our `values.yaml` file to call reach out to our `apps` repository (using the necessary defaults of course):
+Let's then update our `values.yaml` file to reach out to our `apps` repository (using the necessary defaults of course):
 
 ```yaml title="values.yaml"
 applicationDefaults:
@@ -990,7 +990,7 @@ Let's add some overrides for this:
 
 ```sh
 $ touch cert-manager/values-dev.yaml
-$ yq e -i '.sourcesObject.main.targetRevision = ""' cert-manager/values-dev.yaml
+$ yq e -i '.sourcesObject.main.targetRevision = "v1.19.2-rc1"' cert-manager/values-dev.yaml
 $ touch traefik/values-dev.yaml
 $ yq e -i '.enabled = false' traefik/values-dev.yaml
 $ tree
