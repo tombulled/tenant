@@ -60,15 +60,24 @@
 
 applicationSets:
   foo:
-    generatorsObject:
-      foo:
-        list:
-          elements:
-            - name: foo
-            - name: bar
-    
     generators:
-      - list:
-          elements:
-            - name: foo
-            - name: bar
+      - x-git:
+          repoURL: some-repo
+          revision: some-rev
+          valueFiles:
+            - foo.yaml
+            - bar.yaml
+          values:
+            foo: bar
+    # generatorsObject:
+    #   foo:
+    #     list:
+    #       elements:
+    #         - name: foo
+    #         - name: bar
+    # 
+    # generators:
+    #   - list:
+    #       elements:
+    #         - name: foo
+    #         - name: bar
