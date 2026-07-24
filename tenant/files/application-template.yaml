@@ -80,6 +80,9 @@ spec:
   {{- with .sourcesObject }}
   sources:
     {{- range $sourceId, $_ := . }}
+    {{- if or (eq . nil) (eq .enabled false) -}}
+      {{- continue -}}
+    {{- end -}}
     {{- $_ := set . "ref" (.ref | default $sourceId) }}
     {{- $_ := set . "name" (.name | default $sourceId) }}
     - {{ . | toYaml | nindent 6 | trim }}

@@ -1,71 +1,7 @@
-applicationDefaults:
-  # name: "{{.id}}" # TEMP!
-  destination:
-    name: in-cluster
-    namespace: "{{.name}}"
-  sourcesObject:
-    main:
-      chart: "{{.name}}"
-      helm:
-        ignoreMissingValueFiles: true
-        valueFiles:
-          - $values/{{.name}}/values.yaml
-          - $values/{{.name}}/values-{{.metadata.cluster}}.yaml
-    values:
-      repoURL: git@github.com:example/values.git
-      targetRevision: main
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-
-
-# applications:
-#   cert-manager:
-#     sourcesObject:
-#       main:
-#         repoURL: quay.io/jetstack/charts
-#         targetRevision: v1.19.1
-#   traefik:
-#     sourcesObject:
-#       main:
-#         repoURL: https://traefik.github.io/charts
-#         targetRevision: 41.0.0
-
-applicationSets:
-  apps:
-    template:
-      spec:
-        project: default
-    generators:
-      # - git:
-      #     files:
-      #     - path: apps/core/cert-manager/values.yaml
-      #     - path: apps/core/traefik/values.yaml
-      #     repoURL: git@github.com:tombulled/k8s.git
-      #     revision: main
-      #     values:
-      #       foo: bar
-            # id: id # '{{ `{{ $_ := set . "id" .path.basename }}` }}'
-            # mergeKey: mergeKey # '{{ `{{ $_ := set . "mergeKey" .path.path }}` }}'
-      - x-git:
-          repoURL: git@github.com:tombulled/k8s.git
-          revision: main
-          path: "apps/core/*"
-          valueFiles:
-            - values.yaml
-            - values-{{.metadata.cluster}}.yaml
-      # - list:
-      #     elements:
-      #       - sourcesObject:
-      #           main:
-      #             repoURL: https://traefik.github.io/charts
-      #             targetRevision: 41.0.0
-      #         destination:
-      #           namespace: traefik
-      #       - sourcesObject:
-      #           main:
-      #             repoURL: quay.io/jetstack/charts
-      #             targetRevision: v1.19.1
-      #         destination:
-      #           namespace: cert-manager
+applications:
+  foo:
+    sourcesObject:
+      foo: {}
+      bar: ~
+      baz:
+        enabled: false
