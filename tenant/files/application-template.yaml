@@ -1,3 +1,40 @@
+{{- /*
+  The below nested-template templates the application data using itself.
+  This logic is a workaround for the `tpl` function not being available.
+  If https://github.com/argoproj/argo-cd/pull/26614 gets merged, the `tpl` function can be used instead.
+*/ -}}
+{{- block "self-template" . -}}
+  {{- $template := . | toYaml -}}
+
+  {{- /* Find everything that looks like a template, e.g. "{.name}", and loop over each of them */ -}}
+  {{- range $match := regexFindAll "{{ *\\..*? *}}" $template -1 -}}
+    {{- /* Extract all of the keys from the match, e.g: "{.foo.bar}" -> ["foo", "bar"] */ -}}
+    {{- $keys := $match | substr 2 (int (sub (len $match) 2)) | trim | substr 1 -1 | splitList "." -}}
+
+    {{- /* Traverse the application data, using the match's keys. If a value is not found, an empty string is used */ -}}
+    {{- /* NOTE: We can't use the sprig `dig` function as it doesn't accept a dynamic list of values */ -}}
+    {{- $obj := $ -}}
+    {{- range $key := $keys -}}
+      {{- /* If the current object isn't a map, abort as we can't traverse any further */ -}}
+      {{- if ne (kindOf $obj) "map" -}}
+        {{- $obj = "" -}}
+        {{- break -}}
+      {{- end -}}
+
+      {{- /* Update the object to use the value of the current key. After the last iteration, `$obj` will contain the final value */ -}}
+      {{- $obj = get $obj $key -}}
+    {{- end -}}
+
+    {{- /* Replace the "match" (e.g. "{{.name}}") in the template with the digged value */ -}}
+    {{- $template = replace $match (toString $obj) $template -}}
+  {{- end -}}
+
+  {{- range $key, $val := $template | fromYaml -}}
+    {{- $_ := set $ $key $val -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $ := . -}}
 metadata:
   name: {{ .name }}
   {{- with .namespace }}
@@ -19,7 +56,13 @@ spec:
   {{- with .ignoreDifferences }}
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .info }}
+  {{- with .infoObject }}
+  info:
+    {{- range $key, $val := . }}
+    - name: {{ $key | snakecase | replace "_" " " | title }}
+      value: {{ $val }}
+    {{- end }}
+  {{- else with .info }}
   info: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .project }}
@@ -34,9 +77,27 @@ spec:
   {{- with .sourceHydrator }}
   sourceHydrator: {{- . | toYaml | nindent 4}}
   {{- end }}
-  {{- with .sources }}
+  {{- with .sourcesObject }}
+  sources:
+    {{- range $sourceId, $_ := . }}
+    {{- if or (eq . nil) (eq .enabled false) -}}
+      {{- continue -}}
+    {{- end -}}
+    {{- $_ := set . "ref" (.ref | default $sourceId) }}
+    {{- $_ := set . "name" (.name | default $sourceId) }}
+    - {{ . | toYaml | nindent 6 | trim }}
+    {{- end }}
+  {{- else with .sources }}
   sources: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .syncPolicy }}
+    {{- with .syncOptionsObject }}
+      {{- $syncOptions := list }}
+      {{- range $key, $val := . }}
+        {{- $syncOptions = append $syncOptions (printf "%s=%s" (title $key) (toString $val)) }}
+      {{- end }}
+      {{- $_ := unset $.syncPolicy "syncOptionsObject" }}
+      {{- $_ := set $.syncPolicy "syncOptions" $syncOptions }}
+    {{- end }}
   syncPolicy: {{- . | toYaml | nindent 4 }}
   {{- end }}

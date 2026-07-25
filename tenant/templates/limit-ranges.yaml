@@ -1,6 +1,5 @@
-{{- range $namespace := include "namespaces" $ | fromYamlArray }}
-{{- range $id, $_ := $namespace.limitRanges }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.limitRangeDefaults) | fromYaml }}
+{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" $namespace.limitRanges "defaults" $.Values.limitRangeDefaults) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: LimitRange
@@ -20,6 +19,5 @@ spec:
   {{- with .limits }}
   limits: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}
 {{- end }}

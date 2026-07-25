@@ -1,6 +1,5 @@
-{{- range $namespace := include "namespaces" $ | fromYamlArray }}
-{{- range $id, $_ := $namespace.networkPolicies }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.networkPolicyDefaults) | fromYaml }}
+{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" $namespace.networkPolicies "defaults" $.Values.networkPolicyDefaults) | fromYamlArray }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -29,6 +28,5 @@ spec:
   {{- with .policyTypes }}
   policyTypes: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}
 {{- end }}

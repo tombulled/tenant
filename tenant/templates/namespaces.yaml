@@ -1,4 +1,4 @@
-{{- range include "namespaces" $ | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.namespaces "defaults" .Values.namespaceDefaults) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: Namespace
@@ -12,6 +12,6 @@ metadata:
   name: {{ .name }}
 {{- with .finalizers }}
 spec:
-  finalizers: {{ . | toYaml | nindent 2 }}
+  finalizers: {{- . | toYaml | nindent 4 }}
 {{- end }}
-{{- end }}
+{{- end -}}

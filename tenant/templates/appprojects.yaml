@@ -1,5 +1,4 @@
-{{- range $id, $_ := .Values.projects }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.projectDefaults) | fromYaml }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.projects "defaults" .Values.projectDefaults) | fromYamlArray }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -57,5 +56,4 @@ spec:
   {{- with .sourceNamespaces }}
   sourceNamespaces: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}

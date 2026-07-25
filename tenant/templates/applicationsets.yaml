@@ -1,6 +1,4 @@
-{{- range $id, $_ := .Values.applicationSets }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.applicationSetDefaults) | fromYaml }}
-{{ tpl (include "build-extensions" (dict "root" $ "path" "files/applicationset-extensions/*.tpl")) . }}
+{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.applicationSets "defaults" .Values.applicationSetDefaults) | fromYamlArray }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -19,9 +17,18 @@ spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
   {{- end }}
-  generators: {{ ternary "[]" (.generators | toYaml | nindent 4) (empty .generators) }}
+  {{- with include "tenant.application-set.generators" . | fromYamlArray }}
+  generators: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  generators: []
+  {{- end }}
   goTemplate: true
-  {{- with .goTemplateOptions }}
+  {{- with .goTemplateOptionsObject }}
+  goTemplateOptions:
+    {{- range $key, $val := . }}
+    - {{ printf "%s=%s" $key (toString $val) }}
+    {{- end }}
+  {{- else with .goTemplateOptions }}
   goTemplateOptions: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .ignoreApplicationDifferences }}
@@ -40,6 +47,5 @@ spec:
   template: {{- . | toYaml | nindent 4 }}
   {{- end }}
   templatePatch: |
-    {{- include "application-template" $ | trim | nindent 4 }}
-{{- end }}
+    {{- include "tenant.application.template" $ | nindent 4 }}
 {{- end }}
