@@ -3,13 +3,6 @@ theme:
   name: material
   features:
     - content.code.copy
-# markdown_extensions:
-#   # Admonitions
-#   - admonition
-#   - pymdownx.details
-#   - pymdownx.superfences
-#   - pymdownx.tilde
-
 markdown_extensions:
   # Python Markdown
   - abbr
@@ -30,7 +23,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
-      # emoji_generator: !!python/name:material.extensions.emoji.to_svg
       emoji_generator: !!python/name:pymdownx.emoji.to_alt
   - pymdownx.highlight
   - pymdownx.inlinehilite
