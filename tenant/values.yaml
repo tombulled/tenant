@@ -3,7 +3,11 @@ defaults: {}
 applicationDefaults: {}
 applications: {}
 
-applicationSetDefaults: {}
+applicationSetDefaults:
+  template:
+    metadata: {}
+    spec:
+      destination: {}
 applicationSets: {}
 
 projectDefaults: {}
