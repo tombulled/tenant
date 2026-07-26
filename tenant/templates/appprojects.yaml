@@ -30,6 +30,9 @@ spec:
   destinations:
     {{- range $id, $_ := . }}
     {{- $_ := set . "namespace" (.namespace | default $id) }}
+    {{- if and (eq .name nil) (eq .server nil) }}
+      {{- $_ := set . "name" "in-cluster" }}
+    {{- end }}
     - {{ . | toYaml | indent 6 | trim }}
     {{- end }}
   {{- else with .destinations }}
