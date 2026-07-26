@@ -26,7 +26,13 @@ spec:
   {{- with .sourceRepos }}
   sourceRepos: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .destinations }}
+  {{- with .destinationsObject }}
+  destinations:
+    {{- range $id, $_ := . }}
+    {{- $_ := set . "namespace" (.namespace | default $id) }}
+    - {{ . | toYaml | indent 6 | trim }}
+    {{- end }}
+  {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .clusterResourceWhitelist }}
