@@ -1,13 +1,9 @@
-roleBindingDefaults: {}
-
-roleBindings:
+clusterRoles:
   foo:
-    roleRef:
-      kind: Role
-      name: pod-reader
-      apiGroup: rbac.authorization.k8s.io
-    subjectsObject:
-      jane:
-        kind: User
-        name: bob
-        apiGroup: rbac.authorization.k8s.io
+    rules:
+      - apiGroups: [""]
+        #
+        # at the HTTP level, the name of the resource for accessing Secret
+        # objects is "secrets"
+        resources: ["secrets"]
+        verbs: ["get", "watch", "list"]

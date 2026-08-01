@@ -14,6 +14,9 @@ applicationSets: {}
 projectDefaults: {}
 projects: {}
 
+clusterRoleDefaults: {}
+clusterRoles: {}
+
 limitRangeDefaults: {}
 limitRanges: {}
 
