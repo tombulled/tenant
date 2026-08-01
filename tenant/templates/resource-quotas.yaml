@@ -14,7 +14,9 @@ metadata:
   labels: {{- . | toYaml | nindent 4 }}
   {{- end }}
   name: {{ .name }}
-  namespace: {{ $namespace.name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
 spec:
   {{- with .hard }}
   hard: {{- . | toYaml | nindent 4 }}
@@ -25,5 +27,4 @@ spec:
   {{- with .scopes }}
   scopes: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}

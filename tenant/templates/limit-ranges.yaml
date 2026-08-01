@@ -14,10 +14,11 @@ metadata:
   labels: {{- . | toYaml | nindent 4 }}
   {{- end }}
   name: {{ .name }}
-  namespace: {{ $namespace.name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
 spec:
   {{- with .limits }}
   limits: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}

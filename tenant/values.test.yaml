@@ -1,13 +1,9 @@
 roleDefaults: {}
 
 roles:
-  foo: {}
-
-namespaces:
   foo:
-    roles:
-      some-role: {}
-  bar:
-    enabled: false
-    roles:
-      other-role: {}
+    rulesObject:
+      pod-read:
+        apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["get", "watch", "list"]

@@ -17,5 +17,9 @@ metadata:
   {{- with .namespace }}
   namespace: {{ . }}
   {{- end }}
-spec:
+{{- with .rulesObject }}
+rules: {{- . | values | toYaml | nindent 2 }}
+{{- else with .rules }}
+rules: {{- . | toYaml | nindent 2 }}
+{{- end }}
 {{- end }}

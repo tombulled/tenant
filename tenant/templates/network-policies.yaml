@@ -14,7 +14,9 @@ metadata:
   labels: {{- . | toYaml | nindent 4 }}
   {{- end }}
   name: {{ .name }}
-  namespace: {{ $namespace.name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
 spec:
   {{- with .egress }}
   egress: {{- . | toYaml | nindent 4 }}
@@ -28,5 +30,4 @@ spec:
   {{- with .policyTypes }}
   policyTypes: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}
