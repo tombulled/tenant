@@ -1,9 +1,13 @@
-roleDefaults: {}
+roleBindingDefaults: {}
 
-roles:
+roleBindings:
   foo:
-    rulesObject:
-      pod-read:
-        apiGroups: [""]
-        resources: ["pods"]
-        verbs: ["get", "watch", "list"]
+    roleRef:
+      kind: Role
+      name: pod-reader
+      apiGroup: rbac.authorization.k8s.io
+    subjectsObject:
+      jane:
+        kind: User
+        name: bob
+        apiGroup: rbac.authorization.k8s.io

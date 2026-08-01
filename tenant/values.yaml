@@ -20,5 +20,10 @@ namespaces: {}
 extraResources: {}
 
 limitRangeDefaults: {}
+limitRanges: {}
+
 networkPolicyDefaults: {}
+networkPolicies: {}
+
 resourceQuotaDefaults: {}
+resourceQuotas: {}
