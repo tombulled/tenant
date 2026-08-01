@@ -1,0 +1,20 @@
+applicationSets:
+  main:
+    template:
+      spec:
+        project: default
+    generators:
+      - matrix:
+          generators:
+            - list:
+                elements:
+                  - id: foo
+                  - id: bar
+                    enabled: true
+                    annotations:
+                      is-cool: "false"
+            - list:
+                elements:
+                  - enabled: false
+                    annotations:
+                      is-cool: "true"
