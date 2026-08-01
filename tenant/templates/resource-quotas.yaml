@@ -1,5 +1,5 @@
-{{- range $namespace := include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray }}
-{{- range include "tenant.resource.list" (dict "root" $ "values" $namespace.resourceQuotas "defaults" $.Values.resourceQuotaDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list-with-namespaced" (dict
+  "root" $ "key" "resourceQuotas" "defaults" $.Values.resourceQuotaDefaults) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: ResourceQuota
