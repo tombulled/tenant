@@ -14,16 +14,22 @@ applicationSets: {}
 projectDefaults: {}
 projects: {}
 
-namespaceDefaults: {}
-namespaces: {}
-
-extraResources: {}
-
 limitRangeDefaults: {}
 limitRanges: {}
+
+namespaceDefaults: {}
+namespaces: {}
 
 networkPolicyDefaults: {}
 networkPolicies: {}
 
 resourceQuotaDefaults: {}
 resourceQuotas: {}
+
+roleBindingDefaults: {}
+roleBindings: {}
+
+roleDefaults: {}
+roles: {}
+
+extraResources: {}
