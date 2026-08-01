@@ -1,17 +1,3 @@
-{{- define "tenant.application.template" -}}
-  {{- "{{- /* Apply defaults */ -}}" }}
-  {{- printf "{{- $commonDefaults := `%s` | fromJson -}}" ($.Values.defaults | default dict | toJson) | nindent 0 }}
-  {{- printf "{{- $appDefaults := `%s` | fromJson -}}" ($.Values.applicationDefaults | default dict | toJson) | nindent 0 }}
-  {{- "{{- $_ := mustMergeOverwrite . $commonDefaults $appDefaults (deepCopy .) -}}" | nindent 0 }}
-  {{- "" | nindent 0}}
-
-  {{- "{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}" | nindent 0 }}
-  {{- "{{- $_ := set . \"name\" (.name | default .id) -}}" | nindent 0 }}
-  {{- "" | nindent 0 }}
-
-  {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
-{{- end -}}
-
 {{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $root := .root -}}
@@ -57,11 +43,35 @@
     {{- $data := include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $defaults) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
-    {{- if $data -}}
-      {{- $resourceDatas = append $resourceDatas $data -}}
+    {{- with $data -}}
+      {{- $resourceDatas = append $resourceDatas . -}}
     {{- end -}}
   {{- end -}}
 
   {{- /* Output the resource data of the enabled resources as a YAML list */ -}}
   {{- $resourceDatas | toYaml -}}
+{{- end -}}
+
+{{- define "tenant.resource.list-with-namespaced" -}}
+  {{- $ := .root -}}
+  {{- $key := .key -}}
+  {{- $defaults := .defaults | default dict -}}
+
+  {{- $resources := include "tenant.resource.list" (
+    dict "root" $ "values" (get $.Values $key) "defaults" $defaults) | fromYamlArray -}}
+
+  {{- $namespaces := include "tenant.resource.list" (
+    dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray -}}
+
+  {{- range $namespace := $namespaces -}}
+    {{- $namespacedResources := include "tenant.resource.list" (
+    dict "root" $ "values" (get $namespace $key) "defaults" $defaults) | fromYamlArray -}}
+
+    {{- range $namespacedResources -}}
+      {{- $_ := set . "namespace" $namespace.name -}}
+      {{- $resources = append $resources . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $resources | toYaml -}}
 {{- end -}}

@@ -1,0 +1,28 @@
+{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.clusterRoleBindings "defaults" .Values.clusterRoleBindingDefaults) | fromYamlArray }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+{{- with .roleRef }}
+roleRef: {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- with .subjectsObject }}
+subjects:
+  {{- range $key, $val := . }}
+    {{- $_ := set . "name" (.name | default $key) }}
+    {{- . | toYaml | nindent 2 }}
+  {{- end }}
+{{- else with .subjects }}
+subjects: {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- end }}

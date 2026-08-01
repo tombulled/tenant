@@ -14,11 +14,28 @@ applicationSets: {}
 projectDefaults: {}
 projects: {}
 
+clusterRoleBindingDefaults: {}
+clusterRoleBindings: {}
+
+clusterRoleDefaults: {}
+clusterRoles: {}
+
+limitRangeDefaults: {}
+limitRanges: {}
+
 namespaceDefaults: {}
 namespaces: {}
 
-extraResources: {}
-
-limitRangeDefaults: {}
 networkPolicyDefaults: {}
+networkPolicies: {}
+
 resourceQuotaDefaults: {}
+resourceQuotas: {}
+
+roleBindingDefaults: {}
+roleBindings: {}
+
+roleDefaults: {}
+roles: {}
+
+extraResources: {}
