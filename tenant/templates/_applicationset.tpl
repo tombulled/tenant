@@ -1,17 +1,27 @@
 {{- define "tenant.application-set.generators" -}}
-  {{- $generators := ternary (.generatorsObject | values) (.generators | default list) (not (empty .generatorsObject)) -}}
+  {{- $ := .root -}}
+  {{- $appSet := .appSet -}}
 
-  {{- range $generators -}}
-    {{- /* Add a match expression to the selector of all generators that filters out disabled applications */ -}}
-    {{- include "tenant.application-set.generator.add-selector" . -}}
+  {{- $generatorTemplates := (list "convert-x-git" "wrap-with-matrix" "add-selector") -}}
 
-    {{- /* Replace all x-git generators with the appropriate merge + git generators */ -}}
-    {{- include "tenant.application-set.generator.convert-x-git" . -}}
+  {{- with $appSet -}}
+    {{- $generators := ternary (.generatorsObject | values) (.generators | default list) (not (empty .generatorsObject)) -}}
+
+    {{- $newGenerators := list -}}
+    {{- range $generator := $generators -}}
+      {{- range $generatorTemplate := $generatorTemplates -}}
+        {{- $generatorTemplateName := printf "tenant.application-set.generator.%s" $generatorTemplate -}}
+        {{- $generator = include $generatorTemplateName (dict "root" $ "generator" $generator) | fromYaml -}}
+      {{- end -}}
+
+      {{- $newGenerators = append $newGenerators $generator -}}
+    {{- end -}}
+
+    {{- $newGenerators | toYaml -}}
   {{- end -}}
-
-  {{- $generators | toYaml -}}
 {{- end -}}
 
+{{- /* Add a match expression to the selector of all generators that filters out disabled applications */ -}}
 {{- define "tenant.application-set.generator.add-selector" -}}
   {{- $matchExpression := (dict
     "key" "enabled"
@@ -19,15 +29,54 @@
     "values" (list "false")
   ) -}}
 
-  {{- $_ := set . "selector" (.selector | default dict) -}}
-  {{- $matchExpressions := $matchExpression | append (.selector.matchExpressions | default list) -}}
-  {{- $_ := set .selector "matchExpressions" $matchExpressions -}}
+  {{- with .generator | deepCopy -}}
+    {{- $_ := set . "selector" (.selector | default dict) -}}
+    {{- $matchExpressions := $matchExpression | append (.selector.matchExpressions | default list) -}}
+    {{- $_ := set .selector "matchExpressions" $matchExpressions -}}
+    {{- . | toYaml -}}
+  {{- end -}}
 {{- end -}}
 
+{{- /* Wrap each generator in a 'matrix' generator to set necessary defaults upfront (e.g. .enabled) */ -}}
+{{- define "tenant.application-set.generator.wrap-with-matrix" -}}
+  {{- $ := .root -}}
+  {{- $generator := .generator -}}
+
+  {{- $defaults := mustMergeOverwrite ($.Values.defaults | default dict | deepCopy) ($.Values.applicationDefaults | default dict | deepCopy) -}}
+  {{- $defaultEnabled := $defaults.enabled -}}
+
+  {{- with $generator -}}
+    {{- if ne $defaultEnabled false -}}
+      {{- . | toYaml -}}
+    {{- else -}}
+      {{- $newGenerator := (dict
+        "matrix" (dict
+          "generators" (list
+            .
+            (dict
+              "list" (dict
+                "elements" (list
+                  (dict
+                    "enabled" $defaultEnabled
+                  )
+                )
+              )
+            )
+          )
+        )
+      ) -}}
+
+      {{- $newGenerator | toYaml -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Replace all x-git generators with the appropriate merge + git generators */ -}}
 {{- define "tenant.application-set.generator.convert-x-git" -}}
   {{- $xGitKey := "x-git" -}}
+  {{- $generator := .generator | deepCopy -}}
 
-  {{- with get . $xGitKey -}}
+  {{- with get $generator $xGitKey -}}
     {{- $repoURL := .repoURL | required "repoURL is required" -}}
     {{- $revision := .revision | required "revision is required" -}}
     {{- $path := .path | default "" | trimSuffix "/" -}}
@@ -79,7 +128,9 @@
       ) -}}
     {{- end -}}
 
-    {{- $_ := unset $ $xGitKey -}}
-    {{- $_ := set $ $generatorType $generatorData -}}
+    {{- $_ := unset $generator $xGitKey -}}
+    {{- $_ := set $generator $generatorType $generatorData -}}
   {{- end -}}
+
+  {{- $generator | toYaml -}}
 {{- end -}}

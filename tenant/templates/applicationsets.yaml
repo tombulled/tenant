@@ -17,7 +17,7 @@ spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
   {{- end }}
-  {{- with include "tenant.application-set.generators" . | fromYamlArray }}
+  {{- with include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray }}
   generators: {{- . | toYaml | nindent 4 }}
   {{- else }}
   generators: []
