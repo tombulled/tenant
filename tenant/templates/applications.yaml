@@ -2,5 +2,5 @@
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-{{ tpl (include "tenant.application.template" $) . }}
+{{ tpl (include "tenant.application.template" (dict "root" $)) . }}
 {{- end }}

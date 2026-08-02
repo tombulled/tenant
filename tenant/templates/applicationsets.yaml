@@ -47,5 +47,5 @@ spec:
   template: {{- . | toYaml | nindent 4 }}
   {{- end }}
   templatePatch: |
-    {{- include "tenant.application.template" $ | nindent 4 }}
+    {{- include "tenant.application.template" (dict "root" $ "appSet" .) | nindent 4 }}
 {{- end }}
