@@ -11,7 +11,7 @@
     {{- range $generator := $generators -}}
       {{- range $generatorTemplate := $generatorTemplates -}}
         {{- $generatorTemplateName := printf "tenant.application-set.generator.%s" $generatorTemplate -}}
-        {{- $generator = include $generatorTemplateName (dict "root" $ "generator" $generator) | fromYaml -}}
+        {{- $generator = include $generatorTemplateName (dict "root" $ "appSet" $appSet "generator" $generator) | fromYaml -}}
       {{- end -}}
 
       {{- $newGenerators = append $newGenerators $generator -}}
@@ -40,9 +40,10 @@
 {{- /* Wrap each generator in a 'matrix' generator to set necessary defaults upfront (e.g. .enabled) */ -}}
 {{- define "tenant.application-set.generator.wrap-with-matrix" -}}
   {{- $ := .root -}}
+  {{- $appSet := .appSet -}}
   {{- $generator := .generator -}}
 
-  {{- $defaults := mustMergeOverwrite ($.Values.defaults | default dict | deepCopy) ($.Values.applicationDefaults | default dict | deepCopy) -}}
+  {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
   {{- $defaultEnabled := $defaults.enabled -}}
 
   {{- with $generator -}}

@@ -1,0 +1,25 @@
+applicationDefaults:
+  annotations:
+    part-of: root
+
+applicationSets:
+  # all apps enabled by default
+  tenants:
+    defaults:
+      enabled: false
+      annotations:
+        stage: tenet
+    generators:
+      - list:
+          elements:
+            - id: foo
+  # all apps disabled by default
+  bootstrap:
+    defaults:
+      enabled: true
+      annotations:
+        stage: bstrap
+    generators:
+      - list:
+          elements:
+            - id: bar
