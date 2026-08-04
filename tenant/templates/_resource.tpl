@@ -34,6 +34,7 @@
 {{- end -}}
 
 {{- define "tenant.resource.list" -}}
+  {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
   {{- $values := .values | default dict -}}
   {{- $defaults := .defaults | default dict -}}
@@ -55,7 +56,12 @@
   {{- $resourceDatas | toYaml -}}
 {{- end -}}
 
+{{- define "tenant.resource.namespaces" -}}
+  {{- include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) -}}
+{{- end -}}
+
 {{- define "tenant.resource.list-with-namespaced" -}}
+  {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
   {{- $key := .key -}}
   {{- $defaults := .defaults | default dict -}}
@@ -63,8 +69,7 @@
   {{- $resources := include "tenant.resource.list" (
     dict "root" $ "values" (get $.Values $key) "defaults" $defaults) | fromYamlArray -}}
 
-  {{- $namespaces := include "tenant.resource.list" (
-    dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) | fromYamlArray -}}
+  {{- $namespaces := include "tenant.resource.namespaces" $ | fromYamlArray -}}
 
   {{- range $namespace := $namespaces -}}
     {{- $namespacedResources := include "tenant.resource.list" (
