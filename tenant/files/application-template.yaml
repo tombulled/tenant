@@ -79,6 +79,9 @@ spec:
   {{- end }}
   {{- with .sourcesObject }}
   sources:
+    {{- $mainSourceKey := "main" }}
+    {{- $sourcesList := list (pick . $mainSourceKey) (omit . $mainSourceKey) }}
+    {{- range $sourcesList }}
     {{- range $sourceId, $_ := . }}
     {{- if or (eq . nil) (eq .enabled false) -}}
       {{- continue -}}
@@ -86,6 +89,7 @@ spec:
     {{- $_ := set . "ref" (.ref | default $sourceId) }}
     {{- $_ := set . "name" (.name | default $sourceId) }}
     - {{ . | toYaml | nindent 6 | trim }}
+    {{- end }}
     {{- end }}
   {{- else with .sources }}
   sources: {{- . | toYaml | nindent 4 }}
