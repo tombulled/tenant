@@ -14,6 +14,9 @@
   {{- $commonDefaults := $root.Values.defaults | default dict -}}
   {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) -}}
 
+  {{- /* Set the resource ID */ -}}
+  {{- $_ := set $data "id" $id }}
+
   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
   {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) -}}
   {{- if $enabled -}}
