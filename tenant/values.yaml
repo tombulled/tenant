@@ -38,4 +38,7 @@ roleBindings: {}
 roleDefaults: {}
 roles: {}
 
+sealedSecretDefaults: {}
+sealedSecrets: {}
+
 extraResources: {}
