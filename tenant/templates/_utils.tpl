@@ -1,7 +1,7 @@
 {{- define "tenant.utils.map-to-list" -}}
   {{- $values := list -}}
 
-  {{- range $k, $v := $ -}}
+  {{- range $ -}}
     {{- $enabled := ternary .enabled true (ne .enabled nil) -}}
 
     {{- if not $enabled -}}
