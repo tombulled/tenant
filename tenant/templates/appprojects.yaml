@@ -38,16 +38,24 @@ spec:
   {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceWhitelist }}
+  {{- with .clusterResourceWhitelistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- else with .clusterResourceWhitelist }}
   clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceBlacklist }}
-  clusterResourceBlacklist: {{- .| toYaml | nindent 4 }}
+  {{- with .clusterResourceBlacklistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
+  {{- else with .clusterResourceBlacklist }}
+  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceBlacklist }}
+  {{- with .namespaceResourceBlacklistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
+  {{- else with .namespaceResourceBlacklist }}
   namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceWhitelist }}
+  {{- with .namespaceResourceWhitelistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- else with .namespaceResourceWhitelist }}
   namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .orphanedResources }}
