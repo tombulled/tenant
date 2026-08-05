@@ -61,7 +61,9 @@ spec:
   {{- with .orphanedResources }}
   orphanedResources: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .roles }}
+  {{- with .rolesObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  roles: {{- . | toYaml | nindent 4 }}
+  {{- else with .roles }}
   roles: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .syncWindows }}
