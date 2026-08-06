@@ -12,11 +12,17 @@ projectDefaults:
           object: "*"
           permission: allow
       policiesObject:
-        applications-get: {resource: applications, action: get, object: "*", permission: "allow"}
+        applications-get:
+          {
+            resource: applications,
+            action: get,
+            object: "*",
+            permission: "allow",
+          }
 
     read-apps:
       enabled: false
-      name: read-apps
+      # name: read-apps
       description: Read-apps privileges for {{.name}}
       policies:
         - p, proj:{{.name}}:read-apps, applications, get, {{.name}}/*, allow
@@ -44,3 +50,7 @@ projects:
         enabled: true
         groups:
           - TEST_FOO
+    clusterResourceWhitelistObject:
+      namespace:
+        group: ""
+        kind: ""

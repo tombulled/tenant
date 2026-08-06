@@ -38,22 +38,22 @@ spec:
   {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceWhitelistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  {{- with .clusterResourceWhitelistObject | default dict | dict "map" | include "tenant.utils.map-to-list" | fromYamlArray }}
   clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- else with .clusterResourceWhitelist }}
   clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceBlacklistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  {{- with .clusterResourceBlacklistObject | default dict | dict "map" | include "tenant.utils.map-to-list" | fromYamlArray }}
   clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- else with .clusterResourceBlacklist }}
   clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceBlacklistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  {{- with .namespaceResourceBlacklistObject | default dict | dict "map" | include "tenant.utils.map-to-list" | fromYamlArray }}
   namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- else with .namespaceResourceBlacklist }}
   namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceWhitelistObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  {{- with .namespaceResourceWhitelistObject | default dict | dict "map" | include "tenant.utils.map-to-list" | fromYamlArray }}
   namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- else with .namespaceResourceWhitelist }}
   namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
@@ -61,7 +61,7 @@ spec:
   {{- with .orphanedResources }}
   orphanedResources: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .rolesObject | default dict | include "tenant.utils.map-to-list" | fromYamlArray }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" (.rolesObject | default dict) "field" "name") | fromYamlArray }}
   roles: {{- . | toYaml | nindent 4 }}
   {{- else with .roles }}
   roles: {{- . | toYaml | nindent 4 }}
