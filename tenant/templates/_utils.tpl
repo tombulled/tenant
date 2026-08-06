@@ -1,6 +1,6 @@
 {{- define "tenant.utils.map-to-list" -}}
   {{- /* Extract arguments */ -}}
-  {{- $map := .map -}}
+  {{- $map := .map | default dict -}}
   {{- $field := .field -}}
 
   {{- $values := list -}}
