@@ -3,8 +3,13 @@
   This logic is a workaround for the `tpl` function not being available.
   If https://github.com/argoproj/argo-cd/pull/26614 gets merged, the `tpl` function can be used instead.
 */ -}}
-{{- block "self-template" . -}}
-  {{- $template := . | toYaml -}}
+
+
+{{- define "tpl" -}}
+  {{- /* Extract arguments */ -}}
+  {{- $template := .template -}}
+  {{- $data := .data -}}
+  {{- $out := .out -}}
 
   {{- /* Find everything that looks like a template, e.g. "{{.name}}", and loop over each of them */ -}}
   {{- range $match := regexFindAll "{{ *\\..*? *}}" $template -1 -}}
@@ -13,7 +18,7 @@
 
     {{- /* Traverse the application data, using the match's keys. If a value is not found, an empty string is used */ -}}
     {{- /* NOTE: We can't use the sprig `dig` function as it doesn't accept a dynamic list of values */ -}}
-    {{- $obj := $ -}}
+    {{- $obj := $data -}}
     {{- range $key := $keys -}}
       {{- /* If the current object isn't a map, abort as we can't traverse any further */ -}}
       {{- if ne (kindOf $obj) "map" -}}
@@ -29,7 +34,14 @@
     {{- $template = replace $match (toString $obj) $template -}}
   {{- end -}}
 
-  {{- range $key, $val := $template | fromYaml -}}
+  {{- $_ := mergeOverwrite $out ($template | fromYaml) -}}
+{{- end -}}
+
+{{- block "self-template" . -}}
+  {{- $newData := dict -}}
+  {{- template "tpl" (dict "template" (. | toYaml) "data" . "out" $newData) -}}
+
+  {{- range $key, $val := $newData -}}
     {{- $_ := set $ $key $val -}}
   {{- end -}}
 {{- end -}}

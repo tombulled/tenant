@@ -1,0 +1,2 @@
+input: |{{- .Values.projects.main | toYaml | nindent 2 }}
+output: {{- tpl (.Values.projects.main | toYaml) .Values.projects.main | nindent 2 }}
