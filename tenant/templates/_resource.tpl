@@ -26,7 +26,7 @@
     {{- end -}}
 
     {{- /* Template the resource's name using the resource's data */ -}}
-    {{- /* NOTE: This is deliberately done first to reduce the chance of circular references */ -}}
+    {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
     {{- $_ := set $data "name" (tpl (get $data "name") $data) -}}
 
     {{- /* Template the resource's data using itself */ -}}

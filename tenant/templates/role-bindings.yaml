@@ -1,5 +1,8 @@
 {{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $ "key" "roleBindings" "defaults" $.Values.roleBindingDefaults) | fromYamlArray }}
+  "root" $
+  "key" "roleBindings"
+  "defaults" $.Values.roleBindingDefaults
+) | fromYamlArray }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
