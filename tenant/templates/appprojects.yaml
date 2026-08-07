@@ -1,5 +1,8 @@
-{{- range $id, $_ := .Values.projects }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.projectDefaults) | fromYaml }}
+{{- range include "tenant.resource.list" (dict
+  "root" $
+  "values" .Values.projects
+  "defaults" .Values.projectDefaults
+) | fromYamlArray }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -27,25 +30,54 @@ spec:
   {{- with .sourceRepos }}
   sourceRepos: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .destinations }}
+  {{- with .destinationsObject }}
+  destinations:
+    {{- range $id, $_ := . }}
+    {{- $_ := set . "namespace" (.namespace | default $id) }}
+    {{- if and (eq .name nil) (eq .server nil) }}
+      {{- $_ := set . "name" "in-cluster" }}
+    {{- end }}
+    - {{ . | toYaml | indent 6 | trim }}
+    {{- end }}
+  {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceWhitelist }}
+  {{- with .clusterResourceWhitelistObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
   clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceBlacklist }}
-  clusterResourceBlacklist: {{- .| toYaml | nindent 4 }}
+  {{- else with .clusterResourceWhitelist }}
+  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceBlacklist }}
+  {{- with .clusterResourceBlacklistObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- else with .clusterResourceBlacklist }}
+  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceBlacklistObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
   namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .namespaceResourceWhitelist }}
+  {{- else with .namespaceResourceBlacklist }}
+  namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .namespaceResourceWhitelistObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- else with .namespaceResourceWhitelist }}
   namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .orphanedResources }}
   orphanedResources: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .roles }}
+  {{- with .rolesObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
+  roles: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- else with .roles }}
   roles: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .syncWindows }}
@@ -57,5 +89,4 @@ spec:
   {{- with .sourceNamespaces }}
   sourceNamespaces: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
 {{- end }}

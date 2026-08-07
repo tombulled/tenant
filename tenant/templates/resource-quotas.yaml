@@ -1,6 +1,8 @@
-{{- range $namespace := include "namespaces" $ | fromYamlArray }}
-{{- range $id, $_ := $namespace.resourceQuotas }}
-{{- with include "build-resource-data" (dict "root" $ "id" $id "data" . "defaults" $.Values.resourceQuotaDefaults) | fromYaml }}
+{{- range include "tenant.resource.list-with-namespaced" (dict
+  "root" $
+  "key" "resourceQuotas"
+  "defaults" $.Values.resourceQuotaDefaults
+) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: ResourceQuota
@@ -15,7 +17,9 @@ metadata:
   labels: {{- . | toYaml | nindent 4 }}
   {{- end }}
   name: {{ .name }}
-  namespace: {{ $namespace.name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
 spec:
   {{- with .hard }}
   hard: {{- . | toYaml | nindent 4 }}
@@ -26,6 +30,4 @@ spec:
   {{- with .scopes }}
   scopes: {{- . | toYaml | nindent 4 }}
   {{- end }}
-{{- end }}
-{{- end }}
 {{- end }}

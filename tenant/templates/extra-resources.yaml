@@ -1,14 +1,19 @@
 {{- range $id, $_ := .Values.extraResources }}
-{{- $data := tpl (. | toYaml) $.Values.common | fromYaml }}
----
-{{ $data | toYaml }}
+{{- if eq . nil }}
+  {{- continue }}
 {{- end }}
 ---
-{{ range $namespace := include "namespaces" $ | fromYamlArray }}
-{{ range $id, $_ := $namespace.extraResources }}
-{{- $data := tpl (. | toYaml) $.Values.common | fromYaml }}
+{{ tpl (. | toYaml) $.Values.defaults }}
+{{- end -}}
+
+{{- range $namespace := include "tenant.resource.namespaces" $ | fromYamlArray }}
+{{- range $id, $_ := $namespace.extraResources }}
+{{- if eq . nil }}
+  {{- continue }}
+{{- end }}
+{{- $data := tpl (. | toYaml) $.Values.defaults | fromYaml }}
 {{- $_ := mustMergeOverwrite $data (dict "metadata" (dict "namespace" $namespace.name)) }}
 ---
 {{ $data | toYaml }}
 {{- end }}
-{{- end }}
+{{- end -}}

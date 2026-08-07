@@ -1,11 +1,11 @@
 {{- range include "tenant.resource.list-with-namespaced" (dict
   "root" $
-  "key" "limitRanges"
-  "defaults" $.Values.limitRangeDefaults
+  "key" "roleBindings"
+  "defaults" $.Values.roleBindingDefaults
 ) | fromYamlArray }}
 ---
-apiVersion: v1
-kind: LimitRange
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
   {{- with .annotations }}
   annotations: {{- . | toYaml | nindent 4 }}
@@ -20,8 +20,16 @@ metadata:
   {{- with .namespace }}
   namespace: {{ . }}
   {{- end }}
-spec:
-  {{- with .limits }}
-  limits: {{- . | toYaml | nindent 4 }}
+{{- with .roleRef }}
+roleRef: {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- with .subjectsObject }}
+subjects:
+  {{- range $key, $val := . }}
+    {{- $_ := set . "name" (.name | default $key) }}
+    {{- . | toYaml | nindent 2 }}
   {{- end }}
+{{- else with .subjects }}
+subjects: {{- . | toYaml | nindent 2 }}
+{{- end }}
 {{- end }}
