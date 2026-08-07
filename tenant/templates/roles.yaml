@@ -1,5 +1,8 @@
 {{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $ "key" "roles" "defaults" $.Values.roleDefaults) | fromYamlArray }}
+  "root" $
+  "key" "roles"
+  "defaults" $.Values.roleDefaults
+) | fromYamlArray }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

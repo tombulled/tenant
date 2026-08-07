@@ -1,5 +1,8 @@
 {{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $ "key" "resourceQuotas" "defaults" $.Values.resourceQuotaDefaults) | fromYamlArray }}
+  "root" $
+  "key" "resourceQuotas"
+  "defaults" $.Values.resourceQuotaDefaults
+) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: ResourceQuota
