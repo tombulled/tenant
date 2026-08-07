@@ -1,4 +1,8 @@
-{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.clusterRoleBindings "defaults" .Values.clusterRoleBindingDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict
+  "root" $
+  "values" .Values.clusterRoleBindings
+  "defaults" .Values.clusterRoleBindingDefaults
+) | fromYamlArray }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

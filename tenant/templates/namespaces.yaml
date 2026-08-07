@@ -1,4 +1,8 @@
-{{- range include "tenant.resource.list" (dict "root" $ "values" .Values.namespaces "defaults" .Values.namespaceDefaults) | fromYamlArray }}
+{{- range include "tenant.resource.list" (dict
+  "root" $
+  "values" .Values.namespaces
+  "defaults" .Values.namespaceDefaults
+) | fromYamlArray }}
 ---
 apiVersion: v1
 kind: Namespace
