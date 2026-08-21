@@ -20,6 +20,9 @@ metadata:
   {{- with .namespace }}
   namespace: {{ . }}
   {{- end }}
+{{- if and .rulesObject .rules }}
+  {{- fail "Specify either `rulesObject` or `rules`, not both." }}
+{{- end }}
 {{- with .rulesObject }}
 rules: {{- . | values | toYaml | nindent 2 }}
 {{- else with .rules }}

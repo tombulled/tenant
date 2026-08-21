@@ -27,6 +27,9 @@ spec:
   generators: []
   {{- end }}
   goTemplate: true
+  {{- if and .goTemplateOptionsObject .goTemplateOptions }}
+    {{- fail "Specify either `goTemplateOptionsObject` or `goTemplateOptions`, not both." }}
+  {{- end }}
   {{- with .goTemplateOptionsObject }}
   goTemplateOptions:
     {{- range $key, $val := . }}

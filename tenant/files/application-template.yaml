@@ -1,7 +1,7 @@
 {{- /*
-  The below nested-template is a best-effort implementation of the Helm `tpl` function (which is not available).
+  The below nested-template is a best-effort implementation of the Helm `tpl` function (which is not available for ApplicationSets).
 
-  The below-nested template accepts an input dictionary with the following fields:
+  The below nested-template accepts an input dictionary with the following fields:
     `template` - A string template, e.g. "Hello {{.name}}"
     `data` - A map (dict) of data to evaluate the template using, e.g. {"name": "Bob"}
     `out` - An output map (dict), allowing the evaluated template to be captured. A `value` field will be populated.
@@ -78,6 +78,9 @@ spec:
   {{- with .ignoreDifferences }}
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
+  {{- if and .infoObject .info }}
+    {{- fail "Specify either `infoObject` or `info`, not both." }}
+  {{- end }}
   {{- with .infoObject }}
   info:
     {{- range $key, $val := . }}
@@ -98,6 +101,9 @@ spec:
   {{- end }}
   {{- with .sourceHydrator }}
   sourceHydrator: {{- . | toYaml | nindent 4}}
+  {{- end }}
+  {{- if and .sourcesObject .sources }}
+    {{- fail "Specify either `sourcesObject` or `sources`, not both." }}
   {{- end }}
   {{- with .sourcesObject }}
   sources:
