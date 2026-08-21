@@ -1,0 +1,30 @@
+name: bob
+
+namespaces:
+  foo: {}
+  bar: {}
+  baz:
+    enabled: false
+
+extraResources:
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: "{{.Values.name}}"
+  - |
+    apiVersion: v1
+    kind: Application
+    metadata:
+      name: some-app
+    spec:
+      source:
+        helm:
+          valuesObject:
+            {{- with include "tenant.resource.namespaces" $ | fromYamlArray }}
+            namespaces:
+              {{- range . }}
+              - {{ .name }}
+              {{- end }}
+            {{- else }}
+            namespaces: []
+            {{- end }}
