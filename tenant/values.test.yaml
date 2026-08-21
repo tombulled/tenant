@@ -1,0 +1,14 @@
+applicationSets:
+  test:
+    template:
+      spec:
+        project: default
+    generators:
+      - list:
+          elements:
+            - id: foo
+#               info:
+#                 - name: link
+#                   value: google.com
+              infoObject:
+                link2: bob.com
