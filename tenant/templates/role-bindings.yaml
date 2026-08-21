@@ -23,6 +23,10 @@ metadata:
 {{- with .roleRef }}
 roleRef: {{- . | toYaml | nindent 2 }}
 {{- end }}
+
+{{- if and .subjectsObject .subjects }}
+  {{- fail "Specify either `subjectsObject` or `subjects`, not both." }}
+{{- end }}
 {{- with .subjectsObject }}
 subjects:
   {{- range $key, $val := . }}

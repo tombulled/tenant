@@ -30,6 +30,10 @@ spec:
   {{- with .sourceRepos }}
   sourceRepos: {{- . | toYaml | nindent 4 }}
   {{- end }}
+
+  {{- if and .destinationsObject .destinations }}
+    {{- fail "Specify either `destinationsObject` or `destinations`, not both." }}
+  {{- end }}
   {{- with .destinationsObject }}
   destinations:
     {{- range $id, $_ := . }}
@@ -82,12 +86,17 @@ spec:
   {{- with .orphanedResources }}
   orphanedResources: {{- . | toYaml | nindent 4 }}
   {{- end }}
+
+  {{- if and .rolesObject .roles }}
+    {{- fail "Specify either `rolesObject` or `roles`, not both." }}
+  {{- end }}
   {{- with .rolesObject }}
   {{- with include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
   roles: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- else with .roles }}
   roles: {{- . | toYaml | nindent 4 }}
+
   {{- end }}
   {{- with .syncWindows }}
   syncWindows: {{- . | toYaml | nindent 4 }}
