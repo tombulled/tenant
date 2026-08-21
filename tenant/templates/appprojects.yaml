@@ -42,13 +42,37 @@ spec:
   {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceWhitelistObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+
+  {{- $hasClusterResourceWhitelistObject := ne .clusterResourceWhitelistObject nil }}
+  {{- $hasClusterResourceWhitelist := ne .clusterResourceWhitelist nil }}
+  {{- $clusterResourceWhitelist := ternary
+    (include "tenant.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray)
+    .clusterResourceWhitelist
+    $hasClusterResourceWhitelistObject
+  }}
+  {{- if and $hasClusterResourceWhitelistObject $hasClusterResourceWhitelist }}
+    {{- fail "Specify either clusterResourceWhitelistObject or clusterResourceWhitelist, not both." }}
   {{- end }}
-  {{- else with .clusterResourceWhitelist }}
-  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- if ne $clusterResourceWhitelist nil }}
+  clusterResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" $clusterResourceWhitelist "indent" 4) }}
   {{- end }}
+
+  {{- if $hasClusterResourceWhitelistObject }}
+  {{- with include "tenant.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
+  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  clusterResourceWhitelist: []
+  {{- end }}
+  {{- end }}
+
+  {{- if $hasClusterResourceWhitelist }}
+  {{- with .clusterResourceWhitelist }}
+  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  clusterResourceWhitelist: []
+  {{- end }}
+  {{- end }}
+
   {{- with .clusterResourceBlacklistObject }}
   {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
   clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
