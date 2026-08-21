@@ -1,3 +1,16 @@
+{{- define "tenant.utils.render-object" -}}
+  {{- $value := .value -}}
+  {{- $indent := .indent -}}
+
+  {{- if ne $value nil -}}
+    {{- if $value -}}
+      {{- $value | toYaml | nindent $indent -}}
+    {{- else -}}
+      {{- $value | toYaml -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- define "tenant.utils.map-to-list" -}}
   {{- /* Extract arguments */ -}}
   {{- $map := .map | default dict -}}

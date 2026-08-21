@@ -42,34 +42,43 @@ spec:
   {{- else with .destinations }}
   destinations: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- with .clusterResourceWhitelistObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+
+  {{- if and (ne .clusterResourceBlacklistObject nil) (ne .clusterResourceBlacklist nil) }}
+    {{- fail "Specify either clusterResourceBlacklistObject or clusterResourceBlacklist, not both." }}
+  {{- else if ne .clusterResourceBlacklistObject nil }}
+  {{- $clusterResourceBlacklist := include "tenant.utils.map-to-list" (dict "map" .clusterResourceBlacklistObject) | fromYamlArray }}
+  clusterResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" $clusterResourceBlacklist "indent" 4) }}
+  {{- else if ne .clusterResourceBlacklist nil }}
+  clusterResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" .clusterResourceBlacklist "indent" 4) }}
   {{- end }}
-  {{- else with .clusterResourceWhitelist }}
-  clusterResourceWhitelist: {{- . | toYaml | nindent 4 }}
+
+  {{- if and (ne .clusterResourceWhitelistObject nil) (ne .clusterResourceWhitelist nil) }}
+    {{- fail "Specify either clusterResourceWhitelistObject or clusterResourceWhitelist, not both." }}
+  {{- else if ne .clusterResourceWhitelistObject nil }}
+  {{- $clusterResourceWhitelist := include "tenant.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
+  clusterResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" $clusterResourceWhitelist "indent" 4) }}
+  {{- else if ne .clusterResourceWhitelist nil }}
+  clusterResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" .clusterResourceWhitelist "indent" 4) }}
   {{- end }}
-  {{- with .clusterResourceBlacklistObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
+
+  {{- if and (ne .namespaceResourceBlacklistObject nil) (ne .namespaceResourceBlacklist nil) }}
+    {{- fail "Specify either namespaceResourceBlacklistObject or namespaceResourceBlacklist, not both." }}
+  {{- else if ne .namespaceResourceBlacklistObject nil }}
+  {{- $namespaceResourceBlacklist := include "tenant.utils.map-to-list" (dict "map" .namespaceResourceBlacklistObject) | fromYamlArray }}
+  namespaceResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" $namespaceResourceBlacklist "indent" 4) }}
+  {{- else if ne .namespaceResourceBlacklist nil }}
+  namespaceResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" .namespaceResourceBlacklist "indent" 4) }}
   {{- end }}
-  {{- else with .clusterResourceBlacklist }}
-  clusterResourceBlacklist: {{- . | toYaml | nindent 4 }}
+
+  {{- if and (ne .namespaceResourceWhitelistObject nil) (ne .namespaceResourceWhitelist nil) }}
+    {{- fail "Specify either namespaceResourceWhitelistObject or namespaceResourceWhitelist, not both." }}
+  {{- else if ne .namespaceResourceWhitelistObject nil }}
+  {{- $namespaceResourceWhitelist := include "tenant.utils.map-to-list" (dict "map" .namespaceResourceWhitelistObject) | fromYamlArray }}
+  namespaceResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" $namespaceResourceWhitelist "indent" 4) }}
+  {{- else if ne .namespaceResourceWhitelist nil }}
+  namespaceResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" .namespaceResourceWhitelist "indent" 4) }}
   {{- end }}
-  {{- with .namespaceResourceBlacklistObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- else with .namespaceResourceBlacklist }}
-  namespaceResourceBlacklist: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .namespaceResourceWhitelistObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- else with .namespaceResourceWhitelist }}
-  namespaceResourceWhitelist: {{- . | toYaml | nindent 4 }}
-  {{- end }}
+
   {{- with .orphanedResources }}
   orphanedResources: {{- . | toYaml | nindent 4 }}
   {{- end }}
