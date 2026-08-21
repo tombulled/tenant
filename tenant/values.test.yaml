@@ -1,9 +1,13 @@
 projectDefaults:
-#   clusterResourceWhitelistObject: {}
-  clusterResourceWhitelist:
-    - kind: Pod
+  clusterResourceWhitelistObject:
+    pod:
+      kind: Pod
       name: "*"
+  clusterResourceWhitelist:
+#     - kind: Pod
+#       name: "*"
 
 projects:
   foo: {}
-  bar: {}
+  bar:
+    clusterResourceWhitelistObject: ~
