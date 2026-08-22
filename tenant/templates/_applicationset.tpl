@@ -72,7 +72,23 @@
   {{- end -}}
 {{- end -}}
 
-{{- /* Replace all x-git generators with the appropriate merge + git generators */ -}}
+{{- /*
+  Replace all x-git generators with the appropriate merge + git generators.
+
+  The pseudo x-git generator accepts the following fields:
+    x-git:
+      repoURL: git@github.com:example/apps.git # required
+      revision: HEAD # required
+      path: "*" # optional, defaults to ""
+      valueFiles: # required
+        - values.yaml
+        - values-type-dev.yaml
+        - values-foo.yaml
+      values: # optional
+        basename: "{{.path.basename}}"
+      mergeKey: path.path # optional, defaults to "path.path"
+      idKey: path.basename # optional, defaults to "path.basename"
+*/ -}}
 {{- define "tenant.application-set.generator.convert-x-git" -}}
   {{- $xGitKey := "x-git" -}}
   {{- $generator := .generator | deepCopy -}}
