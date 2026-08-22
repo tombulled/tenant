@@ -94,55 +94,87 @@
   {{- $generator := .generator | deepCopy -}}
 
   {{- with get $generator $xGitKey -}}
-    {{- $repoURL := .repoURL | required "repoURL is required" -}}
-    {{- $revision := .revision | required "revision is required" -}}
-    {{- $path := .path | default "" | trimSuffix "/" -}}
-    {{- $valueFiles := .valueFiles | required "valueFiles is required" -}}
+    {{- /* Git generator fields */ -}}
+    {{- $directories := .directories | default list -}}
+    {{- $pathParamPrefix := .pathParamPrefix -}}
+    {{- $repoURL := .repoURL -}}
+    {{- $requeueAfterSeconds := .requeueAfterSeconds -}}
+    {{- $revision := .revision -}}
     {{- $values := .values | default dict -}}
-    {{- $mergeKey := .mergeKey | default "path.path" -}}
+
+    {{- /* Merge generator fields */ -}}
+    {{- $mergeKeys := .mergeKeys | default (list "path.path") -}}
+
+    {{- /* Common (between git & merge) generator fields */ -}}
+    {{- $template := .template -}}
+
+    {{- /* X-Git generator fields */ -}}
+    {{- $valueFiles := .valueFiles | required "Must provide at least one value file" -}}
     {{- $idKey := .idKey | default "path.basename" -}}
 
-    {{- if $path -}}
-      {{- $path = printf "%s/" $path -}}
+    {{- $isMerge := gt (len $valueFiles) 1 }}
+
+    {{- $mergeKeyMap := dict -}}
+    {{- range $index := until (len $mergeKeys) -}}
+      {{- $mergeKey := index $mergeKeys $index -}}
+      {{- $mergeKeyAlias := printf "mergeKey%d" $index -}}
+      {{- $_ := set $mergeKeyMap $mergeKeyAlias $mergeKey -}}
     {{- end -}}
 
-    {{- if eq (len $valueFiles) 0 -}}
-      {{- fail "Must provide at least one value file" -}}
+    {{- if $isMerge -}}
+      {{- range $mergeKeyAlias, $mergeKey := $mergeKeyMap -}}
+        {{- $mergeKeyValue := printf "{{ $_ := set . \"%s\" .%s }}" $mergeKeyAlias $mergeKey }}
+        {{- $_ := set $values $mergeKeyAlias $mergeKeyValue -}}
+      {{- end -}}
     {{- end -}}
 
-    {{- $_ := set $values "mergeKey" (printf "{{ $_ := set . \"mergeKey\" .%s }}" $mergeKey) -}}
     {{- $_ := set $values "id" (printf "{{ $_ := set . \"id\" .%s }}" $idKey) -}}
 
     {{- $gitGenerators := list -}}
     {{- range $valueFile := $valueFiles -}}
+      {{- $files := list -}}
+      {{- range $directory := $directories -}}
+        {{- $file := deepCopy $directory -}}
+        {{- $path := $file.path | trimSuffix "/" -}}
+        {{- $sep := ternary "" "/" (empty $path) -}}
+        {{- $_ := set $file "path" (printf "%s%s%s" $path $sep $valueFile) -}}
+        {{- $files = append $files $file -}}
+      {{- end -}}
+
       {{- $gitGenerator := (dict
-        "git" (dict
-          "repoURL" $repoURL
-          "revision" $revision
-          "files" (list
-            (dict
-              "path" (printf "%s%s" $path $valueFile)
-            )
-          )
-          "values" $values
-        )
+        "files" $files
+        "pathParamPrefix" $pathParamPrefix
+        "repoURL" $repoURL
+        "requeueAfterSeconds" $requeueAfterSeconds
+        "revision" $revision
+        "values" $values
       ) -}}
 
-      {{- $gitGenerators = append $gitGenerators $gitGenerator -}}
+      {{- range $key, $val := $gitGenerator -}}
+        {{- if eq $val nil -}}
+          {{- $_ := unset $gitGenerator $key -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $gitGenerators = append $gitGenerators (dict "git" $gitGenerator) -}}
     {{- end -}}
 
     {{- $generatorType := "" -}}
     {{- $generatorData := dict -}}
 
-    {{- if eq (len $gitGenerators) 1 -}}
-      {{- $generatorType = "git" -}}
-      {{- $generatorData = get (index $gitGenerators 0) "git" -}}
-    {{- else -}}
+    {{- if $isMerge -}}
       {{- $generatorType = "merge" -}}
       {{- $generatorData = (dict
-        "mergeKeys" (list "mergeKey")
+        "mergeKeys" (keys $mergeKeyMap)
         "generators" $gitGenerators
       ) -}}
+    {{- else -}}
+      {{- $generatorType = "git" -}}
+      {{- $generatorData = get (index $gitGenerators 0) "git" -}}
+    {{- end -}}
+
+    {{- if ne $template nil -}}
+      {{- $_ := set $generatorData "template" $template -}}
     {{- end -}}
 
     {{- $_ := unset $generator $xGitKey -}}
