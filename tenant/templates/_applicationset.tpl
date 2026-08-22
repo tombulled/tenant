@@ -117,7 +117,7 @@
     {{- $mergeKeyMap := dict -}}
     {{- range $index := until (len $mergeKeys) -}}
       {{- $mergeKey := index $mergeKeys $index -}}
-      {{- $mergeKeyAlias := printf "mergeKey%d" $index -}}
+      {{- $mergeKeyAlias := ternary $mergeKey (printf "mergeKey%d" $index) $index -}}
       {{- $_ := set $mergeKeyMap $mergeKeyAlias $mergeKey -}}
     {{- end -}}
 
