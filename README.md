@@ -42,8 +42,8 @@ The `Namespace` template uses the following common fields:
 
 ### Sealed Secret Fields
 
-| Name            | Description                                                                             | Example                                        |
-| --------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `data`          | Data is deprecated and will be removed eventually. Use per-value EncryptedData instead. | `"some-data"`                                  |
-| `encryptedData` | Populates the `SealedSecret`'s `spec.encryptedData` field                               | `{"password": "Ag..."}`                        |
-| `template`      | Populates the `SealedSecret`'s `spec.template` field                                    | `{metadata: {annotations: {is-cool: "true"}}}` |
+| Name            | Description                                               | Example                                        |
+| --------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| `data`          | Populates the `SealedSecret`'s `spec.data` field          | `"some-data"`                                  |
+| `encryptedData` | Populates the `SealedSecret`'s `spec.encryptedData` field | `{"password": "Ag..."}`                        |
+| `template`      | Populates the `SealedSecret`'s `spec.template` field      | `{metadata: {annotations: {is-cool: "true"}}}` |
