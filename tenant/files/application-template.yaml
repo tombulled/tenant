@@ -1,61 +1,3 @@
-{{- /*
-  The below nested-template is a best-effort implementation of the Helm `tpl` function (which is not available for ApplicationSets).
-
-  The below nested-template accepts an input dictionary with the following fields:
-    `template` - A string template, e.g. "Hello {{.name}}"
-    `data` - A map (dict) of data to evaluate the template using, e.g. {"name": "Bob"}
-    `out` - An output map (dict), allowing the evaluated template to be captured. A `value` field will be populated.
-
-  If https://github.com/argoproj/argo-cd/pull/26614 gets merged, the `tpl` function can be used instead.
-*/ -}}
-{{- define "tpl" -}}
-  {{- /* Extract arguments */ -}}
-  {{- $template := .template -}}
-  {{- $data := .data -}}
-  {{- $out := .out -}}
-
-  {{- /* Find everything that looks like a template, e.g. "{{.name}}", and loop over each of them */ -}}
-  {{- range $match := regexFindAll "{{ *\\..*? *}}" $template -1 -}}
-    {{- /* Extract all of the keys from the match, e.g: "{{.foo.bar}}" -> ["foo", "bar"] */ -}}
-    {{- $keys := $match | substr 2 (int (sub (len $match) 2)) | trim | substr 1 -1 | splitList "." -}}
-
-    {{- /* Traverse the application data, using the match's keys. If a value is not found, an empty string is used. */ -}}
-    {{- /* We can't use the sprig `dig` function as it doesn't accept a dynamic list of values. */ -}}
-    {{- $obj := $data -}}
-    {{- range $key := $keys -}}
-      {{- /* If the current object isn't a map, abort as we can't traverse any further */ -}}
-      {{- if ne (kindOf $obj) "map" -}}
-        {{- $obj = "" -}}
-        {{- break -}}
-      {{- end -}}
-
-      {{- /* Update the object to use the value of the current key. After the last iteration, `$obj` will contain the final value */ -}}
-      {{- $obj = get $obj $key -}}
-    {{- end -}}
-
-    {{- /* Replace the "match" (e.g. "{{.name}}") in the template with the digged value */ -}}
-    {{- $template = replace $match (toString $obj) $template -}}
-  {{- end -}}
-
-  {{- $_ := set $out "value" $template -}}
-{{- end -}}
-
-{{- block "template-name-first" . -}}
-  {{- $out := dict -}}
-  {{- template "tpl" (dict "template" .name "data" . "out" $out) -}}
-  {{- $_ := set . "name" $out.value -}}
-{{- end -}}
-
-{{- block "template-self" . -}}
-  {{- $out := dict -}}
-  {{- template "tpl" (dict "template" (. | toYaml) "data" . "out" $out) -}}
-  {{- $newData := $out.value | fromYaml -}}
-
-  {{- range $key, $val := $newData -}}
-    {{- $_ := set $ $key $val -}}
-  {{- end -}}
-{{- end -}}
-
 {{- $ := . -}}
 metadata:
   name: {{ .name }}
@@ -84,6 +26,7 @@ spec:
   {{- with .infoObject }}
   info:
     {{- range $key, $val := . }}
+    {{- /* Every key gets automatically converted from camel case to title case, e.g. "gitRepo" -> "Git Repo" */}}
     - name: {{ $key | snakecase | replace "_" " " | title }}
       value: {{ $val }}
     {{- end }}
