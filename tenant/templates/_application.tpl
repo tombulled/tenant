@@ -34,8 +34,10 @@
 
   {{- /* Add additional template logic that's appset-specific */ -}}
   {{- if ne $appSet nil -}}
+    {{- /* Merge together all of the application's defaults */ -}}
     {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
+    {{- /* Insert some templating logic into the application's template that applies the application's defaults */ -}}
     {{- "{{- /* Apply defaults */ -}}" }}
     {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | nindent 0 }}
     {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | nindent 0 }}
