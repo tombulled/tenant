@@ -32,7 +32,8 @@
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
 
-  {{- if $appSet -}}
+  {{- /* Add additional template logic that's appset-specific */ -}}
+  {{- if ne $appSet nil -}}
     {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
     {{- "{{- /* Apply defaults */ -}}" }}
@@ -40,8 +41,8 @@
     {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | nindent 0 }}
     {{- "" | nindent 0}}
 
-    {{- "{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}" | nindent 0 }}
-    {{- "{{- $_ := set . \"name\" (.name | default .id) -}}" | nindent 0 }}
+    {{- /* Insert the contents of the `files/application-template-appset-header.yaml` file */ -}}
+    {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | nindent 0 }}
     {{- "" | nindent 0 }}
   {{- end -}}
 
