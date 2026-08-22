@@ -77,17 +77,24 @@
 
   The pseudo x-git generator accepts the following fields:
     x-git:
-      repoURL: git@github.com:example/apps.git # required
-      revision: HEAD # required
-      path: "*" # optional, defaults to ""
-      valueFiles: # required
+      repoURL: git@github.com:example/apps.git
+      revision: HEAD
+      directories:
+        - path: "*"
+      valueFiles:
         - values.yaml
         - values-type-dev.yaml
         - values-foo.yaml
-      values: # optional
+      values:
         basename: "{{.path.basename}}"
-      mergeKey: path.path # optional, defaults to "path.path"
-      idKey: path.basename # optional, defaults to "path.basename"
+      pathParamPrefix: some-prefix
+      requeueAfterSeconds: 30
+      template:
+        metadata:
+          annotations:
+            some-annotation: some-val
+      mergeKey: path.path
+      idKey: path.basename
 */ -}}
 {{- define "tenant.application-set.generator.convert-x-git" -}}
   {{- $xGitKey := "x-git" -}}

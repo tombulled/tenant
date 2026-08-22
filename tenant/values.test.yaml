@@ -5,22 +5,24 @@ applicationSets:
           repoURL: github.com/example/apps.git
           revision: HEAD
           directories:
-            - path: "*"
-            - path: donotdeploy/
-              exclude: true
+#             - path: "*"
+#             - path: donotdeploy/
+#               exclude: true
             - path: ""
           valueFiles:
-            - values.yaml
-            - values-dev.yaml
-          mergeKeys:
-            - foo
-            - bar
-          pathParamPrefix: some-prefix
-          requeueAfterSeconds: 30
-          template:
-            metadata:
-              annotations:
-                name: bob
-          values:
-            key: val
+            - foo.yaml
+            - bar.yaml
+#             - values.yaml
+#             - values-dev.yaml
+#           mergeKeys:
+#             - foo
+#             - bar
+#           pathParamPrefix: some-prefix
+#           requeueAfterSeconds: 30
+#           template:
+#             metadata:
+#               annotations:
+#                 name: bob
+#           values:
+#             key: val
 #   gitlab-runners:
