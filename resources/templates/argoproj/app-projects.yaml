@@ -1,4 +1,4 @@
-{{- range include "resources-lib.app-projects" $ | fromYamlArray }}
+{{- range include "resources.app-projects" $ | fromYamlArray }}
 ---
 {{ include "resources-lib.app-project.build" . }}
 {{- end }}

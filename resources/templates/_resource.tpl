@@ -20,29 +20,38 @@
       name: c
       namespace: b
 */ -}}
-{{- define "resources.list-with-namespaced" -}}
+{{- define "resources.list" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
-  {{- $key := .key -}}
-  {{- $defaults := .defaults | default dict -}}
+  {{- $kind := .kind -}}
+  {{- $includeNamespaced := ternary .includeNamespaced true (ne .includeNamespaced nil) -}}
+
+  {{- $valuesKey := .kind | include "resources.utils.camel-case" | include "resources.utils.pluralise" -}}
+  {{- $defaultsKey := .kind | include "resources.utils.camel-case" | printf "%sDefaults" -}}
+
+  {{- $values := get $.Values $valuesKey -}}
+  {{- $defaults := get $.Values $defaultsKey -}}
+  {{- $defaultsList := list $.Values.defaults $defaults -}}
 
   {{- /* Build a list of enabled top-level resource datas */ -}}
-  {{- $resources := include "resources.list" (
-    dict "root" $ "values" (get $.Values $key) "defaults" $defaults) | fromYamlArray -}}
+  {{- $resources := include "resources-lib.list" (
+    dict "values" $values "defaults" $defaultsList) | fromYamlArray -}}
 
-  {{- /* Build a list of enabled namespace resource datas */ -}}
-  {{- $namespaces := include "resources.namespaces" $ | fromYamlArray -}}
+  {{- if $includeNamespaced -}}
+    {{- /* Build a list of enabled namespace resource datas */ -}}
+    {{- $namespaces := include "resources.namespaces" $ | fromYamlArray -}}
 
-  {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
-  {{- range $namespace := $namespaces -}}
-    {{- /* Build a list of enabled namespace-specific resource datas */ -}}
-    {{- $namespacedResources := include "resources.list" (
-    dict "root" $ "values" (get $namespace $key) "defaults" $defaults) | fromYamlArray -}}
+    {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
+    {{- range $namespace := $namespaces -}}
+      {{- /* Build a list of enabled namespace-specific resource datas */ -}}
+      {{- $namespacedResources := include "resources-lib.list" (
+        dict "root" $ "values" (get $namespace $valuesKey) "defaults" $defaultsList) | fromYamlArray -}}
 
-    {{- /* For each namespace-specific resource data, set the namespace and append it to the list of resources */ -}}
-    {{- range $namespacedResources -}}
-      {{- $_ := set . "namespace" $namespace.name -}}
-      {{- $resources = append $resources . -}}
+      {{- /* For each namespace-specific resource data, set the namespace and append it to the list of resources */ -}}
+      {{- range $namespacedResources -}}
+        {{- $_ := set . "namespace" $namespace.name -}}
+        {{- $resources = append $resources . -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 

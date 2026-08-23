@@ -1,8 +1,4 @@
-{{- define "resources-lib.application-set.list" -}}
-  {{- include "resources-lib.list" (dict "root" $ "values" .Values.applicationSets "defaults" .Values.applicationSetDefaults) -}}
-{{- end -}}
-
-{{- range include "resources-lib.application-set.list" $ | fromYamlArray }}
+{{- range include "resources.application-sets" $ | fromYamlArray }}
 ---
 {{ include "resources-lib.application-set.build" . }}
 {{- end }}

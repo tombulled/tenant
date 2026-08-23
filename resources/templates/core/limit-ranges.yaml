@@ -1,8 +1,4 @@
-{{- range include "resources-lib.list-with-namespaced" (dict
-  "root" $
-  "key" "limitRanges"
-  "defaults" $.Values.limitRangeDefaults
-) | fromYamlArray }}
+{{- range include "resources.limit-ranges" $ | fromYamlArray }}
 ---
 {{ include "resources-lib.limit-range.build" . }}
 {{- end }}
