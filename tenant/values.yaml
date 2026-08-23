@@ -1,44 +1,15 @@
 defaults: {}
 
-applicationDefaults: {}
-applications: {}
+xApplicationSetDefaults: {}
 
-applicationSetDefaults:
-  template:
-    metadata: {}
-    spec:
-      destination: {}
-      project: default
-applicationSets: {}
-
-projectDefaults: {}
-projects: {}
-
-clusterRoleBindingDefaults: {}
-clusterRoleBindings: {}
-
-clusterRoleDefaults: {}
-clusterRoles: {}
-
-limitRangeDefaults: {}
-limitRanges: {}
-
-namespaceDefaults: {}
-namespaces: {}
-
-networkPolicyDefaults: {}
-networkPolicies: {}
-
-resourceQuotaDefaults: {}
-resourceQuotas: {}
-
-roleBindingDefaults: {}
-roleBindings: {}
-
-roleDefaults: {}
-roles: {}
-
-sealedSecretDefaults: {}
-sealedSecrets: {}
-
-extraResources: {}
+xApplicationSets:
+  foo:
+#     generators:
+#       - list:
+#           elements:
+#             - id: foo
+    generatorsObject:
+      main:
+        list:
+          elements:
+            - id: foo

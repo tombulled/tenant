@@ -1,58 +1,12 @@
 {{- range include "resources.list" (dict
   "root" $
-  "values" .Values.applicationSets
-  "defaults" .Values.applicationSetDefaults
+  "values" .Values.xApplicationSets
+  "defaults" .Values.xApplicationSetDefaults
 ) | fromYamlArray }}
+{{- $_ := set . "goTemplate" true }}
+{{- $_ := set . "generators" (include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray) }}
+{{- $_ := unset . "generatorsObject" }}
+{{- $_ := set . "templatePatch" (include "tenant.application.template" (dict "root" $ "appSet" .)) }}
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
-spec:
-  {{- if ne .applyNestedSelectors nil }}
-  applyNestedSelectors: {{ .applyNestedSelectors }}
-  {{- end }}
-  {{- with include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray }}
-  generators: {{- . | toYaml | nindent 4 }}
-  {{- else }}
-  generators: []
-  {{- end }}
-  goTemplate: true
-  {{- if and .goTemplateOptionsObject .goTemplateOptions }}
-    {{- fail "Specify either `goTemplateOptionsObject` or `goTemplateOptions`, not both." }}
-  {{- end }}
-  {{- with .goTemplateOptionsObject }}
-  goTemplateOptions:
-    {{- range $key, $val := . }}
-    - {{ printf "%s=%s" $key (toString $val) }}
-    {{- end }}
-  {{- else with .goTemplateOptions }}
-  goTemplateOptions: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .ignoreApplicationDifferences }}
-  ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .preservedFields }}
-  preservedFields: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .strategy }}
-  strategy: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .syncPolicy }}
-  syncPolicy: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .template }}
-  template: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  templatePatch: |
-    {{- include "tenant.application.template" (dict "root" $ "appSet" .) | nindent 4 }}
+{{ tpl (include "resources.application-set.template" $) . }}
 {{- end }}
