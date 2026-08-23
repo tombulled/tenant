@@ -1,5 +1,5 @@
-{{- range include "resources.application-sets" $ | fromYamlArray }}
----
+{{- define "resources.application-set.template" -}}
+{{- `
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -61,4 +61,10 @@ spec:
   templatePatch: |
     {{- . | nindent 4 }}
   {{- end }}
+` -}}
+{{- end -}}
+
+{{- range include "resources.application-sets" $ | fromYamlArray }}
+---
+{{ tpl (include "resources.application-set.template" $) . }}
 {{- end }}
