@@ -1,9 +1,2 @@
-applicationSets:
-  foo:
-    generatorsObject:
-      main:
-        list: []
-    templatePatch: bob
-#     templatePatch: |
-#       metadata:
-#         name: bob
+applications:
+  foo: {}
