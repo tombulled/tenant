@@ -48,7 +48,18 @@
   {{- $context := .context -}}
 
   {{- $templates := dict
+    "AppProject" "resources-lib.app-project.template"
+    "ApplicationSet" "resources-lib.application-set.template"
     "Application" "resources-lib.application.template"
+    "SealedSecret" "resources-lib.sealed-secret.template"
+    "LimitRange" "resources-lib.limit-range.template"
+    "Namespace" "resources-lib.namespace.template"
+    "ResourceQuota" "resources-lib.resource-quota.template"
+    "NetworkPolicy" "resources-lib.network-policy.template"
+    "ClusterRoleBinding" "resources-lib.cluster-role-binding.template"
+    "ClusterRole" "resources-lib.cluster-role.template"
+    "RoleBinding" "resources-lib.role-binding.template"
+    "Role" "resources-lib.role.template"
   -}}
 
   {{- $resources := list -}}

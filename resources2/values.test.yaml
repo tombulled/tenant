@@ -1,5 +1,17 @@
+defaults:
+  labels:
+    is-awesome: "false"
+
+applicationDefaults:
+  annotations:
+    is-cool: "true"
+
 applications:
   foo: {}
   bar:
     enabled: false
   baz: {}
+
+namespaces:
+  foo: {}
+  bar: {}
