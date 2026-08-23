@@ -2,10 +2,6 @@
 
 A Helm chart to represent a _tenant_ of a Kubernetes cluster.
 
-## Prerequisites
-
-TODO
-
 ## Installing the Chart
 
 To install the chart with the release name `my-tenant`:
