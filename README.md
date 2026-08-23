@@ -11,7 +11,7 @@ TODO
 To install the chart with the release name `my-tenant`:
 
 ```sh
-helm install my-tenant .
+helm install my-tenant tenant
 ```
 
 > Note: No resources are configured by default, so the above command **won't actually install any resources**
