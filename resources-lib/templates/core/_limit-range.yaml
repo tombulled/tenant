@@ -1,4 +1,4 @@
-{{- define "resources.limit-range.template" -}}
+{{- define "resources-lib.limit-range.template" -}}
 {{- `
 apiVersion: v1
 kind: LimitRange
@@ -21,8 +21,8 @@ spec:
     {{- fail "Specify either 'limitsObject' or 'limits', not both."}}
   {{- end }}
   {{- with .limitsObject }}
-  {{- $limits := include "resources.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  limits: {{ include "resources.utils.render-object" (dict "value" $limits "indent" 4) }}
+  {{- $limits := include "resources-lib.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  limits: {{ include "resources-lib.utils.render-object" (dict "value" $limits "indent" 4) }}
   {{- else with .limits }}
   limits: {{- . | toYaml | nindent 4 }}
   {{- else }}
@@ -31,6 +31,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.limit-range.build" -}}
-  {{- tpl (include "resources.limit-range.template" nil | trim) . -}}
+{{- define "resources-lib.limit-range.build" -}}
+  {{- tpl (include "resources-lib.limit-range.template" nil | trim) . -}}
 {{- end -}}

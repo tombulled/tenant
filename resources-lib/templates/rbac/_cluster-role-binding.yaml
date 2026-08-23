@@ -1,4 +1,4 @@
-{{- define "resources.cluster-role-binding.template" -}}
+{{- define "resources-lib.cluster-role-binding.template" -}}
 {{- `
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -20,14 +20,14 @@ roleRef: {{- . | toYaml | nindent 2 }}
   {{- fail "Specify either 'subjectsObject' or 'subjects', not both." }}
 {{- end }}
 {{- with .subjectsObject }}
-{{- $subjects := include "resources.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
-subjects: {{ include "resources.utils.render-object" (dict "value" $subjects "indent" 2) }}
+{{- $subjects := include "resources-lib.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
+subjects: {{ include "resources-lib.utils.render-object" (dict "value" $subjects "indent" 2) }}
 {{- else with .subjects }}
 subjects: {{- . | toYaml | nindent 2 }}
 {{- end }}
 ` -}}
 {{- end -}}
 
-{{- define "resources.cluster-role-binding.build" -}}
-  {{- tpl (include "resources.cluster-role-binding.template" nil | trim) . -}}
+{{- define "resources-lib.cluster-role-binding.build" -}}
+  {{- tpl (include "resources-lib.cluster-role-binding.template" nil | trim) . -}}
 {{- end -}}

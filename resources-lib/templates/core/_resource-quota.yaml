@@ -1,4 +1,4 @@
-{{- define "resources.resource-quota.template" -}}
+{{- define "resources-lib.resource-quota.template" -}}
 {{- `
 apiVersion: v1
 kind: ResourceQuota
@@ -29,6 +29,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.resource-quota.build" -}}
-  {{- tpl (include "resources.resource-quota.template" nil | trim) . -}}
+{{- define "resources-lib.resource-quota.build" -}}
+  {{- tpl (include "resources-lib.resource-quota.template" nil | trim) . -}}
 {{- end -}}

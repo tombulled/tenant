@@ -1,4 +1,4 @@
-{{- define "resources.namespace.template" -}}
+{{- define "resources-lib.namespace.template" -}}
 {{- `
 apiVersion: v1
 kind: Namespace
@@ -17,6 +17,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.namespace.build" -}}
-  {{- tpl (include "resources.namespace.template" nil | trim) . -}}
+{{- define "resources-lib.namespace.build" -}}
+  {{- tpl (include "resources-lib.namespace.template" nil | trim) . -}}
 {{- end -}}

@@ -1,4 +1,4 @@
-{{- define "resources.app-project.template" -}}
+{{- define "resources-lib.app-project.template" -}}
 {{- `
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -46,37 +46,37 @@ spec:
   {{- if and (ne .clusterResourceBlacklistObject nil) (ne .clusterResourceBlacklist nil) }}
     {{- fail "Specify either clusterResourceBlacklistObject or clusterResourceBlacklist, not both." }}
   {{- else if ne .clusterResourceBlacklistObject nil }}
-  {{- $clusterResourceBlacklist := include "resources.utils.map-to-list" (dict "map" .clusterResourceBlacklistObject) | fromYamlArray }}
-  clusterResourceBlacklist: {{ include "resources.utils.render-object" (dict "value" $clusterResourceBlacklist "indent" 4) }}
+  {{- $clusterResourceBlacklist := include "resources-lib.utils.map-to-list" (dict "map" .clusterResourceBlacklistObject) | fromYamlArray }}
+  clusterResourceBlacklist: {{ include "resources-lib.utils.render-object" (dict "value" $clusterResourceBlacklist "indent" 4) }}
   {{- else if ne .clusterResourceBlacklist nil }}
-  clusterResourceBlacklist: {{ include "resources.utils.render-object" (dict "value" .clusterResourceBlacklist "indent" 4) }}
+  clusterResourceBlacklist: {{ include "resources-lib.utils.render-object" (dict "value" .clusterResourceBlacklist "indent" 4) }}
   {{- end }}
 
   {{- if and (ne .clusterResourceWhitelistObject nil) (ne .clusterResourceWhitelist nil) }}
     {{- fail "Specify either clusterResourceWhitelistObject or clusterResourceWhitelist, not both." }}
   {{- else if ne .clusterResourceWhitelistObject nil }}
-  {{- $clusterResourceWhitelist := include "resources.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
-  clusterResourceWhitelist: {{ include "resources.utils.render-object" (dict "value" $clusterResourceWhitelist "indent" 4) }}
+  {{- $clusterResourceWhitelist := include "resources-lib.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
+  clusterResourceWhitelist: {{ include "resources-lib.utils.render-object" (dict "value" $clusterResourceWhitelist "indent" 4) }}
   {{- else if ne .clusterResourceWhitelist nil }}
-  clusterResourceWhitelist: {{ include "resources.utils.render-object" (dict "value" .clusterResourceWhitelist "indent" 4) }}
+  clusterResourceWhitelist: {{ include "resources-lib.utils.render-object" (dict "value" .clusterResourceWhitelist "indent" 4) }}
   {{- end }}
 
   {{- if and (ne .namespaceResourceBlacklistObject nil) (ne .namespaceResourceBlacklist nil) }}
     {{- fail "Specify either namespaceResourceBlacklistObject or namespaceResourceBlacklist, not both." }}
   {{- else if ne .namespaceResourceBlacklistObject nil }}
-  {{- $namespaceResourceBlacklist := include "resources.utils.map-to-list" (dict "map" .namespaceResourceBlacklistObject) | fromYamlArray }}
-  namespaceResourceBlacklist: {{ include "resources.utils.render-object" (dict "value" $namespaceResourceBlacklist "indent" 4) }}
+  {{- $namespaceResourceBlacklist := include "resources-lib.utils.map-to-list" (dict "map" .namespaceResourceBlacklistObject) | fromYamlArray }}
+  namespaceResourceBlacklist: {{ include "resources-lib.utils.render-object" (dict "value" $namespaceResourceBlacklist "indent" 4) }}
   {{- else if ne .namespaceResourceBlacklist nil }}
-  namespaceResourceBlacklist: {{ include "resources.utils.render-object" (dict "value" .namespaceResourceBlacklist "indent" 4) }}
+  namespaceResourceBlacklist: {{ include "resources-lib.utils.render-object" (dict "value" .namespaceResourceBlacklist "indent" 4) }}
   {{- end }}
 
   {{- if and (ne .namespaceResourceWhitelistObject nil) (ne .namespaceResourceWhitelist nil) }}
     {{- fail "Specify either namespaceResourceWhitelistObject or namespaceResourceWhitelist, not both." }}
   {{- else if ne .namespaceResourceWhitelistObject nil }}
-  {{- $namespaceResourceWhitelist := include "resources.utils.map-to-list" (dict "map" .namespaceResourceWhitelistObject) | fromYamlArray }}
-  namespaceResourceWhitelist: {{ include "resources.utils.render-object" (dict "value" $namespaceResourceWhitelist "indent" 4) }}
+  {{- $namespaceResourceWhitelist := include "resources-lib.utils.map-to-list" (dict "map" .namespaceResourceWhitelistObject) | fromYamlArray }}
+  namespaceResourceWhitelist: {{ include "resources-lib.utils.render-object" (dict "value" $namespaceResourceWhitelist "indent" 4) }}
   {{- else if ne .namespaceResourceWhitelist nil }}
-  namespaceResourceWhitelist: {{ include "resources.utils.render-object" (dict "value" .namespaceResourceWhitelist "indent" 4) }}
+  namespaceResourceWhitelist: {{ include "resources-lib.utils.render-object" (dict "value" .namespaceResourceWhitelist "indent" 4) }}
   {{- end }}
 
   {{- with .orphanedResources }}
@@ -87,7 +87,7 @@ spec:
     {{- fail "Specify either 'rolesObject' or 'roles', not both." }}
   {{- end }}
   {{- with .rolesObject }}
-  {{- with include "resources.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
+  {{- with include "resources-lib.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
   roles: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- else with .roles }}
@@ -106,6 +106,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.app-project.build" -}}
-  {{- tpl (include "resources.app-project.template" nil | trim) . -}}
+{{- define "resources-lib.app-project.build" -}}
+  {{- tpl (include "resources-lib.app-project.template" nil | trim) . -}}
 {{- end -}}

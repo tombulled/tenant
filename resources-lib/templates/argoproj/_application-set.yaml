@@ -1,4 +1,4 @@
-{{- define "resources.application-set.template" -}}
+{{- define "resources-lib.application-set.template" -}}
 {{- `
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -21,8 +21,8 @@ spec:
     {{- fail "Specify either 'generatorsObject' or 'generators', not both." }}
   {{- end }}
   {{- with .generatorsObject }}
-  {{- $generators := include "resources.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  generators: {{ include "resources.utils.render-object" (dict "value" $generators "indent" 4) }}
+  {{- $generators := include "resources-lib.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  generators: {{ include "resources-lib.utils.render-object" (dict "value" $generators "indent" 4) }}
   {{- else with .generators }}
   generators: {{- . | toYaml | nindent 4 }}
   {{- else }}
@@ -64,6 +64,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.application-set.build" -}}
-  {{- tpl (include "resources.application-set.template" nil | trim) . -}}
+{{- define "resources-lib.application-set.build" -}}
+  {{- tpl (include "resources-lib.application-set.template" nil | trim) . -}}
 {{- end -}}

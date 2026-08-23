@@ -1,4 +1,4 @@
-{{- range include "resources.list" (dict "values" .Values.namespaces "defaults" (list .Values.namespaceDefaults)) | fromYamlArray }}
+{{- range include "resources-lib.list" (dict "values" .Values.namespaces "defaults" (list .Values.namespaceDefaults)) | fromYamlArray }}
 ---
-{{ include "resources.namespace.build" . }}
+{{ include "resources-lib.namespace.build" . }}
 {{- end }}

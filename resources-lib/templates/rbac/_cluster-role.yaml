@@ -1,4 +1,4 @@
-{{- define "resources.cluster-role.template" -}}
+{{- define "resources-lib.cluster-role.template" -}}
 {{- `
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -20,14 +20,14 @@ aggregationRule: {{- . | toYaml | nindent 4 }}
   {{- fail "Specify either 'rulesObject' or 'rules', not both." }}
 {{- end }}
 {{- with .rulesObject }}
-{{- $rules := include "resources.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-rules: {{ include "resources.utils.render-object" (dict "value" $rules "indent" 2) }}
+{{- $rules := include "resources-lib.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+rules: {{ include "resources-lib.utils.render-object" (dict "value" $rules "indent" 2) }}
 {{- else with .rules }}
 rules: {{- . | toYaml | nindent 2 }}
 {{- end }}
 ` -}}
 {{- end -}}
 
-{{- define "resources.cluster-role.build" -}}
-  {{- tpl (include "resources.cluster-role.template" nil | trim) . -}}
+{{- define "resources-lib.cluster-role.build" -}}
+  {{- tpl (include "resources-lib.cluster-role.template" nil | trim) . -}}
 {{- end -}}

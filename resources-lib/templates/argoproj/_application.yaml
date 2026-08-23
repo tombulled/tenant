@@ -1,4 +1,4 @@
-{{- define "resources.application.template" -}}
+{{- define "resources-lib.application.template" -}}
 {{- `
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -85,6 +85,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.application.build" -}}
-  {{- tpl (include "resources.application.template" nil | trim) . -}}
+{{- define "resources-lib.application.build" -}}
+  {{- tpl (include "resources-lib.application.template" nil | trim) . -}}
 {{- end -}}

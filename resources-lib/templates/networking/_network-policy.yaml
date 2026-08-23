@@ -1,4 +1,4 @@
-{{- define "resources.network-policy.template" -}}
+{{- define "resources-lib.network-policy.template" -}}
 {{- `
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -34,6 +34,6 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- define "resources.network-policy.build" -}}
-  {{- tpl (include "resources.network-policy.template" nil | trim) . -}}
+{{- define "resources-lib.network-policy.build" -}}
+  {{- tpl (include "resources-lib.network-policy.template" nil | trim) . -}}
 {{- end -}}
