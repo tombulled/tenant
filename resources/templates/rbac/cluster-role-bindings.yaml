@@ -1,8 +1,8 @@
-{{- range include "resources.list" (dict
+{{- range include "resources-lib.list" (dict
   "root" $
   "values" .Values.clusterRoleBindings
   "defaults" .Values.clusterRoleBindingDefaults
 ) | fromYamlArray }}
 ---
-{{ include "resources.cluster-role-binding.build" . }}
+{{ include "resources-lib.cluster-role-binding.build" . }}
 {{- end }}

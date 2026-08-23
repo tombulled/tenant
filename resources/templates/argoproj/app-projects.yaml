@@ -1,8 +1,4 @@
-{{- define "resources.app-projects" -}}
-  {{- include "resources.list" (dict "root" $ "values" .Values.appProjects "defaults" .Values.appProjectDefaults) -}}
-{{- end -}}
-
-{{- range include "resources.app-projects" $ | fromYamlArray }}
+{{- range include "resources-lib.app-projects" $ | fromYamlArray }}
 ---
-{{ include "resources.app-project.build" . }}
+{{ include "resources-lib.app-project.build" . }}
 {{- end }}

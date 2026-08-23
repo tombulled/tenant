@@ -1,8 +1,8 @@
-{{- range include "resources.list-with-namespaced" (dict
+{{- range include "resources-lib.list-with-namespaced" (dict
   "root" $
   "key" "networkPolicies"
   "defaults" $.Values.networkPolicyDefaults
 ) | fromYamlArray }}
 ---
-{{ include "resources.network-policy.build" . }}
+{{ include "resources-lib.network-policy.build" . }}
 {{- end }}

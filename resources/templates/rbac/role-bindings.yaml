@@ -1,8 +1,8 @@
-{{- range include "resources.list-with-namespaced" (dict
+{{- range include "resources-lib.list-with-namespaced" (dict
   "root" $
   "key" "roleBindings"
   "defaults" $.Values.roleBindingDefaults
 ) | fromYamlArray }}
 ---
-{{ include "resources.role-binding.build" . }}
+{{ include "resources-lib.role-binding.build" . }}
 {{- end }}
