@@ -1,14 +1,17 @@
-limitRanges:
-  foo:
-    limitsObject:
-      main:
-        default: # this section defines default limits
-          cpu: 500m
-        defaultRequest: # this section defines default requests
-          cpu: 500m
-        max: # max and min define the limit range
-          cpu: "1"
-        min:
-          cpu: 100m
-        type: Container
-  bar: {}
+groups:
+  gitlab-runner:
+    namespaceDefaults:
+      name: "gitlab-runner-{{.id}}"
+    namespaces:
+      foo: {}
+      bar: {}
+      baz: {}
+
+namespaces:
+  gitlab-runner-foo: {}
+  gitlab-runner-bar: {}
+  gitlab-runner-baz: {}
+
+  jenkins-agent-foo: {}
+  jenkins-agent-bar: {}
+  jenkins-agent-baz: {}

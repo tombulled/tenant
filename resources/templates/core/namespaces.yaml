@@ -1,4 +1,4 @@
-{{- range include "resources.namespaces" $ | fromYamlArray -}}
+{{- range include "resources.namespaces" $ | fromYamlArray }}
 ---
 apiVersion: v1
 kind: Namespace
@@ -14,4 +14,4 @@ metadata:
 spec:
   finalizers: {{- . | toYaml | nindent 4 }}
 {{- end }}
-{{- end -}}
+{{- end }}
