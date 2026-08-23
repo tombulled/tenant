@@ -1,3 +1,7 @@
+{{- define "resources.namespaces" -}}
+  {{- include "resources.list" (dict "root" $ "values" .Values.namespaces "defaults" .Values.namespaceDefaults) -}}
+{{- end -}}
+
 {{- range include "resources.namespaces" $ | fromYamlArray }}
 ---
 {{ include "resources.namespace.build" . }}
