@@ -1,0 +1,27 @@
+{{- range include "resources.list-with-namespaced" (dict
+  "root" $
+  "key" "limitRanges"
+  "defaults" $.Values.limitRangeDefaults
+) | fromYamlArray }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+spec:
+  {{- with .limits }}
+  limits: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}

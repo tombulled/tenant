@@ -1,0 +1,8 @@
+{{- range .Values.extraResources }}
+{{- if eq . nil }}
+  {{- continue }}
+{{- end }}
+---
+{{- $value := ternary . (toYaml .) (typeIs "string" .) }}
+{{ tpl $value $ }}
+{{- end -}}

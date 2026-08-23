@@ -1,0 +1,30 @@
+defaults: {}
+
+clusterRoleBindingDefaults: {}
+clusterRoleBindings: {}
+
+clusterRoleDefaults: {}
+clusterRoles: {}
+
+limitRangeDefaults: {}
+limitRanges: {}
+
+namespaceDefaults: {}
+namespaces: {}
+
+networkPolicyDefaults: {}
+networkPolicies: {}
+
+resourceQuotaDefaults: {}
+resourceQuotas: {}
+
+roleBindingDefaults: {}
+roleBindings: {}
+
+roleDefaults: {}
+roles: {}
+
+sealedSecretDefaults: {}
+sealedSecrets: {}
+
+extraResources: {}
