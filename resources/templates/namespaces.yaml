@@ -1,8 +1,4 @@
-{{- range include "resources.list" (dict
-  "root" $
-  "values" .Values.namespaces
-  "defaults" .Values.namespaceDefaults
-) | fromYamlArray }}
+{{- range include "resources.namespaces" $ | fromYamlArray -}}
 ---
 apiVersion: v1
 kind: Namespace
