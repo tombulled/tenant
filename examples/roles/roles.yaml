@@ -1,0 +1,68 @@
+roles:
+  # Create an empty role with name `a` (the name is inferred from the resource ID)
+  a: {}
+
+  # Create an empty role with name `bee`
+  b:
+    name: "bee"
+
+  # Disable a role
+  # ... Using nil data
+  c: ~
+  # ... Using `enabled`
+  d:
+    enabled: false
+
+  # Create a role with a list of rules
+  e:
+    name: pod-reader
+    namespace: default
+    rules:
+      - apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["get", "watch", "list"]
+
+  # Create a role with a map of rules
+  f:
+    name: reader
+    namespace: default
+    rulesObject:
+      pods-read:
+        apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["get", "watch", "list"]
+      deployments-read:
+        enabled: false
+        apiGroups: [""]
+        resources: ["deployments"]
+        verbs: ["get", "watch", "list"]
+      secrets-read: ~
+
+  # Role with all fields populated
+  g:
+    enabled: true # If omitted, defaults to true
+    name: fully-populated # If omitted, defaults to the resource ID
+    namespace: some-namespace
+    annotations:
+      owning-team: some-cool-team
+    labels:
+      is-system: "true"
+    finalizers:
+      - some-finalizer
+    rules:
+      - apiGroups: [""]
+        resources: ["deployments"]
+        verbs: ["get", "watch", "list"]
+    # Only `rules` or `rulesObject` can be specified, so the above rules could
+    # also be declared as:
+    #   rulesObject:
+    #     pods-read:
+    #       apiGroups: [""]
+    #       resources: ["pods"]
+    #       verbs: ["get", "watch", "list"]
+
+  # Role with templated field
+  h:
+    name: foo
+    annotations:
+      my-name-is: "{{.name}}"
