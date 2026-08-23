@@ -96,7 +96,7 @@
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
-  {{- $datasToMerge := concat $defaults $data -}}
+  {{- $datasToMerge := append $defaults $data -}}
   {{- $data := dict -}}
   {{- range $dataToMerge := $datasToMerge -}}
     {{- $data = mustMergeOverwrite $data ($dataToMerge | default dict | deepCopy) -}}
@@ -123,4 +123,37 @@
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
   {{- end -}}
+{{- end -}}
+
+{{- /*
+  Builds and returns a list of *enabled* resource datas.
+
+  Parameters:
+    `values` - Map of resources (e.g. `{"foo": {}, "bar": {}}`)
+    `defaults` - List of resource defaults to apply to each resource (in ascending order of precedence)
+*/ -}}
+{{- define "resources.list" -}}
+  {{- /* Extract arguments */ -}}
+  {{- $values := .values | default dict -}}
+  {{- $defaults := .defaults | default list -}}
+
+  {{- $resourceDatas := list -}}
+
+  {{- /* Iterate over each configured resource */ -}}
+  {{- range $id, $_ := $values -}}
+    {{- /* Build the resource's data */ -}}
+    {{- $data := include "resources.data" (dict
+        "id" $id
+        "data" .
+        "defaults" $defaults
+    ) | fromYaml -}}
+
+    {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
+    {{- with $data -}}
+      {{- $resourceDatas = append $resourceDatas . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Output the resource data of the enabled resources as a YAML list */ -}}
+  {{- $resourceDatas | toYaml -}}
 {{- end -}}

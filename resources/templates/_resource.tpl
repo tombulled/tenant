@@ -1,35 +1,4 @@
 {{- /*
-  Builds and returns a list of *enabled* resource datas.
-
-  Parameters:
-    `root` - Root context (`$`)
-    `values` - List of resources, e.g. `.Values.namespaces`
-    `defaults` - Map of resource defaults, e.g. `.Values.namespaceDefaults`
-*/ -}}
-{{- define "resources.list" -}}
-  {{- /* Extract arguments */ -}}
-  {{- $ := .root -}}
-  {{- $values := .values | default dict -}}
-  {{- $defaults := .defaults | default dict -}}
-
-  {{- $resourceDatas := list -}}
-
-  {{- /* Iterate over each configured resource */ -}}
-  {{- range $id, $_ := $values -}}
-    {{- /* Build the resource's data */ -}}
-    {{- $data := include "resources.data" (dict "root" $ "id" $id "data" . "defaults" $defaults) | fromYaml -}}
-
-    {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
-    {{- with $data -}}
-      {{- $resourceDatas = append $resourceDatas . -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- /* Output the resource data of the enabled resources as a YAML list */ -}}
-  {{- $resourceDatas | toYaml -}}
-{{- end -}}
-
-{{- /*
   Builds and returns a list of *enabled* resource datas, *including* any attached to namespaces.
   
   Parameters:

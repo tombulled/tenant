@@ -1,3 +1,15 @@
-roleBindings:
-  foo: {}
-  bar: {}
+defaults:
+  annotations:
+    from-defaults: "true"
+    name: bob
+
+namespaceDefaults:
+  annotations:
+    from-ns-defaults: "true"
+    name: sally
+
+namespaces:
+  foo:
+    annotations:
+      from-resource: "true"
+      name: pizza

@@ -1,0 +1,7 @@
+namespaceDefaults:
+  annotations:
+    is-cool: "true"
+
+namespaces:
+  foo: {}
+  bar: {}
