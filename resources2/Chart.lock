@@ -1,0 +1,6 @@
+dependencies:
+- name: resources-lib
+  repository: file://../resources-lib
+  version: 0.1.0
+digest: sha256:85802d075d29598f35f5ea3c48fde3ec17a1da39c3a95e993353f5a006096fcb
+generated: "2026-08-23T19:07:15.546502866+01:00"

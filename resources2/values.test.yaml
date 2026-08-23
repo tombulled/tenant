@@ -1,0 +1,5 @@
+applications:
+  foo: {}
+  bar:
+    enabled: false
+  baz: {}
