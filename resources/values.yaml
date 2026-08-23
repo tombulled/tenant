@@ -1,11 +1,14 @@
 defaults: {}
 
+# Argo - AppProject
 appProjectDefaults: {}
 appPojects: {}
 
+# Argo - Application
 applicationDefaults: {}
 applications: {}
 
+# Argo - ApplicationSet
 applicationSetDefaults:
   template:
     metadata: {}
@@ -14,31 +17,41 @@ applicationSetDefaults:
       project: default
 applicationSets: {}
 
-clusterRoleBindingDefaults: {}
-clusterRoleBindings: {}
-
-clusterRoleDefaults: {}
-clusterRoles: {}
-
-limitRangeDefaults: {}
-limitRanges: {}
-
-namespaceDefaults: {}
-namespaces: {}
-
-networkPolicyDefaults: {}
-networkPolicies: {}
-
-resourceQuotaDefaults: {}
-resourceQuotas: {}
-
-roleBindingDefaults: {}
-roleBindings: {}
-
-roleDefaults: {}
-roles: {}
-
+# Bitnami - SealedSecret
 sealedSecretDefaults: {}
 sealedSecrets: {}
 
+# Core - LimitRange
+limitRangeDefaults: {}
+limitRanges: {}
+
+# Core - Namespace
+namespaceDefaults: {}
+namespaces: {}
+
+# Core - ResourceQuota
+resourceQuotaDefaults: {}
+resourceQuotas: {}
+
+# Networking - NetworkPolicy
+networkPolicyDefaults: {}
+networkPolicies: {}
+
+# RBAC - ClusterRoleBinding
+clusterRoleBindingDefaults: {}
+clusterRoleBindings: {}
+
+# RBAC - ClusterRole
+clusterRoleDefaults: {}
+clusterRoles: {}
+
+# RBAC - RoleBinding
+roleBindingDefaults: {}
+roleBindings: {}
+
+# RBAC - Role
+roleDefaults: {}
+roles: {}
+
+# Extra Resources
 extraResources: {}
