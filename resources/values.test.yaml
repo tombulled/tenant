@@ -1,10 +1,9 @@
-# appProjects:
-#   foo: {}
-# namespaces:
-#   foo: {}
-# sealedSecrets:
-#   foo: {}
-applications:
+applicationSets:
   foo:
-    source:
-      repoURL: bob.com
+    generatorsObject:
+      main:
+        list: []
+    templatePatch: bob
+#     templatePatch: |
+#       metadata:
+#         name: bob

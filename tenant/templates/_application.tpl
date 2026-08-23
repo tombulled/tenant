@@ -48,6 +48,5 @@
     {{- "" | nindent 0 }}
   {{- end -}}
 
-  {{- /* Insert the contents of the `files/application-template.yaml` file */ -}}
-  {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
+  {{- include "resources.application.template" $ | trim | nindent 0 }}
 {{- end -}}

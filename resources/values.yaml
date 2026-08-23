@@ -6,6 +6,14 @@ appPojects: {}
 applicationDefaults: {}
 applications: {}
 
+applicationSetDefaults:
+  template:
+    metadata: {}
+    spec:
+      destination: {}
+      project: default
+applicationSets: {}
+
 clusterRoleBindingDefaults: {}
 clusterRoleBindings: {}
 
