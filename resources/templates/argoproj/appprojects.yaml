@@ -1,7 +1,7 @@
 {{- range include "resources.list" (dict
   "root" $
-  "values" .Values.projects
-  "defaults" .Values.projectDefaults
+  "values" .Values.appProjects
+  "defaults" .Values.appProjectDefaults
 ) | fromYamlArray }}
 ---
 apiVersion: argoproj.io/v1alpha1
