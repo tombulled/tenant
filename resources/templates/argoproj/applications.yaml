@@ -1,14 +1,3 @@
-{{- define "resources.x.template" -}}
-  {{- $ := .root -}}
-  {{- $file := .file -}}
-
-  {{- $.Files.Get (printf "files/%s" $file) -}}
-{{- end -}}
-
-{{- define "resources.application.template-maybe" -}}
-  {{- include "resources.x.template" (dict "root" $ "file" "argoproj/application.yaml") -}}
-{{- end -}}
-
 {{- define "resources.application.template" -}}
   {{- $.Files.Get "files/argoproj/application.yaml" -}}
 {{- end -}}
@@ -24,7 +13,7 @@
   {{- include "resources.list" (dict "root" $ "values" .Values.applications "defaults" .Values.applicationDefaults) -}}
 {{- end -}}
 
-{{- range include "resources.applications" $ | fromYamlArray }}
+{{- range include "resources.application.list" $ | fromYamlArray }}
 ---
 {{ tpl (include "resources.application.template" $) . }}
 {{- end }}

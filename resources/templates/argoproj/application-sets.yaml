@@ -64,7 +64,15 @@ spec:
 ` -}}
 {{- end -}}
 
-{{- range include "resources.application-sets" $ | fromYamlArray }}
+{{- define "resources.application-set.build" -}}
+  {{- tpl (include "resources.application-set.template" nil | trim) . -}}
+{{- end -}}
+
+{{- define "resources.application-set.list" -}}
+  {{- include "resources.list" (dict "root" $ "values" .Values.applicationSets "defaults" .Values.applicationSetDefaults) -}}
+{{- end -}}
+
+{{- range include "resources.application-set.list" $ | fromYamlArray }}
 ---
-{{ tpl (include "resources.application-set.template" $) . }}
+{{ include "resources.application-set.build" . }}
 {{- end }}
