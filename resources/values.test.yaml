@@ -4,3 +4,7 @@ namespaces:
   foo: {}
 sealedSecrets:
   foo: {}
+applications:
+  foo:
+    source:
+      repoURL: bob.com

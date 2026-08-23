@@ -3,6 +3,9 @@ defaults: {}
 appProjectDefaults: {}
 appPojects: {}
 
+applicationDefaults: {}
+applications: {}
+
 clusterRoleBindingDefaults: {}
 clusterRoleBindings: {}
 
