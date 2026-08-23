@@ -1,5 +1,5 @@
-{{- range include "resources.applications" $ | fromYamlArray }}
----
+{{- define "resources.application.template" -}}
+{{- `
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -24,7 +24,7 @@ spec:
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- if and .infoObject .info }}
-    {{- fail "Specify either `infoObject` or `info`, not both." }}
+    {{- fail "Specify either 'infoObject' or 'info', not both." }}
   {{- end }}
   {{- with .infoObject }}
   info:
@@ -49,7 +49,7 @@ spec:
   sourceHydrator: {{- . | toYaml | nindent 4}}
   {{- end }}
   {{- if and .sourcesObject .sources }}
-    {{- fail "Specify either `sourcesObject` or `sources`, not both." }}
+    {{- fail "Specify either 'sourcesObject' or 'sources', not both." }}
   {{- end }}
   {{- with .sourcesObject }}
   sources:
@@ -82,4 +82,10 @@ spec:
     {{- end }}
   syncPolicy: {{- . | toYaml | nindent 4 }}
   {{- end }}
+` -}}
+{{- end -}}
+
+{{- range include "resources.applications" $ | fromYamlArray }}
+---
+{{ tpl (include "resources.application.template" $) . }}
 {{- end }}

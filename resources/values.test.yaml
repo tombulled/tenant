@@ -1,9 +1,9 @@
-appProjects:
-  foo: {}
-namespaces:
-  foo: {}
-sealedSecrets:
-  foo: {}
+# appProjects:
+#   foo: {}
+# namespaces:
+#   foo: {}
+# sealedSecrets:
+#   foo: {}
 applications:
   foo:
     source:
