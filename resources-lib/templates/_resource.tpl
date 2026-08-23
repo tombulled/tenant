@@ -84,7 +84,7 @@
              my-id-is: foo
              my-name-is: some-cool-ns
 */ -}}
-{{- define "resources.data" -}}
+{{- define "resources-lib.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
@@ -132,7 +132,7 @@
     `values` - Map of resources (e.g. `{"foo": {}, "bar": {}}`)
     `defaults` - List of resource defaults to apply to each resource (in ascending order of precedence)
 */ -}}
-{{- define "resources.list" -}}
+{{- define "resources-lib.list" -}}
   {{- /* Extract arguments */ -}}
   {{- $values := .values | default dict -}}
   {{- $defaults := .defaults | default list -}}
@@ -142,7 +142,7 @@
   {{- /* Iterate over each configured resource */ -}}
   {{- range $id, $_ := $values -}}
     {{- /* Build the resource's data */ -}}
-    {{- $data := include "resources.data" (dict
+    {{- $data := include "resources-lib.data" (dict
         "id" $id
         "data" .
         "defaults" $defaults

@@ -1,4 +1,4 @@
-{{- define "resources.utils.render-object" -}}
+{{- define "resources-lib.utils.render-object" -}}
   {{- $value := .value -}}
   {{- $indent := .indent -}}
 
@@ -11,7 +11,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- define "resources.utils.map-to-list" -}}
+{{- define "resources-lib.utils.map-to-list" -}}
   {{- /* Extract arguments */ -}}
   {{- $map := .map | default dict -}}
   {{- $field := .field -}}
