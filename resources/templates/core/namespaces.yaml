@@ -1,17 +1,4 @@
 {{- range include "resources.namespaces" $ | fromYamlArray }}
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-{{- with .finalizers }}
-spec:
-  finalizers: {{- . | toYaml | nindent 4 }}
-{{- end }}
+{{ include "resources.namespace.build" . }}
 {{- end }}

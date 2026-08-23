@@ -1,0 +1,34 @@
+{{- define "resources.resource-quota.template" -}}
+{{- `
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+spec:
+  {{- with .hard }}
+  hard: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopeSelector }}
+  scopeSelector: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .scopes }}
+  scopes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+` -}}
+{{- end -}}
+
+{{- define "resources.resource-quota.build" -}}
+  {{- tpl (include "resources.resource-quota.template" nil | trim) . -}}
+{{- end -}}

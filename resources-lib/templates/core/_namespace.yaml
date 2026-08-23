@@ -1,0 +1,22 @@
+{{- define "resources.namespace.template" -}}
+{{- `
+apiVersion: v1
+kind: Namespace
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+{{- with .finalizers }}
+spec:
+  finalizers: {{- . | toYaml | nindent 4 }}
+{{- end }}
+` -}}
+{{- end -}}
+
+{{- define "resources.namespace.build" -}}
+  {{- tpl (include "resources.namespace.template" nil | trim) . -}}
+{{- end -}}

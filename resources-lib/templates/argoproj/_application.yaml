@@ -1,3 +1,5 @@
+{{- define "resources.application.template" -}}
+{{- `
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -80,3 +82,9 @@ spec:
     {{- end }}
   syncPolicy: {{- . | toYaml | nindent 4 }}
   {{- end }}
+` -}}
+{{- end -}}
+
+{{- define "resources.application.build" -}}
+  {{- tpl (include "resources.application.template" nil | trim) . -}}
+{{- end -}}

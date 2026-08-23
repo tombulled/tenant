@@ -1,0 +1,39 @@
+{{- define "resources.network-policy.template" -}}
+{{- `
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- with .annotations }}
+  annotations: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .finalizers }}
+  finalizers: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+  labels: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  name: {{ .name }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+spec:
+  {{- with .egress }}
+  egress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .ingress }}
+  ingress: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .podSelector }}
+  podSelector: {{ . | toYaml | nindent 4 }}
+  {{- else }}
+  podSelector: {}
+  {{- end }}
+  {{- with .policyTypes }}
+  policyTypes: {{- . | toYaml | nindent 4 }}
+  {{- end }}
+` -}}
+{{- end -}}
+
+{{- define "resources.network-policy.build" -}}
+  {{- tpl (include "resources.network-policy.template" nil | trim) . -}}
+{{- end -}}
