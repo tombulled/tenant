@@ -1,0 +1,4 @@
+networkPolicies:
+  foo:
+    podSelector:
+      foo: bar
