@@ -1,31 +1,29 @@
-roles:
-  # Create an empty role with name `a` (the name is inferred from the resource ID)
+clusterRoles:
+  # Create an empty cluster role with name `a` (the name is inferred from the resource ID)
   a: {}
 
-  # Create an empty role with name `bee`
+  # Create an empty cluster role with name `bee`
   b:
     name: "bee"
 
-  # Disable a role
+  # Disable a cluster role
   # ... Using nil data
   c: ~
   # ... Using `enabled`
   d:
     enabled: false
 
-  # Create a role with a list of rules
+  # Create a cluster role with a list of rules
   e:
-    name: pod-reader
-    namespace: default
+    name: secret-reader
     rules:
       - apiGroups: [""]
-        resources: ["pods"]
+        resources: ["secrets"]
         verbs: ["get", "watch", "list"]
 
-  # Create a role with a map of rules
+  # Create a cluster role with a map of rules
   f:
     name: reader
-    namespace: default
     rulesObject:
       pods-read:
         apiGroups: [""]
@@ -38,11 +36,18 @@ roles:
         verbs: ["get", "watch", "list"]
       secrets-read: ~
 
-  # Role with all fields populated
+  # Create an aggregated cluster role
   g:
+    name: monitoring
+    aggregationRule:
+      clusterRoleSelectors:
+        - matchLabels:
+            rbac.example.com/aggregate-to-monitoring: "true"
+
+  # Cluster role with all fields populated
+  h:
     enabled: true # If omitted, defaults to true
     name: fully-populated # If omitted, defaults to the resource ID
-    namespace: some-namespace
     annotations:
       owning-team: some-cool-team
     labels:
@@ -60,9 +65,10 @@ roles:
     #       apiGroups: [""]
     #       resources: ["deployments"]
     #       verbs: ["get", "watch", "list"]
+    aggregationRule: {}
 
-  # Role with templated field
-  h:
+  # Cluster role with templated field
+  i:
     name: foo
     annotations:
       my-name-is: "{{.name}}"

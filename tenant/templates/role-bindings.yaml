@@ -23,16 +23,12 @@ metadata:
 {{- with .roleRef }}
 roleRef: {{- . | toYaml | nindent 2 }}
 {{- end }}
-
 {{- if and .subjectsObject .subjects }}
   {{- fail "Specify either `subjectsObject` or `subjects`, not both." }}
 {{- end }}
 {{- with .subjectsObject }}
-subjects:
-  {{- range $key, $val := . }}
-    {{- $_ := set . "name" (.name | default $key) }}
-    {{- . | toYaml | nindent 2 }}
-  {{- end }}
+{{- $subjects := include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
+subjects: {{ include "tenant.utils.render-object" (dict "value" $subjects "indent" 2) }}
 {{- else with .subjects }}
 subjects: {{- . | toYaml | nindent 2 }}
 {{- end }}
