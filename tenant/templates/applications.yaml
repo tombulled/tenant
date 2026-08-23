@@ -1,4 +1,4 @@
-{{- range include "tenant.resource.list" (dict
+{{- range include "resources.list" (dict
   "root" $
   "values" .Values.applications
   "defaults" .Values.applicationDefaults

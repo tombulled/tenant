@@ -1,0 +1,6 @@
+dependencies:
+- name: resources
+  repository: file://../resources
+  version: 0.1.0
+digest: sha256:3e613d68a33d59299d1d75be07bd42e80d28424e9fa0f2ee84d72d7cb154b985
+generated: "2026-08-23T11:02:25.687490287+01:00"
