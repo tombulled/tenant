@@ -1,17 +1,6 @@
-groups:
-  gitlab-runner:
-    namespaceDefaults:
-      name: "gitlab-runner-{{.id}}"
-    namespaces:
-      foo: {}
-      bar: {}
-      baz: {}
-
+appProjects:
+  foo: {}
 namespaces:
-  gitlab-runner-foo: {}
-  gitlab-runner-bar: {}
-  gitlab-runner-baz: {}
-
-  jenkins-agent-foo: {}
-  jenkins-agent-bar: {}
-  jenkins-agent-baz: {}
+  foo: {}
+sealedSecrets:
+  foo: {}

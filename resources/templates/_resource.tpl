@@ -155,15 +155,6 @@
 {{- end -}}
 
 {{- /*
-  Builds and returns a list of *enabled* namespace resource datas.
-
-  Accepts a single argument of the root context (`$`).
-*/ -}}
-{{- define "resources.namespaces" -}}
-  {{- include "resources.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) -}}
-{{- end -}}
-
-{{- /*
   Builds and returns a list of *enabled* resource datas, *including* any attached to namespaces.
   
   Parameters:
