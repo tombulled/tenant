@@ -28,7 +28,3 @@ spec:
   {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.resource-quota.build" -}}
-  {{- tpl (include "resources-lib.resource-quota.template" nil | trim) . -}}
-{{- end -}}

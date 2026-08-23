@@ -16,7 +16,3 @@ spec:
 {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.namespace.build" -}}
-  {{- tpl (include "resources-lib.namespace.template" nil | trim) . -}}
-{{- end -}}

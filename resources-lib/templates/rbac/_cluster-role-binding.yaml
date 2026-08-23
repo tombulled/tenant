@@ -27,7 +27,3 @@ subjects: {{- . | toYaml | nindent 2 }}
 {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.cluster-role-binding.build" -}}
-  {{- tpl (include "resources-lib.cluster-role-binding.template" nil | trim) . -}}
-{{- end -}}

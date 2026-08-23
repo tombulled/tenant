@@ -105,7 +105,3 @@ spec:
   {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.app-project.build" -}}
-  {{- tpl (include "resources-lib.app-project.template" nil | trim) . -}}
-{{- end -}}

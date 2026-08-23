@@ -33,7 +33,3 @@ spec:
   {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.network-policy.build" -}}
-  {{- tpl (include "resources-lib.network-policy.template" nil | trim) . -}}
-{{- end -}}

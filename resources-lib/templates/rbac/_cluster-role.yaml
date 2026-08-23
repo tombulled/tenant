@@ -27,7 +27,3 @@ rules: {{- . | toYaml | nindent 2 }}
 {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.cluster-role.build" -}}
-  {{- tpl (include "resources-lib.cluster-role.template" nil | trim) . -}}
-{{- end -}}

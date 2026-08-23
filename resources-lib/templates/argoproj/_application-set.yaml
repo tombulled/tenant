@@ -63,7 +63,3 @@ spec:
   {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.application-set.build" -}}
-  {{- tpl (include "resources-lib.application-set.template" nil | trim) . -}}
-{{- end -}}

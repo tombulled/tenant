@@ -30,7 +30,3 @@ spec:
   {{- end }}
 ` -}}
 {{- end -}}
-
-{{- define "resources-lib.limit-range.build" -}}
-  {{- tpl (include "resources-lib.limit-range.template" nil | trim) . -}}
-{{- end -}}
