@@ -113,10 +113,10 @@
 
     {{- /* Template the resource's name using the resource's data */ -}}
     {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
-    {{- $_ := set $data "name" (tpl (get $data "name") $data) -}}
+    {{- $_ := set $data "name" (include "tenant.utils.template" (dict "value" (get $data "name") "context" $root "scope" $data)) -}}
 
     {{- /* Template the resource's data using itself */ -}}
-    {{- $data = tpl ($data | toYaml) $data | fromYaml -}}
+    {{- $data = include "tenant.utils.template" (dict "value" $data "context" $root "scope" $data) | fromYaml -}}
 
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
