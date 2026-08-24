@@ -18,4 +18,4 @@ metadata:
 spec:
   finalizers: {{- . | toYaml | nindent 4 }}
 {{- end }}
-{{- end -}}
+{{- end }}

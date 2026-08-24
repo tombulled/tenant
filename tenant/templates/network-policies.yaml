@@ -27,8 +27,10 @@ spec:
   {{- with .ingress }}
   ingress: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  {{- if ne .podSelector nil }}
-  podSelector: {{ ternary "{}" (.podSelector | toYaml | nindent 4) (empty .podSelector) }}
+  {{- with .podSelector }}
+  podSelector: {{ . | toYaml | nindent 4 }}
+  {{- else }}
+  podSelector: {}
   {{- end }}
   {{- with .policyTypes }}
   policyTypes: {{- . | toYaml | nindent 4 }}
