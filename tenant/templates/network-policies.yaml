@@ -1,8 +1,4 @@
-{{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $
-  "key" "networkPolicies"
-  "defaults" $.Values.networkPolicyDefaults
-) | fromYamlArray }}
+{{- range include "tenant.resources.network-policies" $ | fromYamlArray }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
