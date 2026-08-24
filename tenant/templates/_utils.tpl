@@ -63,3 +63,20 @@
 
   {{- $values | toYaml -}}
 {{- end -}}
+
+{{- define "tenant.utils.template" -}}
+  {{- $value := .value -}}
+  {{- $context := .context -}}
+  {{- $scope := .scope -}}
+
+  {{- $template := ternary $value (toYaml $value) (typeIs "string" $value) -}}
+
+  {{- if .scope -}}
+    {{- tpl
+      (printf "{{- $ := .context -}}{{- with .scope -}}%s{{- end }}" $template)
+      (dict "context" $context "scope" $scope)
+     -}}
+  {{- else -}}
+    {{- tpl $template $context -}}
+  {{- end -}}
+{{- end -}}

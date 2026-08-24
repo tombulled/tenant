@@ -1,0 +1,19 @@
+namespaces:
+  foo: {}
+  bar: {}
+  baz: {}
+
+applications:
+  tenant-metrics:
+    source:
+      repoURL: bob.com
+      helm:
+        values: |
+          {{- with include "tenant.resources.namespaces" $ | fromYamlArray }}
+          namespaces:
+            {{- range . }}
+            - {{ .name | quote }}
+            {{- end }}
+          {{- else }}
+          namespaces: []
+          {{- end }}
