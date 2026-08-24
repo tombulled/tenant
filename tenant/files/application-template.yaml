@@ -2,7 +2,7 @@ metadata:
   name: {{ .name }}
   {{- with .namespace }}
   namespace: {{ . }}
-  {{- end -}}
+  {{- end }}
   {{- with .finalizers }}
   finalizers: {{ . | toYaml | nindent 4 }}
   {{- end }}
@@ -15,7 +15,7 @@ metadata:
 spec:
   {{- with .destination }}
   destination: {{- . | toYaml | nindent 4 }}
-  {{- end -}}
+  {{- end }}
   {{- with .ignoreDifferences }}
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
@@ -34,7 +34,7 @@ spec:
   {{- end }}
   {{- with .project }}
   project: {{ . }}
-  {{- end -}}
+  {{- end }}
   {{- if ne .revisionHistoryLimit nil }}
   revisionHistoryLimit: {{ .revisionHistoryLimit }}
   {{- end }}

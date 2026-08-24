@@ -1,8 +1,4 @@
-{{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $
-  "key" "limitRanges"
-  "defaults" $.Values.limitRangeDefaults
-) | fromYamlArray }}
+{{- range include "tenant.resources.limit-ranges" $ | fromYamlArray }}
 ---
 apiVersion: v1
 kind: LimitRange

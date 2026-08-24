@@ -38,16 +38,16 @@
     {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
     {{- /* Insert some templating logic into the application's template that applies the application's defaults */ -}}
-    {{- "{{- /* Apply defaults */ -}}" }}
-    {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | nindent 0 }}
-    {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | nindent 0 }}
-    {{- "" | nindent 0}}
+    {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
+    {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | printf "%s\n" }}
+    {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n" }}
+    {{- "\n" }}
 
     {{- /* Insert the contents of the `files/application-template-appset-header.yaml` file */ -}}
-    {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | nindent 0 }}
-    {{- "" | nindent 0 }}
+    {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | printf "%s\n" }}
+    {{- "\n" }}
   {{- end -}}
 
   {{- /* Insert the contents of the `files/application-template.yaml` file */ -}}
-  {{- $.Files.Get "files/application-template.yaml" | trim | nindent 0 }}
+  {{- $.Files.Get "files/application-template.yaml" | trim }}
 {{- end -}}

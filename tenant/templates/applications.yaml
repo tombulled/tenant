@@ -1,8 +1,4 @@
-{{- range include "tenant.resource.list" (dict
-  "root" $
-  "values" .Values.applications
-  "defaults" .Values.applicationDefaults
-) | fromYamlArray }}
+{{- range include "tenant.resources.applications" $ | fromYamlArray }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application

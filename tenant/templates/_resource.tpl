@@ -155,15 +155,6 @@
 {{- end -}}
 
 {{- /*
-  Builds and returns a list of *enabled* namespace resource datas.
-
-  Accepts a single argument of the root context (`$`).
-*/ -}}
-{{- define "tenant.resource.namespaces" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" $.Values.namespaces "defaults" $.Values.namespaceDefaults) -}}
-{{- end -}}
-
-{{- /*
   Builds and returns a list of *enabled* resource datas, *including* any attached to namespaces.
   
   Parameters:
@@ -196,7 +187,7 @@
     dict "root" $ "values" (get $.Values $key) "defaults" $defaults) | fromYamlArray -}}
 
   {{- /* Build a list of enabled namespace resource datas */ -}}
-  {{- $namespaces := include "tenant.resource.namespaces" $ | fromYamlArray -}}
+  {{- $namespaces := include "tenant.resources.namespaces" $ | fromYamlArray -}}
 
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
