@@ -21,7 +21,7 @@ metadata:
   namespace: {{ . }}
   {{- end }}
 spec:
-  {{- with .hard }}
+  {{- with .hard | include "tenant.utils.filter-map" | fromYaml }}
   hard: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- with .scopeSelector }}
