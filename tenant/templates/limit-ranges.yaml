@@ -21,7 +21,15 @@ metadata:
   namespace: {{ . }}
   {{- end }}
 spec:
-  {{- with .limits }}
+  {{- if and .limitsObject .limits }}
+    {{- fail "Specify either 'limitsObject' or 'limits', not both."}}
+  {{- end }}
+  {{- with .limitsObject }}
+  {{- $limits := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  limits: {{ include "tenant.utils.render-object" (dict "value" $limits "indent" 4) }}
+  {{- else with .limits }}
   limits: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  limits: []
   {{- end }}
 {{- end }}
