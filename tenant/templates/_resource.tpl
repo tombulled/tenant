@@ -90,6 +90,7 @@
   {{- $id := .id -}}
   {{- $data := .data -}}
   {{- $defaults := .defaults | default dict -}}
+  {{- $vars := .vars | default dict -}}
 
   {{- /* If the resource data is nil, disable this resource (it is considered unwanted) */ -}}
   {{- if eq $data nil -}}
@@ -113,10 +114,10 @@
 
     {{- /* Template the resource's name using the resource's data */ -}}
     {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
-    {{- $_ := set $data "name" (include "tenant.utils.template" (dict "value" (get $data "name") "context" $root "scope" $data)) -}}
+    {{- $_ := set $data "name" (include "tenant.utils.template" (dict "value" (get $data "name") "context" $root "scope" $data "vars" $vars)) -}}
 
     {{- /* Template the resource's data using itself */ -}}
-    {{- $data = include "tenant.utils.template" (dict "value" $data "context" $root "scope" $data) | fromYaml -}}
+    {{- $data = include "tenant.utils.template" (dict "value" $data "context" $root "scope" $data "vars" $vars) | fromYaml -}}
 
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
@@ -136,13 +137,14 @@
   {{- $ := .root -}}
   {{- $values := .values | default dict -}}
   {{- $defaults := .defaults | default dict -}}
+  {{- $vars := .vars | default dict -}}
 
   {{- $resourceDatas := list -}}
 
   {{- /* Iterate over each configured resource */ -}}
   {{- range $id, $_ := $values -}}
     {{- /* Build the resource's data */ -}}
-    {{- $data := include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $defaults) | fromYaml -}}
+    {{- $data := include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $defaults "vars" $vars) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
     {{- with $data -}}
@@ -195,8 +197,12 @@
     {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}}
 
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
-    {{- $namespacedResources := include "tenant.resource.list" (
-      dict "root" $ "values" (get $namespace $key) "defaults" $namespacedDefaults) | fromYamlArray -}}
+    {{- $namespacedResources := include "tenant.resource.list" (dict
+      "root" $
+      "values" (get $namespace $key)
+      "defaults" $namespacedDefaults
+      "vars" (dict "namespace" $namespace)
+    ) | fromYamlArray -}}
 
     {{- /* Add all of the namespace-specific resource datas to the list of resources */ -}}
     {{- $resources = concat $resources $namespacedResources -}}

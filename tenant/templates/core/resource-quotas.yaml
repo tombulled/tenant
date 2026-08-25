@@ -19,6 +19,8 @@ metadata:
 spec:
   {{- with .hard | include "tenant.utils.filter-map" | fromYaml }}
   hard: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  hard: {}
   {{- end }}
   {{- with .scopeSelector }}
   scopeSelector: {{- . | toYaml | nindent 4 }}

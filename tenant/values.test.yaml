@@ -1,0 +1,8 @@
+namespaces:
+  some-namespace:
+    resourceQuotas:
+      main:
+        name: "{{.id}}"
+        annotations:
+          namespace: "{{ `{{$namespace.name}}` }}"
+          namespace2: "{{ `{{.namespace}}` }}"

@@ -68,15 +68,27 @@
   {{- $value := .value -}}
   {{- $context := .context -}}
   {{- $scope := .scope -}}
+  {{- $vars := .vars | default dict -}}
 
-  {{- $template := ternary $value (toYaml $value) (typeIs "string" $value) -}}
+  {{- $valueString := ternary $value (toYaml $value) (typeIs "string" $value) -}}
+
+  {{- $input := dict
+    "context" $context
+    "scope" $scope
+    "vars" $vars
+  -}}
+
+  {{- $template := "{{- $ := .context -}}" -}}
+
+  {{- range $key := $vars | keys -}}
+    {{- $template = printf "{{- $%s := .vars.%s -}}" $key $key | print $template -}}
+  {{- end -}}
 
   {{- if .scope -}}
-    {{- tpl
-      (printf "{{- $ := .context -}}{{- with .scope -}}%s{{- end }}" $template)
-      (dict "context" $context "scope" $scope)
-     -}}
+    {{- $template = printf "{{- with .scope -}}%s{{- end -}}" $valueString | print $template -}}
   {{- else -}}
-    {{- tpl $template $context -}}
+    {{- $template = $valueString | print $template -}}
   {{- end -}}
+
+  {{- tpl $template $input -}}
 {{- end -}}
