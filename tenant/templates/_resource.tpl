@@ -91,6 +91,7 @@
   {{- $data := .data -}}
   {{- $defaults := .defaults | default dict -}}
   {{- $vars := .vars | default dict -}}
+  {{- $hasNestedResources := ternary .hasNestedResources false (ne .hasNestedResources nil) -}}
 
   {{- /* If the resource data is nil, disable this resource (it is considered unwanted) */ -}}
   {{- if eq $data nil -}}
@@ -112,12 +113,34 @@
       {{- $_ := set $data "name" $id -}}
     {{- end -}}
 
+    {{- /* If the resource has nested resources, remove these before self-templating, otherwise they'll get templated twice */ -}}
+    {{- $nestedResources := dict -}}
+    {{- if $hasNestedResources -}}
+      {{- $nestedResources = $data.resources -}}
+      {{- $_ := unset $data "resources" -}}
+    {{- end -}}
+
     {{- /* Template the resource's name using the resource's data */ -}}
     {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
-    {{- $_ := set $data "name" (include "tenant.utils.template" (dict "value" (get $data "name") "context" $root "scope" $data "vars" $vars)) -}}
+    {{- $_ := set $data "name" (include "tenant.utils.template" (dict
+      "value" (get $data "name")
+      "context" $root
+      "scope" $data
+      "vars" $vars
+    )) -}}
 
     {{- /* Template the resource's data using itself */ -}}
-    {{- $data = include "tenant.utils.template" (dict "value" $data "context" $root "scope" $data "vars" $vars) | fromYaml -}}
+    {{- $data = include "tenant.utils.template" (dict
+      "value" $data
+      "context" $root
+      "scope" $data
+      "vars" $vars
+    ) | fromYaml -}}
+
+    {{- /* If the resource has nested resources, re-add these now that self-templating has happened */ -}}
+    {{- if $hasNestedResources -}}
+      {{- $_ := set $data "resources" $nestedResources -}}
+    {{- end -}}
 
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
@@ -138,13 +161,21 @@
   {{- $values := .values | default dict -}}
   {{- $defaults := .defaults | default dict -}}
   {{- $vars := .vars | default dict -}}
+  {{- $hasNestedResources := .hasNestedResources -}}
 
   {{- $resourceDatas := list -}}
 
   {{- /* Iterate over each configured resource */ -}}
   {{- range $id, $_ := $values -}}
     {{- /* Build the resource's data */ -}}
-    {{- $data := include "tenant.resource.data" (dict "root" $ "id" $id "data" . "defaults" $defaults "vars" $vars) | fromYaml -}}
+    {{- $data := include "tenant.resource.data" (dict
+      "root" $
+      "id" $id
+      "data" .
+      "defaults" $defaults
+      "vars" $vars
+      "hasNestedResources" $hasNestedResources
+    ) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
     {{- with $data -}}
@@ -193,13 +224,13 @@
 
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
-    {{- /* Create a copy of the defaults, updated to include the namespace */ -}}
+    {{- /* Create a copy of the resource defaults, updated to include the namespace */ -}}
     {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}}
 
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
     {{- $namespacedResources := include "tenant.resource.list" (dict
       "root" $
-      "values" (get $namespace $key)
+      "values" (dig "resources" $key (dict) $namespace)
       "defaults" $namespacedDefaults
       "vars" (dict "namespace" $namespace)
     ) | fromYamlArray -}}
