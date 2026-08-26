@@ -4,5 +4,7 @@ namespaces:
       main:
         name: "{{.id}}"
         annotations:
-          namespace: "{{ `{{$namespace.name}}` }}"
-          namespace2: "{{ `{{.namespace}}` }}"
+          namespace: "{{ `{{$namespace.name}}` }}" # <-- works
+          namespace2: "{{ `{{.namespace}}` }}"     # <-- works
+#           namespace3: "{{$namespace.name}}" # <-- the goal
+#           namespace4: "{{.namespace}}"      # <-- the goal

@@ -74,7 +74,7 @@
 
   {{- $input := dict
     "context" $context
-    "scope" $scope
+    "scope" ($scope | default $context)
     "vars" $vars
   -}}
 
@@ -84,11 +84,7 @@
     {{- $template = printf "{{- $%s := .vars.%s -}}" $key $key | print $template -}}
   {{- end -}}
 
-  {{- if .scope -}}
-    {{- $template = printf "{{- with .scope -}}%s{{- end -}}" $valueString | print $template -}}
-  {{- else -}}
-    {{- $template = $valueString | print $template -}}
-  {{- end -}}
+  {{- $template = printf "{{- with .scope -}}%s{{- end -}}" $valueString | print $template -}}
 
   {{- tpl $template $input -}}
 {{- end -}}
