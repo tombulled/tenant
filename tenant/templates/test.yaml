@@ -1,7 +1,0 @@
-template: |
-  {{- include "tenant.utils.template" (dict
-    "value" "name: {{$namespace.name}}"
-    "context" (dict "id" "tb-ace")
-    "scope" (dict "id" "foo")
-    "vars" (dict "namespace" (dict "name" "bob"))
-  ) | nindent 2 }}
