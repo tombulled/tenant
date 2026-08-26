@@ -250,9 +250,6 @@
 
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
-    {{- /* Create a copy of the resource defaults, updated to include the namespace */ -}}
-    {{- /* {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}} */ -}}
-
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
     {{- $namespacedResources := include "tenant.resource.list" (dict
       "root" $
@@ -262,10 +259,11 @@
       "vars" (dict "namespace" $namespace)
     ) | fromYamlArray -}}
 
-    {{- /* "defaults" $namespacedDefaults # <-- what do? */ -}}
-
-    {{- /* Add all of the namespace-specific resource datas to the list of resources */ -}}
-    {{- $resources = concat $resources $namespacedResources -}}
+    {{- /* For each namespace-specific resource data, set the namespace and append it to the list of resources */ -}}
+    {{- range $namespacedResources -}}
+      {{- $_ := set . "namespace" $namespace.name -}}
+      {{- $resources = append $resources . -}}
+    {{- end -}}
   {{- end -}}
 
   {{- /* Finally, output the full set of resource datas as a YAML array */ -}}

@@ -1,11 +1,17 @@
+# FIXME NEXT TIME: Resource defaults aren't being applied to namespace sub-resources.
+# See example below.
+
+resourceQuotaDefaults:
+  namespace: some-ns
+
 namespaceDefaults:
   resources:
     resourceQuota:
-      name: "{{$namespace.name}}"
+      name: quota
       annotations:
-        id: "{{.id}}"
         namespace: "{{.namespace}}"
-        bob: "{{.bob}}"
+        namespace2: "{{$namespace.name}}"
+      # namespace: other-ns
 
 namespaces:
   foo: {}
