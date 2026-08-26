@@ -102,14 +102,16 @@
   {{- $commonDefaults := $root.Values.defaults | default dict -}}
   {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) -}}
 
-  {{- /* Set the resource ID */ -}}
-  {{- $_ := set $data "id" $id }}
+  {{- /* If the resource has an ID, set the `id` field */ -}}
+  {{- if ne $id nil -}}
+    {{- $_ := set $data "id" $id }}
+  {{- end -}}
 
   {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
   {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) -}}
   {{- if $enabled -}}
-    {{- /* If unspecified, default the resource's name to the resource's ID */ -}}
-    {{- if eq $data.name nil -}}
+    {{- /* If unspecified, default the resource's name to the resource's ID (if one exists) */ -}}
+    {{- if and (eq $data.name nil) (ne $id nil) -}}
       {{- $_ := set $data "name" $id -}}
     {{- end -}}
 
@@ -158,20 +160,41 @@
 {{- define "tenant.resource.list" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
-  {{- $values := .values | default dict -}}
-  {{- $defaults := .defaults | default dict -}}
+  {{- $context := .context | default $.Values -}}
+  {{- $key := .key -}}
+  {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
   {{- $vars := .vars | default dict -}}
   {{- $hasNestedResources := .hasNestedResources -}}
+
+  {{- $value := index $context $key -}}
+  {{- $values := index $context $keyPlural | default dict -}}
+  {{- $defaults := index $context (print $key "Defaults") | default dict -}}
+
+  {{- if and (ne $value nil) $values -}}
+    {{- fail (printf "Specify either '%s' or '%s', not both." $key $keyPlural) -}}
+  {{- end -}}
+
+  {{- $valuesList := list -}}
+  {{- if ne $value nil -}}
+    {{- $valuesList = append $valuesList (dict "key" nil "val" $value) -}}
+  {{- else -}}
+    {{- range $key, $val := $values -}}
+      {{- $valuesList = append $valuesList (dict "key" $key "val" $val) -}}
+    {{- end -}}
+  {{- end -}}
 
   {{- $resourceDatas := list -}}
 
   {{- /* Iterate over each configured resource */ -}}
-  {{- range $id, $_ := $values -}}
+  {{- range $valuesList -}}
+    {{- $key := .key -}}
+    {{- $val := .val -}}
+
     {{- /* Build the resource's data */ -}}
     {{- $data := include "tenant.resource.data" (dict
       "root" $
-      "id" $id
-      "data" .
+      "id" $key
+      "data" $val
       "defaults" $defaults
       "vars" $vars
       "hasNestedResources" $hasNestedResources
@@ -213,11 +236,14 @@
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
   {{- $key := .key -}}
-  {{- $defaults := .defaults | default dict -}}
+  {{- $keyPlural := .keyPlural -}}
 
   {{- /* Build a list of enabled top-level resource datas */ -}}
-  {{- $resources := include "tenant.resource.list" (
-    dict "root" $ "values" (get $.Values $key) "defaults" $defaults) | fromYamlArray -}}
+  {{- $resources := include "tenant.resource.list" (dict
+    "root" $
+    "key" $key
+    "keyPlural" $keyPlural
+  ) | fromYamlArray -}}
 
   {{- /* Build a list of enabled namespace resource datas */ -}}
   {{- $namespaces := include "tenant.resources.namespaces" $ | fromYamlArray -}}
@@ -225,15 +251,18 @@
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
     {{- /* Create a copy of the resource defaults, updated to include the namespace */ -}}
-    {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}}
+    {{- /* {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}} */ -}}
 
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
     {{- $namespacedResources := include "tenant.resource.list" (dict
       "root" $
-      "values" (dig "resources" $key (dict) $namespace)
-      "defaults" $namespacedDefaults
+      "context" ($namespace.resources | default dict)
+      "key" $key
+      "keyPlural" $keyPlural
       "vars" (dict "namespace" $namespace)
     ) | fromYamlArray -}}
+
+    {{- /* "defaults" $namespacedDefaults # <-- what do? */ -}}
 
     {{- /* Add all of the namespace-specific resource datas to the list of resources */ -}}
     {{- $resources = concat $resources $namespacedResources -}}

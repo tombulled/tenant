@@ -1,47 +1,47 @@
 {{- define "tenant.resources.applications" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.applications "defaults" .Values.applicationDefaults) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "application") -}}
 {{- end -}}
 
 {{- define "tenant.resources.application-sets" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.applicationSets "defaults" .Values.applicationSetDefaults) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "applicationSet") -}}
 {{- end -}}
 
 {{- define "tenant.resources.app-projects" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.projects "defaults" .Values.projectDefaults) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "project") -}}
 {{- end -}}
 
 {{- define "tenant.resources.cluster-role-bindings" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.clusterRoleBindings "defaults" .Values.clusterRoleBindingDefaults) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "clusterRoleBinding") -}}
 {{- end -}}
 
 {{- define "tenant.resources.cluster-roles" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.clusterRoles "defaults" .Values.clusterRoleDefaults) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "clusterRole") -}}
 {{- end -}}
 
 {{- define "tenant.resources.limit-ranges" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "limitRanges" "defaults" .Values.limitRangeDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "limitRange") -}}
 {{- end -}}
 
 {{- define "tenant.resources.namespaces" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "values" .Values.namespaces "defaults" .Values.namespaceDefaults "hasNestedResources" true) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "namespace" "hasNestedResources" true) -}}
 {{- end -}}
 
 {{- define "tenant.resources.network-policies" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "networkPolicies" "defaults" .Values.networkPolicyDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "networkPolicy") -}}
 {{- end -}}
 
 {{- define "tenant.resources.resource-quotas" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "resourceQuotas" "defaults" .Values.resourceQuotaDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "resourceQuota") -}}
 {{- end -}}
 
 {{- define "tenant.resources.role-bindings" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "roleBindings" "defaults" .Values.roleBindingDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "roleBinding") -}}
 {{- end -}}
 
 {{- define "tenant.resources.roles" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "roles" "defaults" .Values.roleDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "role") -}}
 {{- end -}}
 
 {{- define "tenant.resources.sealed-secrets" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "sealedSecrets" "defaults" .Values.sealedSecretDefaults) -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "sealedSecret") -}}
 {{- end -}}

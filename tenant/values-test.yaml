@@ -1,0 +1,12 @@
+namespaceDefaults:
+  resources:
+    resourceQuota:
+      name: "{{$namespace.name}}"
+      annotations:
+        id: "{{.id}}"
+        namespace: "{{.namespace}}"
+        bob: "{{.bob}}"
+
+namespaces:
+  foo: {}
+  bar: {}

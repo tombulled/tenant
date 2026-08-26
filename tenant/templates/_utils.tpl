@@ -1,15 +1,3 @@
-{{- define "tenant.utils.filter-list" -}}
-  {{- $list := list -}}
-
-  {{- range $val := . | default list -}}
-    {{- if ne $val nil -}}
-      {{- $list = append $list $val -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- $list | toYaml -}}
-{{- end -}}
-
 {{- define "tenant.utils.filter-map" -}}
   {{- $map := dict -}}
 
@@ -36,7 +24,6 @@
 {{- end -}}
 
 {{- define "tenant.utils.map-to-list" -}}
-  {{- /* Extract arguments */ -}}
   {{- $map := .map | default dict -}}
   {{- $field := .field -}}
 
@@ -62,6 +49,16 @@
   {{- end -}}
 
   {{- $values | toYaml -}}
+{{- end -}}
+
+{{- define "tenant.utils.pluralise" -}}
+  {{- $lastChar := . | trunc -1 -}}
+
+  {{- if eq $lastChar "y" -}}
+    {{- printf "%sies" (trimSuffix "y" .) -}}
+  {{- else -}}
+    {{- printf "%ss" . -}}
+  {{- end -}}
 {{- end -}}
 
 {{- define "tenant.utils.template" -}}
