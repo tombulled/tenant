@@ -29,11 +29,7 @@
 
   {{- $values := list -}}
 
-  {{- range $key, $_ := $map -}}
-    {{- if eq . nil -}}
-      {{- continue -}}
-    {{- end -}}
-
+  {{- range $key, $_ := include "tenant.utils.filter-map" $map | fromYaml -}}
     {{- $enabled := ternary .enabled true (ne .enabled nil) -}}
 
     {{- if not $enabled -}}
