@@ -1,6 +1,4 @@
 {{- range include "tenant.resources.applications" $ | fromYamlArray }}
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-{{ tpl (include "tenant.application.template" (dict "root" $)) . }}
+{{ tpl (include "argocd-templates.application" $) . }}
 {{- end }}

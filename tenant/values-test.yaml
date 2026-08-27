@@ -1,3 +1,7 @@
-projects:
-  foo: {}
-  bar: {}
+# applicationSets:
+#   foo: {}
+# 
+# xApplicationSets:
+#   foo: ...
+# 
+# xApplicationSetDefaults: {}
