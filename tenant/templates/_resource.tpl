@@ -171,11 +171,11 @@
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
   {{- $context := ternary .context $.Values (ne .context nil) -}}
+  {{- $defaults := .defaults | default dict -}}
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
   {{- $vars := .vars | default dict -}}
   {{- $hasNestedResources := .hasNestedResources -}}
-  {{- $defaults := .defaults | default dict -}}
 
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
@@ -271,7 +271,7 @@
 
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
-    {{- /* Create a copy of the defaults, updated to include the namespace */ -}}
+    {{- /* Create a copy of the resource defaults, updated to include the namespace */ -}}
     {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}}
 
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
