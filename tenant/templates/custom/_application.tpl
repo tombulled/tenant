@@ -44,7 +44,7 @@
     {{- "\n" }}
 
     {{- /* Insert the contents of the `files/application-template-appset-header.yaml` file */ -}}
-    {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | printf "%s\n" }}
+    {{- include "tenant.application-set.app-header" $ | printf "%s\n" }}
     {{- "\n" }}
   {{- end -}}
 
