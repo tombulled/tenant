@@ -4,12 +4,12 @@ applicationDefaults: {}
 application: ~
 applications: {}
 
-applicationSetDefaults:
-  template:
-    metadata: {}
-    spec:
-      destination: {}
-      project: default
+applicationSetDefaults: {}
+#   template:
+#     metadata: {}
+#     spec:
+#       destination: {}
+#       project: default
 applicationSet: ~
 applicationSets: {}
 
