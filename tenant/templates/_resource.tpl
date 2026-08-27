@@ -99,8 +99,7 @@
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
-  {{- $commonDefaults := $root.Values.defaults | default dict -}}
-  {{- $data = mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $defaults) (deepCopy $data) -}}
+  {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) -}}
 
   {{- /* If the resource has an ID, set the `id` field */ -}}
   {{- if ne $id nil -}}
@@ -168,7 +167,9 @@
 
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
-  {{- $defaults := index $context (print $key "Defaults") | default dict -}}
+  {{- $commonDefaults := $context.defaults | default dict -}}
+  {{- $resourceDefaults := index $context (print $key "Defaults") | default dict -}}
+  {{- $defaults := mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $resourceDefaults) -}}
 
   {{- if and (ne $value nil) $values -}}
     {{- fail (printf "Specify either '%s' or '%s', not both." $key $keyPlural) -}}

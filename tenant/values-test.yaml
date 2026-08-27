@@ -1,17 +1,34 @@
-# FIXME NEXT TIME: Resource defaults aren't being applied to namespace sub-resources.
-# See example below.
+# # FIXME NEXT TIME: Resource defaults aren't being applied to namespace sub-resources.
+# # See example below.
+# 
+# resourceQuotaDefaults:
+#   namespace: some-ns
+# 
+# namespaceDefaults:
+#   resources:
+#     resourceQuota:
+#       name: quota
+#       annotations:
+#         namespace: "{{.namespace}}"
+#         namespace2: "{{$namespace.name}}"
+#       # namespace: other-ns
+# 
+# namespaces:
+#   foo: {}
+#   bar: {}
 
-resourceQuotaDefaults:
-  namespace: some-ns
+defaults:
+  annotations:
+    is-res: "true"
 
 namespaceDefaults:
   resources:
-    resourceQuota:
-      name: quota
+    defaults:
+      name: default-name
+    resourceQuotaDefaults:
       annotations:
-        namespace: "{{.namespace}}"
-        namespace2: "{{$namespace.name}}"
-      # namespace: other-ns
+        is-rq: "true"
+    resourceQuota: {}
 
 namespaces:
   foo: {}
