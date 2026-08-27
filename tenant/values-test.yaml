@@ -1,10 +1,17 @@
-applicationSets:
+# applicationSets:
+#   foo:
+#     template:
+#       spec:
+#         project: default
+#     generators:
+#       - list:
+#           elements:
+#             - name: bob
+#             - name: sally
+
+xApplicationSets:
   foo:
     template:
       spec:
         project: default
-    generators:
-      - list:
-          elements:
-            - name: bob
-            - name: sally
+#   bar: {}

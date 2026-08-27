@@ -1,4 +1,0 @@
-{{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
----
-{{ . | toYaml }}
-{{- end }}
