@@ -1,8 +1,5 @@
-{{- define "tenant.application-set.app-header" -}}
+{{- define "tenant.x-application-set.template-patch.template-self" -}}
 {{- `
-{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}
-{{- $_ := set . "name" (.name | default .id) -}}
-
 {{- /*
   The below nested-template is a best-effort implementation of the Helm 'tpl' function (which is not currently available for ApplicationSets).
 
