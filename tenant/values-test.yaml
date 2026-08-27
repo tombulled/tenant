@@ -1,17 +1,33 @@
-# applicationSets:
-#   foo:
-#     template:
-#       spec:
-#         project: default
-#     generators:
-#       - list:
-#           elements:
-#             - name: bob
-#             - name: sally
+defaults:
+  annotations:
+    part-of: some-cool-app
 
-xApplicationSets:
+applicationDefaults:
+  project: some-app-project
+
+applications:
   foo:
-    template:
-      spec:
-        project: default
-#   bar: {}
+    source:
+      repoURL: bob.com
+
+applicationSetDefaults:
+  template:
+    spec:
+      project: default
+
+applicationSets:
+  foo:
+    generators:
+      - list:
+          elements:
+            - name: bob
+            - name: sally
+
+xApplicationSetDefaults:
+  template:
+    spec:
+      project: some-funky-project
+
+# applications inherit: defaults, applicationDefaults, .defaults
+xApplicationSets: # <-- defaults, xApplicationSetDefaults, xApplicationSets
+  foo: {}

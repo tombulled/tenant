@@ -5,11 +5,6 @@ application: ~
 applications: {}
 
 applicationSetDefaults: {}
-#   template:
-#     metadata: {}
-#     spec:
-#       destination: {}
-#       project: default
 applicationSet: ~
 applicationSets: {}
 
@@ -52,5 +47,9 @@ roles: {}
 sealedSecretDefaults: {}
 sealedSecret: ~
 sealedSecrets: {}
+
+xApplicationSetDefaults: {}
+xApplicationSet: ~
+xApplicationSets: {}
 
 extraResources: {}

@@ -43,7 +43,7 @@
   {{- $appSet := .appSet -}}
   {{- $generator := .generator -}}
 
-  {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
+  {{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
   {{- $defaultEnabled := $defaults.enabled -}}
 
   {{- with $generator -}}
