@@ -1,35 +1,25 @@
-# # FIXME NEXT TIME: Resource defaults aren't being applied to namespace sub-resources.
-# # See example below.
-# 
-# resourceQuotaDefaults:
-#   namespace: some-ns
-# 
-# namespaceDefaults:
-#   resources:
-#     resourceQuota:
-#       name: quota
-#       annotations:
-#         namespace: "{{.namespace}}"
-#         namespace2: "{{$namespace.name}}"
-#       # namespace: other-ns
-# 
-# namespaces:
-#   foo: {}
-#   bar: {}
-
 defaults:
   annotations:
-    is-res: "true"
+    tenant: some-tenant
 
-namespaceDefaults:
-  resources:
-    defaults:
-      name: default-name
-    resourceQuotaDefaults:
-      annotations:
-        is-rq: "true"
-    resourceQuota: {}
+roleDefaults:
+  annotations:
+    is-role: "true"
 
-namespaces:
+roles:
   foo: {}
   bar: {}
+
+namespaceDefaults:
+   annotations:
+     is-namespace: "true"
+
+   resources:
+     limitRange:
+       name: "{{.namespace}}"
+       limits:
+         - foo
+
+namespaces:
+  ns1: {}
+  ns2: {}

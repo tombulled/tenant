@@ -139,13 +139,24 @@
     ) | fromYaml -}}
 
     {{- /* If the resource has nested resources, re-add these now that self-templating has happened */ -}}
-    {{- if $hasNestedResources -}}
+    {{- if and $hasNestedResources (ne $nestedResources nil) -}}
       {{- $_ := set $data "resources" $nestedResources -}}
     {{- end -}}
 
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
   {{- end -}}
+{{- end -}}
+
+{{- define "tenant.utils.get-defaults" -}}
+  {{- $context := .context -}}
+  {{- $key := .key -}}
+
+  {{- $commonDefaults := $context.defaults | default dict -}}
+  {{- $resourceDefaults := index $context (print $key "Defaults") | default dict -}}
+  {{- $defaults := mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $resourceDefaults) -}}
+
+  {{- $defaults | toYaml -}}
 {{- end -}}
 
 {{- /*
@@ -159,17 +170,21 @@
 {{- define "tenant.resource.list" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
-  {{- $context := .context | default $.Values -}}
+  {{- $context := ternary .context $.Values (ne .context nil) -}}
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
   {{- $vars := .vars | default dict -}}
   {{- $hasNestedResources := .hasNestedResources -}}
+  {{- $defaults := .defaults | default dict -}}
 
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
-  {{- $commonDefaults := $context.defaults | default dict -}}
-  {{- $resourceDefaults := index $context (print $key "Defaults") | default dict -}}
-  {{- $defaults := mustMergeOverwrite (deepCopy $commonDefaults) (deepCopy $resourceDefaults) -}}
+
+  {{- $contextDefaults := include "tenant.utils.get-defaults" (dict
+    "context" $context
+    "key" $key
+  ) | fromYaml -}}
+  {{- $mergedDefaults := mustMergeOverwrite (deepCopy $defaults) (deepCopy $contextDefaults) -}}
 
   {{- if and (ne $value nil) $values -}}
     {{- fail (printf "Specify either '%s' or '%s', not both." $key $keyPlural) -}}
@@ -196,7 +211,7 @@
       "root" $
       "id" $key
       "data" $val
-      "defaults" $defaults
+      "defaults" $mergedDefaults
       "vars" $vars
       "hasNestedResources" $hasNestedResources
     ) | fromYaml -}}
@@ -249,8 +264,16 @@
   {{- /* Build a list of enabled namespace resource datas */ -}}
   {{- $namespaces := include "tenant.resources.namespaces" $ | fromYamlArray -}}
 
+  {{- $defaults := include "tenant.utils.get-defaults" (dict
+    "context" $.Values
+    "key" $key
+  ) | fromYaml -}}
+
   {{- /* For each namespace, also build any namespace-specific resource datas, and append those to the list */ -}}
   {{- range $namespace := $namespaces -}}
+    {{- /* Create a copy of the defaults, updated to include the namespace */ -}}
+    {{- $namespacedDefaults := mustMergeOverwrite (deepCopy $defaults) (dict "namespace" $namespace.name) -}}
+
     {{- /* Build a list of enabled namespace-specific resource datas */ -}}
     {{- $namespacedResources := include "tenant.resource.list" (dict
       "root" $
@@ -258,13 +281,11 @@
       "key" $key
       "keyPlural" $keyPlural
       "vars" (dict "namespace" $namespace)
+      "defaults" $namespacedDefaults
     ) | fromYamlArray -}}
 
-    {{- /* For each namespace-specific resource data, set the namespace and append it to the list of resources */ -}}
-    {{- range $namespacedResources -}}
-      {{- $_ := set . "namespace" $namespace.name -}}
-      {{- $resources = append $resources . -}}
-    {{- end -}}
+    {{- /* Add all of the namespace-specific resource datas to the list of resources */ -}}
+    {{- $resources = concat $resources $namespacedResources -}}
   {{- end -}}
 
   {{- /* Finally, output the full set of resource datas as a YAML array */ -}}
