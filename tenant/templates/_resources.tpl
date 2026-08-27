@@ -6,6 +6,10 @@
   {{- include "tenant.resource.list" (dict "root" $ "key" "applicationSet") -}}
 {{- end -}}
 
+{{- define "tenant.resources.x-application-sets" -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "xApplicationSet") -}}
+{{- end -}}
+
 {{- define "tenant.resources.app-projects" -}}
   {{- include "tenant.resource.list" (dict "root" $ "key" "project") -}}
 {{- end -}}

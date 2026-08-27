@@ -2,5 +2,10 @@
 #   foo: {}
 #   bar: {}
 
-applicationSets:
+# applicationSets:
+#   foo: {}
+#   bar: {}
+
+xApplicationSets:
   foo: {}
+  bar: {}

@@ -1,5 +1,5 @@
-{{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
----
+{{- define "tenant.template.application-set" -}}
+{{- `
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -17,14 +17,22 @@ spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
   {{- end }}
-  {{- with include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray }}
+  {{- if and .generatorsObject .generators }}
+    {{- fail "Specify either 'generatorsObject' or 'generators', not both." }}
+  {{- end }}
+  {{- with .generatorsObject }}
+  {{- $generators := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+  generators: {{ include "tenant.utils.render-object" (dict "value" $generators "indent" 4) }}
+  {{- else with .generators }}
   generators: {{- . | toYaml | nindent 4 }}
   {{- else }}
   generators: []
   {{- end }}
-  goTemplate: true
+  {{- if ne .goTemplate nil }}
+  goTemplate: {{ .goTemplate }}
+  {{- end }}
   {{- if and .goTemplateOptionsObject .goTemplateOptions }}
-    {{- fail "Specify either `goTemplateOptionsObject` or `goTemplateOptions`, not both." }}
+    {{- fail "Specify either 'goTemplateOptionsObject' or 'goTemplateOptions', not both." }}
   {{- end }}
   {{- with .goTemplateOptionsObject }}
   goTemplateOptions:
@@ -49,6 +57,14 @@ spec:
   {{- with .template }}
   template: {{- . | toYaml | nindent 4 }}
   {{- end }}
+  {{- with .templatePatch }}
   templatePatch: |
-    {{- include "tenant.application.template" (dict "root" $ "appSet" .) | nindent 4 }}
+    {{- . | nindent 4 }}
+  {{- end }}
+` | trim -}}
+{{- end -}}
+
+{{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
+---
+{{ tpl (include "tenant.template.application-set" $) . }}
 {{- end }}

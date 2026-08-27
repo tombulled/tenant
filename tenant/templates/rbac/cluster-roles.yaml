@@ -17,7 +17,7 @@ metadata:
 aggregationRule: {{- . | toYaml | nindent 4 }}
 {{- end }}
 {{- if and .rulesObject .rules }}
-  {{- fail "Specify either `rulesObject` or `rules`, not both." }}
+  {{- fail "Specify either 'rulesObject' or 'rules', not both." }}
 {{- end }}
 {{- with .rulesObject }}
 {{- $rules := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}

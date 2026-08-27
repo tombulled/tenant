@@ -28,7 +28,7 @@ spec:
   {{- end }}
 
   {{- if and .destinationsObject .destinations }}
-    {{- fail "Specify either `destinationsObject` or `destinations`, not both." }}
+    {{- fail "Specify either 'destinationsObject' or 'destinations', not both." }}
   {{- end }}
   {{- with .destinationsObject }}
   destinations:
@@ -44,7 +44,7 @@ spec:
   {{- end }}
 
   {{- if and (ne .clusterResourceBlacklistObject nil) (ne .clusterResourceBlacklist nil) }}
-    {{- fail "Specify either clusterResourceBlacklistObject or clusterResourceBlacklist, not both." }}
+    {{- fail "Specify either 'clusterResourceBlacklistObject' or 'clusterResourceBlacklist', not both." }}
   {{- else if ne .clusterResourceBlacklistObject nil }}
   {{- $clusterResourceBlacklist := include "tenant.utils.map-to-list" (dict "map" .clusterResourceBlacklistObject) | fromYamlArray }}
   clusterResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" $clusterResourceBlacklist "indent" 4) }}
@@ -53,7 +53,7 @@ spec:
   {{- end }}
 
   {{- if and (ne .clusterResourceWhitelistObject nil) (ne .clusterResourceWhitelist nil) }}
-    {{- fail "Specify either clusterResourceWhitelistObject or clusterResourceWhitelist, not both." }}
+    {{- fail "Specify either 'clusterResourceWhitelistObject' or 'clusterResourceWhitelist', not both." }}
   {{- else if ne .clusterResourceWhitelistObject nil }}
   {{- $clusterResourceWhitelist := include "tenant.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
   clusterResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" $clusterResourceWhitelist "indent" 4) }}
@@ -62,7 +62,7 @@ spec:
   {{- end }}
 
   {{- if and (ne .namespaceResourceBlacklistObject nil) (ne .namespaceResourceBlacklist nil) }}
-    {{- fail "Specify either namespaceResourceBlacklistObject or namespaceResourceBlacklist, not both." }}
+    {{- fail "Specify either 'namespaceResourceBlacklistObject' or 'namespaceResourceBlacklist', not both." }}
   {{- else if ne .namespaceResourceBlacklistObject nil }}
   {{- $namespaceResourceBlacklist := include "tenant.utils.map-to-list" (dict "map" .namespaceResourceBlacklistObject) | fromYamlArray }}
   namespaceResourceBlacklist: {{ include "tenant.utils.render-object" (dict "value" $namespaceResourceBlacklist "indent" 4) }}
@@ -71,7 +71,7 @@ spec:
   {{- end }}
 
   {{- if and (ne .namespaceResourceWhitelistObject nil) (ne .namespaceResourceWhitelist nil) }}
-    {{- fail "Specify either namespaceResourceWhitelistObject or namespaceResourceWhitelist, not both." }}
+    {{- fail "Specify either 'namespaceResourceWhitelistObject' or 'namespaceResourceWhitelist', not both." }}
   {{- else if ne .namespaceResourceWhitelistObject nil }}
   {{- $namespaceResourceWhitelist := include "tenant.utils.map-to-list" (dict "map" .namespaceResourceWhitelistObject) | fromYamlArray }}
   namespaceResourceWhitelist: {{ include "tenant.utils.render-object" (dict "value" $namespaceResourceWhitelist "indent" 4) }}
@@ -84,7 +84,7 @@ spec:
   {{- end }}
 
   {{- if and .rolesObject .roles }}
-    {{- fail "Specify either `rolesObject` or `roles`, not both." }}
+    {{- fail "Specify either 'rolesObject' or 'roles', not both." }}
   {{- end }}
   {{- with .rolesObject }}
   {{- with include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
