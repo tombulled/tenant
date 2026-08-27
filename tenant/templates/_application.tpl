@@ -48,6 +48,6 @@
     {{- "\n" }}
   {{- end -}}
 
-  {{- /* Insert the contents of the `files/application-template.yaml` file */ -}}
-  {{- $.Files.Get "files/application-template.yaml" | trim }}
+  {{- /* Insert the raw application template */ -}}
+  {{- include "tenant.template.application" $ -}}
 {{- end -}}

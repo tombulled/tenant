@@ -1,0 +1,6 @@
+# applications:
+#   foo: {}
+#   bar: {}
+
+applicationSets:
+  foo: {}
