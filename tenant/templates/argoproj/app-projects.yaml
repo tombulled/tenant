@@ -92,8 +92,8 @@ spec:
   {{- end }}
   {{- else with .roles }}
   roles: {{- . | toYaml | nindent 4 }}
-
   {{- end }}
+
   {{- with .syncWindows }}
   syncWindows: {{- . | toYaml | nindent 4 }}
   {{- end }}

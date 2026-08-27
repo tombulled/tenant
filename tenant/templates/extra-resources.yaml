@@ -1,8 +1,5 @@
-{{- range .Values.extraResources }}
-{{- if eq . nil }}
-  {{- continue }}
-{{- end }}
+{{- range include "tenant.utils.map-to-list" (dict "map" .Values.extraResources) | fromYamlArray }}
 ---
 {{- $value := ternary . (toYaml .) (typeIs "string" .) }}
 {{ tpl $value $ }}
-{{- end -}}
+{{- end }}
