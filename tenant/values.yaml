@@ -1,6 +1,7 @@
 defaults: {}
 
 applicationDefaults: {}
+application: ~
 applications: {}
 
 applicationSetDefaults:
@@ -9,36 +10,47 @@ applicationSetDefaults:
     spec:
       destination: {}
       project: default
+applicationSet: ~
 applicationSets: {}
 
 projectDefaults: {}
+project: ~
 projects: {}
 
 clusterRoleBindingDefaults: {}
+clusterRoleBinding: ~
 clusterRoleBindings: {}
 
 clusterRoleDefaults: {}
+clusterRole: ~
 clusterRoles: {}
 
 limitRangeDefaults: {}
+limitRange: ~
 limitRanges: {}
 
 namespaceDefaults: {}
+namespace: ~
 namespaces: {}
 
 networkPolicyDefaults: {}
+networkPolicy: ~
 networkPolicies: {}
 
 resourceQuotaDefaults: {}
+resourceQuota: ~
 resourceQuotas: {}
 
 roleBindingDefaults: {}
+roleBinding: ~
 roleBindings: {}
 
 roleDefaults: {}
+role: ~
 roles: {}
 
 sealedSecretDefaults: {}
+sealedSecret: ~
 sealedSecrets: {}
 
 extraResources: {}
