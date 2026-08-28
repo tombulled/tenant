@@ -53,9 +53,10 @@ spec:
     {{- $sourcesList := list (pick . $mainSourceKey) (omit . $mainSourceKey) }}
     {{- range $sourcesList }}
     {{- range $sourceId, $_ := . }}
-    {{- if or (eq . nil) (eq .enabled false) -}}
+    {{- if or (eq . nil) (eq (index . "$enabled") false) -}}
       {{- continue -}}
     {{- end -}}
+    {{- $_ := unset . "$enabled" -}}
     {{- if and (eq .ref nil) (eq .chart nil) }}
       {{- $_ := set . "ref" $sourceId }}
     {{- end }}

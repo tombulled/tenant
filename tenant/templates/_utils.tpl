@@ -30,7 +30,8 @@
   {{- $values := list -}}
 
   {{- range $key, $_ := include "tenant.utils.filter-map" $map | fromYaml -}}
-    {{- $enabled := ternary .enabled true (ne .enabled nil) -}}
+    {{- $enabledVal := index . "$enabled" -}}
+    {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
 
     {{- if not $enabled -}}
       {{- continue -}}
@@ -40,7 +41,7 @@
       {{- $_ := set . $field $key -}}
     {{- end -}}
 
-    {{- $_ := unset . "enabled" -}}
+    {{- $_ := unset . "$enabled" -}}
     {{- $values = append $values . -}}
   {{- end -}}
 
