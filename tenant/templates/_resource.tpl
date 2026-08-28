@@ -105,8 +105,8 @@
   {{- $defaults := .defaults | default dict -}}
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
-  {{- $vars := .vars | default dict -}}
-  {{- $hasNestedResources := .hasNestedResources -}}
+  {{- $templateVars := .templateVars | default dict -}}
+  {{- $templateExclude := .templateExclude -}}
 
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
@@ -143,8 +143,8 @@
       "data" $val
       "defaults" $mergedDefaults
       "templateContext" $
-      "templateVars" $vars
-      "hasNestedResources" $hasNestedResources
+      "templateVars" $templateVars
+      "templateExclude" $templateExclude
     ) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
@@ -189,7 +189,7 @@
       "context" ($namespace.resources | default dict)
       "key" $key
       "keyPlural" $keyPlural
-      "vars" (dict "namespace" $namespace)
+      "templateVars" (dict "namespace" $namespace)
       "defaults" $namespacedDefaults
     ) | fromYamlArray -}}
 

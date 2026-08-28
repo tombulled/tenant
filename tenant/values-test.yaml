@@ -1,0 +1,27 @@
+defaults:
+  metadata:
+    clusterId: tom-dev
+    clusterType: dev
+    tenant: some-tenant
+  $metadata:
+    clusterId: tom-dev
+    clusterType: dev
+    tenant: some-tenant
+
+namespaceDefaults:
+  annotations:
+    cluster-id: "{{$metadata.clusterId}}"
+    cluster-type: "{{$metadata.clusterType}}"
+    cluster-id2: "{{.metadata.clusterId}}"
+    cluster-type2: "{{.metadata.clusterType}}"
+
+  resources:
+    resourceQuota:
+      name: bob
+
+namespaces:
+  foo:
+    $enabled: false
+  bar:
+    $food: pizza
+    name: "{{$food}}"

@@ -23,7 +23,7 @@
 {{- end -}}
 
 {{- define "tenant.resources.namespaces" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "key" "namespace" "hasNestedResources" true) -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "namespace" "templateExclude" (list "resources")) -}}
 {{- end -}}
 
 {{- define "tenant.resources.network-policies" -}}
