@@ -23,7 +23,7 @@
   {{- $enabledVal := index $data $fieldEnabled -}}
   {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
 
-  {{- /* Only create a resource if it is enabled */ -}}
+  {{- /* Only create the resource if it is enabled */ -}}
   {{- if $enabled -}}
     {{- /* If a resource ID was specified in the data, we'll respect that */ -}}
     {{- if hasKey $data $fieldId -}}
