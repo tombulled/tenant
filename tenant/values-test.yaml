@@ -1,33 +1,5 @@
-defaults:
-  annotations:
-    part-of: some-cool-app
-
-applicationDefaults:
-  project: some-app-project
-
-applications:
-  foo:
-    source:
-      repoURL: bob.com
-
-applicationSetDefaults:
-  template:
-    spec:
-      project: default
-
-applicationSets:
-  foo:
-    generators:
-      - list:
-          elements:
-            - name: bob
-            - name: sally
-
-xApplicationSetDefaults:
-  template:
-    spec:
-      project: some-funky-project
-
-# applications inherit: defaults, applicationDefaults, .defaults
-xApplicationSets: # <-- defaults, xApplicationSetDefaults, xApplicationSets
-  foo: {}
+namespace:
+  $id: foo
+  $enabled: true
+  $food: pizza
+  name: "{{$food}}"
