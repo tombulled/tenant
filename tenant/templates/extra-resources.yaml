@@ -1,5 +1,9 @@
 {{- range include "tenant.utils.map-to-list" (dict "map" .Values.extraResources) | fromYamlArray }}
 ---
 {{- $value := ternary . (toYaml .) (typeIs "string" .) }}
-{{ tpl $value $ }}
+{{ include "tenant.utils.template" (dict
+  "value" $value
+  "context" $
+  "scope" .
+)}}
 {{- end }}

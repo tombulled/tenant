@@ -1,5 +1,8 @@
-application:
-  syncPolicy:
-    syncOptionsObject:
-      food: pizza
-      desert: ~
+extraResources:
+  foo:
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: bob
+      annotations:
+        my-name-is: "{{.metadata.name}}"
