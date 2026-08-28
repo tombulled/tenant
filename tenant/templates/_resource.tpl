@@ -1,146 +1,85 @@
-{{- /*
-  Build a resource's data.
-
-  Terminology:
-    "resource" - A Kubernetes resource (e.g. Application, ClusterRole, Namespace, etc.)
-    "resource data" - A map containing all the fields the resource's template will be executed using.
-
-  This nested-template does the followng:
-    1. If the resource's data is `nil`, the resource is treated as disabled (and will not get created)
-         This is a convenient way to quickly disable a resource, e.g:
-           applications:
-             my-app: ~
-    2. Applies the resource's defaults.
-         The order of precedence for resource data (low -> high) is:
-           * `.Values.defaults`
-           * `.Values.<resource-name-singular>Defaults`
-           * `.Values.<resource-name-plural>.<some-id>`
-         Example:
-           The following values:
-             defaults:
-               annotations:
-                 food: pizza
-             applicationDefaults:
-               annotations:
-                 drink: coke
-             applications:
-               foo:
-                 annotations:
-                   snack: chips
-           Would get merged to become:
-             annotations:
-               food: pizza
-               drink: coke
-               snack: chips
-    3. Adds the resource's ID as an `id` field in the resource's data
-         This means that the resource's ID can be used when self-templating the resource's data.
-         For example:
-           applications:
-             foo: {}
-         Would yield resource data of:
-           id: foo
-    4. Ignores any resources that are disabled.
-         Important considerations:
-           * Resources are enabled by default (if the `enabled` field isn't specified)
-           * To disable a resource you must set `enabled: false`, e.g:
-               applications:
-                 foo:
-                   enabled: false
-    5. Defaults the resource's name to the resource's ID (if a `name` field wasn't specified)
-         For example, the following resource:
-           applications:
-             foo: {}
-         Would yield resource data of:
-           id: foo
-           name: foo
-         Whereas, the following resource:
-           applications:
-             foo:
-               name: bar
-         Would yield resource data of:
-           id: foo
-           name: bar
-    6. Templates the resource's name using the resource's data
-        The resource's name is templated first to reduce the chance of circular references.
-         For example, the following resource:
-           applications:
-             foo:
-               name: "{{.id}}-runner"
-         Would yield resource data of:
-           id: foo
-           name: foo-runner
-    7. Templates the resource's data using itself
-         For example, the following resource:
-           applications:
-             foo:
-               name: some-cool-app
-               annotations:
-                 my-id-is: "{{.id}}"
-                 my-name-is: "{{.name}}"
-         Would yield resource data of:
-           id: foo
-           name: some-cool-app
-           annotations:
-             my-id-is: foo
-             my-name-is: some-cool-app
-*/ -}}
 {{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
-  {{- $root := .root -}}
   {{- $id := .id -}}
   {{- $data := .data -}}
   {{- $defaults := .defaults | default dict -}}
-  {{- $vars := .vars | default dict -}}
-  {{- $hasNestedResources := ternary .hasNestedResources false (ne .hasNestedResources nil) -}}
+  {{- $templateContext := .templateContext -}}
+  {{- $templateVars := .templateVars | default dict -}}
+  {{- $templateExclude := .templateExclude | default list -}}
 
-  {{- /* If the resource data is nil, disable this resource (it is considered unwanted) */ -}}
+  {{- /* Internal fields */ -}}
+  {{- $fieldId := "$id" -}}
+  {{- $fieldEnabled := "$enabled" -}}
+
+  {{- /* If the resource data is nil, disable the resource */ -}}
   {{- if eq $data nil -}}
-    {{- $data = dict "enabled" false -}}
+    {{- $data = dict $fieldEnabled false -}}
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
   {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) -}}
 
-  {{- /* If the resource has an ID, set the `id` field */ -}}
-  {{- if ne $id nil -}}
-    {{- $_ := set $data "id" $id }}
-  {{- end -}}
+  {{- /* Determine whether the resource is enabled (defaults to enabled) */ -}}
+  {{- $enabledVal := index $data $fieldEnabled -}}
+  {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
 
-  {{- /* Only create a resource if it is enabled (defaults to enabled unless told otherwise) */ -}}
-  {{- $enabled := ternary $data.enabled true (ne $data.enabled nil) -}}
+  {{- /* Only create the resource if it is enabled */ -}}
   {{- if $enabled -}}
-    {{- /* If unspecified, default the resource's name to the resource's ID (if one exists) */ -}}
-    {{- if and (eq $data.name nil) (ne $id nil) -}}
+    {{- /* If a resource ID was specified in the data, we'll respect that */ -}}
+    {{- if hasKey $data $fieldId -}}
+      {{- $id = index $data $fieldId -}}
+    {{- end -}}
+
+    {{- /* If the resource has an ID, but no name, default the resource's name to the resource's ID */ -}}
+    {{- if and (ne $id nil) (eq $data.name nil) -}}
       {{- $_ := set $data "name" $id -}}
     {{- end -}}
 
-    {{- /* If the resource has nested resources, remove these before self-templating, otherwise they'll get templated twice */ -}}
-    {{- $nestedResources := dict -}}
-    {{- if $hasNestedResources -}}
-      {{- $nestedResources = $data.resources -}}
-      {{- $_ := unset $data "resources" -}}
+    {{- /* Set the resource ID as a template variable */ -}}
+    {{- $_ := set $templateVars "id" $id -}}
+
+    {{- /* Remove any fields prefixed with a '$' from the resource data, and add these as template variables */ -}}
+    {{- range $key, $val := $data -}}
+      {{- if hasPrefix "$" $key -}}
+        {{- $_ := unset $data $key -}}
+        {{- $_ := set $templateVars (trimPrefix "$" $key) $val -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- /* Temporarily remove any fields that should be excluded from templating */ -}}
+    {{- $templateExcluded := dict -}}
+    {{- range $key := $templateExclude -}}
+      {{- if hasKey $data $key -}}
+        {{- $_ := set $templateExcluded $key (index $data $key) -}}
+        {{- $_ := unset $data $key -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- /* If no template context was provided, template the data within the context of itself */ -}}
+    {{- if eq $templateContext nil -}}
+      {{- $templateContext = $data -}}
     {{- end -}}
 
     {{- /* Template the resource's name using the resource's data */ -}}
     {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
     {{- $_ := set $data "name" (include "tenant.utils.template" (dict
       "value" (get $data "name")
-      "context" $root
+      "context" $templateContext
       "scope" $data
-      "vars" $vars
+      "vars" $templateVars
     )) -}}
 
     {{- /* Template the resource's data using itself */ -}}
     {{- $data = include "tenant.utils.template" (dict
       "value" $data
-      "context" $root
+      "context" $templateContext
       "scope" $data
-      "vars" $vars
+      "vars" $templateVars
     ) | fromYaml -}}
 
-    {{- /* If the resource has nested resources, re-add these now that self-templating has happened */ -}}
-    {{- if and $hasNestedResources (ne $nestedResources nil) -}}
-      {{- $_ := set $data "resources" $nestedResources -}}
+    {{- /* Re-add any fields that were excluded from templating */ -}}
+    {{- range $key, $val := $templateExcluded -}}
+      {{- $_ := set $data $key $val -}}
     {{- end -}}
 
     {{- /* Finally, output the new resource data */ -}}
@@ -159,14 +98,6 @@
   {{- $defaults | toYaml -}}
 {{- end -}}
 
-{{- /*
-  Builds and returns a list of *enabled* resource datas.
-
-  Parameters:
-    `root` - Root context (`$`)
-    `values` - List of resources, e.g. `.Values.namespaces`
-    `defaults` - Map of resource defaults, e.g. `.Values.namespaceDefaults`
-*/ -}}
 {{- define "tenant.resource.list" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
@@ -208,11 +139,11 @@
 
     {{- /* Build the resource's data */ -}}
     {{- $data := include "tenant.resource.data" (dict
-      "root" $
       "id" $key
       "data" $val
       "defaults" $mergedDefaults
-      "vars" $vars
+      "templateContext" $
+      "templateVars" $vars
       "hasNestedResources" $hasNestedResources
     ) | fromYaml -}}
 
@@ -226,28 +157,6 @@
   {{- $resourceDatas | toYaml -}}
 {{- end -}}
 
-{{- /*
-  Builds and returns a list of *enabled* resource datas, *including* any attached to namespaces.
-  
-  Parameters:
-    `root` - The root context
-    `key` - The key identifiying the list of resources, e.g. "namespaces", "networkPolicies", etc.
-    `defaults` - Map of resource-specific defaults, e.g. `.Values.namespaceDefaults`
-  
-  For example:
-    resourceQuotas:
-      a: {}
-    namespaces:
-      b:
-        resourceQuotas:
-          c: {}
-  Would output the following ResourceQuota resource datas:
-    - id: a
-      name: a
-    - id: c
-      name: c
-      namespace: b
-*/ -}}
 {{- define "tenant.resource.list-with-namespaced" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
