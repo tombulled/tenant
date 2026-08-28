@@ -20,7 +20,7 @@ spec:
   ignoreDifferences: {{- . | toYaml | nindent 4 }}
   {{- end }}
   {{- if and .infoObject .info }}
-    {{- fail "Specify either `infoObject` or `info`, not both." }}
+    {{- fail "Specify either 'infoObject' or 'info', not both." }}
   {{- end }}
   {{- with .infoObject }}
   info:
@@ -45,7 +45,7 @@ spec:
   sourceHydrator: {{- . | toYaml | nindent 4}}
   {{- end }}
   {{- if and .sourcesObject .sources }}
-    {{- fail "Specify either `sourcesObject` or `sources`, not both." }}
+    {{- fail "Specify either 'sourcesObject' or 'sources', not both." }}
   {{- end }}
   {{- with .sourcesObject }}
   sources:

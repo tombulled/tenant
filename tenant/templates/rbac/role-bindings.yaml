@@ -20,7 +20,7 @@ metadata:
 roleRef: {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- if and .subjectsObject .subjects }}
-  {{- fail "Specify either `subjectsObject` or `subjects`, not both." }}
+  {{- fail "Specify either 'subjectsObject' or 'subjects', not both." }}
 {{- end }}
 {{- with .subjectsObject }}
 {{- $subjects := include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}

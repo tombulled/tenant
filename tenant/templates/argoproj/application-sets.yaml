@@ -24,7 +24,7 @@ spec:
   {{- end }}
   goTemplate: true
   {{- if and .goTemplateOptionsObject .goTemplateOptions }}
-    {{- fail "Specify either `goTemplateOptionsObject` or `goTemplateOptions`, not both." }}
+    {{- fail "Specify either 'goTemplateOptionsObject' or 'goTemplateOptions', not both." }}
   {{- end }}
   {{- with .goTemplateOptionsObject }}
   goTemplateOptions:
