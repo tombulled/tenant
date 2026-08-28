@@ -1,16 +1,5 @@
 application:
-  sourcesObject:
-    main:
-      repoURL: gitlab.com
-    values:
-      enabled: true
-      repoURL: bob.com
-    baz: ~
-  infoObject:
-    url: google.com
-
-role:
-  rulesObject:
-    some-rule:
-      $enabled: true
-      is-admin: "true"
+  syncPolicy:
+    syncOptionsObject:
+      food: pizza
+      desert: ~

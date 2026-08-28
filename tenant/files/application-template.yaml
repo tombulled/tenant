@@ -72,6 +72,9 @@ spec:
     {{- with .syncOptionsObject }}
       {{- $syncOptions := list }}
       {{- range $key, $val := . }}
+        {{- if eq $val nil }}
+          {{- continue }}
+        {{- end }}
         {{- $syncOptions = append $syncOptions (printf "%s=%s" (title $key) (toString $val)) }}
       {{- end }}
       {{- $_ := unset $syncPolicy "syncOptionsObject" }}
