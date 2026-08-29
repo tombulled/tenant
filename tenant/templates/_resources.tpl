@@ -47,5 +47,5 @@
 {{- end -}}
 
 {{- define "tenant.resources.extra-resources" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "extraResource") -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "extraResource" "nameField" "metadata.name") -}}
 {{- end -}}

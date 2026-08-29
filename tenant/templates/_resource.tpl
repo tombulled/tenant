@@ -6,7 +6,7 @@
   {{- $templateContext := .templateContext -}}
   {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude | default list -}}
-  {{- $nameField := .nameField | default "metadata.name" -}}
+  {{- $nameField := .nameField -}}
 
   {{- /* Internal fields */ -}}
   {{- $fieldId := "$id" -}}
@@ -115,6 +115,7 @@
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
   {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude -}}
+  {{- $nameField := .nameField | default "name" -}}
 
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
@@ -153,6 +154,7 @@
       "templateContext" $
       "templateVars" $templateVars
       "templateExclude" $templateExclude
+      "nameField" $nameField
     ) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}
@@ -170,12 +172,14 @@
   {{- $ := .root -}}
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural -}}
+  {{- $nameField := .nameField -}}
 
   {{- /* Build a list of enabled top-level resource datas */ -}}
   {{- $resources := include "tenant.resource.list" (dict
     "root" $
     "key" $key
     "keyPlural" $keyPlural
+    "nameField" $nameField
   ) | fromYamlArray -}}
 
   {{- /* Build a list of enabled namespace resource datas */ -}}
@@ -199,6 +203,7 @@
       "keyPlural" $keyPlural
       "templateVars" (dict "namespace" $namespace)
       "defaults" $namespacedDefaults
+      "nameField" $nameField
     ) | fromYamlArray -}}
 
     {{- /* Add all of the namespace-specific resource datas to the list of resources */ -}}

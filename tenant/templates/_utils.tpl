@@ -44,12 +44,16 @@
 {{- end -}}
 
 {{- define "tenant.utils.dynamic-set" -}}
-  {{- $map := .map | default dict -}}
+  {{- $map := .map -}}
   {{- $keys := .keys | default list -}}
   {{- $value := .value -}}
 
   {{- $obj := $map -}}
   {{- range $key := initial $keys -}}
+    {{- if not (hasKey $obj $key) -}}
+      {{- $_ := set $obj $key (dict) -}}
+    {{- end -}}
+
     {{- $obj = index $obj $key -}}
 
     {{- if ne (kindOf $obj) "map" -}}
