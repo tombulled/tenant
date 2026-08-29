@@ -1,0 +1,4 @@
+{{- range include "tenant.resource.list" (dict "root" $ "key" "eater") | fromYamlArray -}}
+---
+{{ . | toYaml }}
+{{- end -}}

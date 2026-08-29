@@ -87,7 +87,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- define "tenant.utils.get-defaults" -}}
+{{- define "tenant.resource.get-defaults" -}}
   {{- $context := .context -}}
   {{- $key := .key -}}
 
@@ -111,7 +111,7 @@
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
 
-  {{- $contextDefaults := include "tenant.utils.get-defaults" (dict
+  {{- $contextDefaults := include "tenant.resource.get-defaults" (dict
     "context" $context
     "key" $key
   ) | fromYaml -}}
@@ -173,7 +173,7 @@
   {{- /* Build a list of enabled namespace resource datas */ -}}
   {{- $namespaces := include "tenant.resources.namespaces" $ | fromYamlArray -}}
 
-  {{- $defaults := include "tenant.utils.get-defaults" (dict
+  {{- $defaults := include "tenant.resource.get-defaults" (dict
     "context" $.Values
     "key" $key
   ) | fromYaml -}}

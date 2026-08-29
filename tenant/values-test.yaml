@@ -1,8 +1,10 @@
-extraResources:
-  foo:
-    apiVersion: v1
-    kind: Namespace
-    metadata:
-      name: bob
-      annotations:
-        my-name-is: "{{.metadata.name}}"
+# TODO: Each resource should decide if/how it wants to use the id.
+# {{- define "tenant.resources.applications" -}}
+#   {{- include "tenant.resource.list" (dict "root" $ "key" "application" "defaults" ("name" "{{ $id | default ''}}")) -}}
+# {{- end -}}
+# `tenant.resource.data` shouldn't need to care about the "ID" imo, this is just a var.
+# `tenant.resource.data` maybe also doesn't need `templateVars` as these are just dollar fields.
+#   maybe no harm in having the field too, unsure.
+
+eater:
+  food: pizza
