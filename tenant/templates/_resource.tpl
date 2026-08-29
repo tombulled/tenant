@@ -20,12 +20,9 @@
   {{- /* Apply defaults */ -}}
   {{- $data = mustMergeOverwrite (deepCopy $defaults) (deepCopy $data) -}}
 
-  {{- /* Determine whether the resource is enabled (defaults to enabled) */ -}}
-  {{- $enabledVal := index $data $fieldEnabled -}}
-  {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
-
-  {{- /* Only create the resource if it is enabled */ -}}
-  {{- if $enabled -}}
+  {{- /* Only create the resource if it is enabled (defaults to enabled) */ -}}
+  {{- $enabled := index $data $fieldEnabled -}}
+  {{- if ne $enabled false -}}
     {{- /* If a resource ID was specified in the data, we'll respect that */ -}}
     {{- if hasKey $data $fieldId -}}
       {{- $id = index $data $fieldId -}}

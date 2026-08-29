@@ -1,7 +1,10 @@
-extraResourceDefaults:
-  apiVersion: v1
-  kind: Namespace
+applicationDefaults:
+  $enabled: false
 
-extraResources:
-  foo: {}
-  bar: {}
+applicationSets:
+  foo:
+    generators:
+      - list:
+          elements:
+            - name: foo
+            - name: bar
