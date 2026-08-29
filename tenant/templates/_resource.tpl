@@ -6,6 +6,7 @@
   {{- $templateContext := .templateContext -}}
   {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude | default list -}}
+  {{- $nameField := .nameField | default "metadata.name" -}}
 
   {{- /* Internal fields */ -}}
   {{- $fieldId := "$id" -}}
@@ -31,8 +32,11 @@
     {{- end -}}
 
     {{- /* If the resource has an ID, but no name, default the resource's name to the resource's ID */ -}}
-    {{- if and (ne $id nil) (eq $data.name nil) -}}
-      {{- $_ := set $data "name" $id -}}
+    {{- if ne $nameField nil -}}
+      {{- $name := include "tenant.utils.dynamic-get" (dict "map" $data "keys" (splitList "." $nameField)) -}}
+      {{- if and (ne $id nil) (not $name) -}}
+        {{- $_ := include "tenant.utils.dynamic-set" (dict "map" $data "keys" (splitList "." $nameField) "value" $id) -}}
+      {{- end -}}
     {{- end -}}
 
     {{- /* Set the resource ID as a template variable */ -}}
@@ -62,12 +66,16 @@
 
     {{- /* Template the resource's name using the resource's data */ -}}
     {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
-    {{- $_ := set $data "name" (include "tenant.utils.template" (dict
-      "value" (get $data "name")
-      "context" $templateContext
-      "scope" $data
-      "vars" $templateVars
-    )) -}}
+    {{- if ne $nameField nil -}}
+      {{- $name := include "tenant.utils.dynamic-get" (dict "map" $data "keys" (splitList "." $nameField)) -}}
+      {{- $templatedName := include "tenant.utils.template" (dict
+        "value" $name
+        "context" $templateContext
+        "scope" $data
+        "vars" $templateVars
+      ) -}}
+      {{- $_ := include "tenant.utils.dynamic-set" (dict "map" $data "keys" (splitList "." $nameField) "value" $templatedName) -}}
+    {{- end -}}
 
     {{- /* Template the resource's data using itself */ -}}
     {{- $data = include "tenant.utils.template" (dict

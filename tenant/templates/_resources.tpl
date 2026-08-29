@@ -45,3 +45,7 @@
 {{- define "tenant.resources.sealed-secrets" -}}
   {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "sealedSecret") -}}
 {{- end -}}
+
+{{- define "tenant.resources.extra-resources" -}}
+  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "extraResource") -}}
+{{- end -}}

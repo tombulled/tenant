@@ -6,5 +6,19 @@
 # `tenant.resource.data` maybe also doesn't need `templateVars` as these are just dollar fields.
 #   maybe no harm in having the field too, unsure.
 
-eater:
-  food: pizza
+# Can template vars also be templated?
+# $name: ""
+
+# eaterDefaults:
+#   thing: "{{$id}}"
+
+# eater:
+#   food: pizza
+
+eaters:
+  pizza:
+    metadata:
+      # name: "{{ $.Release.Name }}"
+      name: "eater-{{$id}}"
+      annotations:
+        my-name-is: "{{ .metadata.name }}"

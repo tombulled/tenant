@@ -23,6 +23,44 @@
   {{- end -}}
 {{- end -}}
 
+{{- define "tenant.utils.dynamic-get" -}}
+  {{- $map := .map | default dict -}}
+  {{- $keys := .keys | default list -}}
+
+  {{- $value := $map -}}
+  {{- range $key := $keys -}}
+    {{- /* If the current value isn't a map, abort as we can't traverse any deeper */ -}}
+    {{- if ne (kindOf $value) "map" -}}
+      {{- $value = "" -}}
+      {{- break -}}
+    {{- end -}}
+
+    {{- /* Update '$value' to use the value of the current key */ -}}
+    {{- /* After the last iteration, '$value' will contain the final value */ -}}
+    {{- $value = get $value $key -}}
+  {{- end -}}
+
+  {{- $value -}}
+{{- end -}}
+
+{{- define "tenant.utils.dynamic-set" -}}
+  {{- $map := .map | default dict -}}
+  {{- $keys := .keys | default list -}}
+  {{- $value := .value -}}
+
+  {{- $obj := $map -}}
+  {{- range $key := initial $keys -}}
+    {{- $obj = index $obj $key -}}
+
+    {{- if ne (kindOf $obj) "map" -}}
+      {{- $obj = dict -}}
+      {{- break -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $_ := set $obj (last $keys) $value -}}
+{{- end -}}
+
 {{- define "tenant.utils.map-to-list" -}}
   {{- $map := .map | default dict -}}
   {{- $field := .field -}}
