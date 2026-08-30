@@ -1,24 +1,15 @@
-applicationDefaults:
-  $enabled: false
-  annotations:
-    my-id-is: "{{$id}}"
+defaults:
+  namespace: argocd
+  $metadata:
+    clusterId: cluster-id
+    clusterType: cluster-type
 
-applicationSets:
-  foo:
-    generators:
-      - list:
-          elements:
-            - $enabled: true
-              $id: some-id
-            - name: bar
-
-# Working with '$enabled'
-# 1. Every generator gets wrapped in a matrix, which converts $enabled -> enabled
-# 2. The post-selector then uses 'enabled'
-# 3. In templatePatch, the 'enabled' field gets unset
-
-# Working with '$'
-# 1. A sanitized version of the root context gets added
-
-# Working with '$id'
-# 1. '$id' is treated like '.$id'
+extraResources:
+  root:
+    sourcesObject:
+      main:
+        repoURL: git@github.com:tombulled/tenant.git
+        helm:
+          values: |
+            defaults:
+              $metadata: {{ $metadata | toJson }}
