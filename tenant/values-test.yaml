@@ -8,8 +8,7 @@ applicationSets:
     generators:
       - list:
           elements:
-            - name: foo
-              $enabled: true
+            - $enabled: true
               $id: some-id
             - name: bar
 
