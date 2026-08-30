@@ -1,3 +1,92 @@
+{{- /*
+  Build a resource's data.
+
+  Terminology:
+    "resource" - A Kubernetes resource (e.g. Application, ClusterRole, Namespace, etc.)
+    "resource data" - A map containing all the fields the resource's template will be executed using.
+
+  This nested-template does the followng:
+    1. If the resource's data is `nil`, the resource is treated as disabled (and will not get created)
+         This is a convenient way to quickly disable a resource, e.g:
+           applications:
+             my-app: ~
+         Will be treated identically to:
+           applications:
+             my-app:
+               $enabled: false
+    2. Applies the resource's defaults.
+         The order of precedence for resource data (low -> high) is:
+           * `.Values.defaults`
+           * `.Values.<resource-name-singular>Defaults`
+           * `.Values.<resource-name-plural>.<some-id>`
+         Example:
+           The following values:
+             defaults:
+               annotations:
+                 food: pizza
+             applicationDefaults:
+               annotations:
+                 drink: coke
+             applications:
+               foo:
+                 annotations:
+                   snack: chips
+           Would get merged to become:
+             annotations:
+               food: pizza
+               drink: coke
+               snack: chips
+    3. Exposes the resource's ID as a `$id` variable field
+         This means that the resource's ID can be used when self-templating the resource's data.
+         For example:
+           applications:
+             foo:
+               annotations:
+                 my-id-is: "{{$id}}"
+         Would yield resource data of:
+           annotations:
+             my-id-is: foo
+    4. Ignores any resources that are disabled.
+         Important considerations:
+           * Resources are enabled by default (if the `$enabled` field isn't specified)
+           * To disable a resource you must set `$enabled: false`, e.g:
+               applications:
+                 foo:
+                   $enabled: false
+    5. Defaults the resource's name to the resource's ID (if a `name` field wasn't specified)
+         For example, the following resource:
+           applications:
+             foo: {}
+         Would yield resource data of:
+           name: foo
+         Whereas, the following resource:
+           applications:
+             foo:
+               name: bar
+         Would yield resource data of:
+           name: bar
+    6. Templates the resource's name using the resource's data
+        The resource's name is templated first to reduce the chance of circular references.
+         For example, the following resource:
+           applications:
+             foo:
+               name: "{{$id}}-runner"
+         Would yield resource data of:
+           name: foo-runner
+    7. Templates the resource's data using itself
+         For example, the following resource:
+           applications:
+             foo:
+               name: some-cool-app
+               annotations:
+                 my-id-is: "{{$id}}"
+                 my-name-is: "{{.name}}"
+         Would yield resource data of:
+           name: some-cool-app
+           annotations:
+             my-id-is: foo
+             my-name-is: some-cool-app
+*/ -}}
 {{- define "tenant.resource.data" -}}
   {{- /* Extract arguments */ -}}
   {{- $id := .id -}}
