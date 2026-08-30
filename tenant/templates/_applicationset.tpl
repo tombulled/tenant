@@ -24,7 +24,7 @@
 {{- /* Add a match expression to the selector of all generators that filters out disabled applications */ -}}
 {{- define "tenant.application-set.generator.add-selector" -}}
   {{- $matchExpression := (dict
-    "key" "$enabled"
+    "key" "enabled"
     "operator" "NotIn"
     "values" (list "false")
   ) -}}
@@ -44,31 +44,27 @@
   {{- $generator := .generator -}}
 
   {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
-  {{- $defaultEnabled := index $defaults "$enabled" -}}
+  {{- $defaultEnabled := ne (index $defaults "$enabled") false -}}
 
   {{- with $generator -}}
-    {{- if ne $defaultEnabled false -}}
-      {{- . | toYaml -}}
-    {{- else -}}
-      {{- $newGenerator := (dict
-        "matrix" (dict
-          "generators" (list
-            .
-            (dict
-              "list" (dict
-                "elements" (list
-                  (dict
-                    "$enabled" $defaultEnabled
-                  )
+    {{- $newGenerator := (dict
+      "matrix" (dict
+        "generators" (list
+          .
+          (dict
+            "list" (dict
+              "elements" (list
+                (dict
+                  "enabled" (printf "{{ ternary (index . \"$enabled\") %t (hasKey . \"$enabled\") }}" $defaultEnabled)
                 )
               )
             )
           )
         )
-      ) -}}
+      )
+    ) -}}
 
-      {{- $newGenerator | toYaml -}}
-    {{- end -}}
+    {{- $newGenerator | toYaml -}}
   {{- end -}}
 {{- end -}}
 

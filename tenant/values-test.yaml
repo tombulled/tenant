@@ -1,5 +1,7 @@
 applicationDefaults:
   $enabled: false
+  annotations:
+    my-id-is: "{{$id}}"
 
 applicationSets:
   foo:
@@ -7,4 +9,17 @@ applicationSets:
       - list:
           elements:
             - name: foo
+              $enabled: true
             - name: bar
+
+# Working with '$enabled'
+# 1. Every generator gets wrapped in a matrix, which converts $enabled -> enabled
+# 2. The post-selector then uses 'enabled'
+# 3. In templatePatch, the 'enabled' field gets unset
+
+# Working with '$'
+# 1. A sanitized version of the root context gets added
+
+# Working with '$id'
+# 1. A new "template" function gets created which accepts the same inputs as tenant.utils.template
+# 2. A
