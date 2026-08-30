@@ -23,9 +23,9 @@
   {{- $out := .out -}}
 
   {{- /* Find everything that looks like a template, e.g. "{{.name}}", and loop over each of them */ -}}
-  {{- range $match := regexFindAll "{{ *\\..*? *}}" $template -1 -}}
+  {{- range $match := regexFindAll "{{ *[\\.\\$].*? *}}" $template -1 -}}
     {{- /* Extract all of the keys from the match, e.g: "{{.foo.bar}}" -> ["foo", "bar"] */ -}}
-    {{- $keys := $match | substr 2 (int (sub (len $match) 2)) | trim | substr 1 -1 | splitList "." -}}
+    {{- $keys := $match | trimAll "{} ." | splitList "." -}}
 
     {{- /* Traverse the application data, using the match's keys. If a value is not found, an empty string is used. */ -}}
     {{- /* Unfortunately we can't use the sprig 'dig' function as it doesn't accept a dynamic list of values. */ -}}

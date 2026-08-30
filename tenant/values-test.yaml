@@ -10,6 +10,7 @@ applicationSets:
           elements:
             - name: foo
               $enabled: true
+              $id: some-id
             - name: bar
 
 # Working with '$enabled'
@@ -21,5 +22,4 @@ applicationSets:
 # 1. A sanitized version of the root context gets added
 
 # Working with '$id'
-# 1. A new "template" function gets created which accepts the same inputs as tenant.utils.template
-# 2. A
+# 1. '$id' is treated like '.$id'
