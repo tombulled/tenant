@@ -32,22 +32,17 @@
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
 
-  {{- /* Add additional template logic that's appset-specific */ -}}
-  {{- if ne $appSet nil -}}
-    {{- /* Merge together all of the application's defaults */ -}}
-    {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
+  {{- /* Merge together all of the application's defaults */ -}}
+  {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
-    {{- /* Insert some templating logic into the application's template that applies the application's defaults */ -}}
-    {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
-    {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | printf "%s\n" }}
-    {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n" }}
-    {{- "\n" }}
+  {{- /* Insert some templating logic into the application's template that applies the application's defaults */ -}}
+  {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
+  {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | printf "%s\n" }}
+  {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
 
-    {{- /* Insert the contents of the `files/application-template-appset-header.yaml` file */ -}}
-    {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | printf "%s\n" }}
-    {{- "\n" }}
-  {{- end -}}
+  {{- /* Insert the contents of the `files/application-template-appset-header.yaml` file */ -}}
+  {{- $.Files.Get "files/application-template-appset-header.yaml" | trim | printf "%s\n\n" }}
 
-  {{- /* Insert the contents of the `files/application-template.yaml` file */ -}}
-  {{- $.Files.Get "files/application-template.yaml" | trim }}
+  {{- /* Insert the application template */ -}}
+  {{- include "tenant.template.application" $ -}}
 {{- end -}}
