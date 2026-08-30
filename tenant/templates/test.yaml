@@ -1,0 +1,19 @@
+{{- range $id, $data := merge (dict "" $.Values.test) ($.Values.tests | default dict) }}
+---
+{{ include "tenant.resource.data" (dict
+  "data" $data
+  "defaults" (list
+    (dict "name" $id)
+    $.Values.defaults
+    $.Values.testDefaults
+  )
+  "templateContext" $
+  "templateVars" (dict
+    "id" $id
+  )
+  "templateExclude" (list
+    "resources"
+  )
+  "nameField" "name"
+) }}
+{{- end }}
