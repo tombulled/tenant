@@ -32,7 +32,6 @@
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
 
-  {{- /* Add additional template logic that's appset-specific */ -}}
   {{- /* Merge together all of the application's defaults */ -}}
   {{- $defaults := include "tenant.application.defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
