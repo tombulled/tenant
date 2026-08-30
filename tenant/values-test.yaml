@@ -1,0 +1,10 @@
+application:
+  name: test
+  source:
+    repoURL: gitlab.com
+
+applicationSet:
+  name: test
+  generators:
+    - list:
+        elements: []
