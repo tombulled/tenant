@@ -1,27 +1,27 @@
-# # defaults:
-# #   $enabled: false
-# 
-# testDefaults:
-#   is-cool: "true"
-#   id-is: "{{$id}}"
-#   release-name: "{{$.Release.Name}}"
-# 
-# test:
-#   name: this-is-test
-#   
-# tests:
-#   foo:
-#     $name: "test-{{$id}}"
-#     name: "{{$name}}"
-#     namespace: "{{$name}}"
-#     annotations:
-#       my-name-is: "{{$name}}"
-#   bar:
-#     name: "test-{{$id}}"
-#     annotations:
-#       my-name-is: "{{.name}}"
-#   "":
-#     namespace: this-has-no-id
+# defaults:
+#   $enabled: false
+
+testDefaults:
+  is-cool: "true"
+  id-is: "{{$id}}"
+  release-name: "{{$.Release.Name}}"
+
+test:
+  name: this-is-test
+  
+tests:
+  foo:
+    $name: "test-{{$id}}"
+    name: "{{$name}}"
+    namespace: "{{$name}}"
+    annotations:
+      my-name-is: "{{$name}}"
+  bar:
+    name: "test-{{$id}}"
+    annotations:
+      my-name-is: "{{.name}}"
+  "":
+    namespace: this-has-no-id
 # 
 # # namespaces:
 # #   foo:
@@ -29,13 +29,13 @@
 # #       resourceQuota:
 # #         name: bob
 
-namespaceDefaults:
-  annotations:
-    id: "{{$id}}"
-
-namespace:
-  name: baz
-
-namespaces:
-  foo: {}
-  bar: {}
+# namespaceDefaults:
+#   annotations:
+#     id: "{{$id}}"
+# 
+# namespace:
+#   name: baz
+# 
+# namespaces:
+#   foo: {}
+#   bar: {}

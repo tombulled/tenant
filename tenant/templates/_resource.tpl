@@ -5,7 +5,7 @@
   {{- $templateContext := .templateContext -}}
   {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude | default list -}}
-  {{- $nameField := .nameField -}}
+  {{- $templateFirst := .templateFirst | default list -}}
 
   {{- /* If the resource data is nil, disable the resource */ -}}
   {{- if eq $data nil -}}
@@ -40,17 +40,23 @@
       {{- $templateContext = $data -}}
     {{- end -}}
 
-    {{- /* Template the resource's name using the resource's data */ -}}
-    {{- /* This is deliberately done first to reduce the chance of circular references */ -}}
-    {{- if ne $nameField nil -}}
-      {{- $name := include "tenant.utils.dynamic-get" (dict "map" $data "keys" (splitList "." $nameField)) -}}
-      {{- $templatedName := include "tenant.utils.template" (dict
-        "value" $name
+    {{- /* Template fields first that should "jump the queue" */ -}}
+    {{- range $key := $templateFirst -}}
+      {{- $value := include "tenant.utils.dynamic-get" (dict
+        "map" $data
+        "keys" (splitList "." $key)
+      ) -}}
+      {{- $valueTemplated := include "tenant.utils.template" (dict
+        "value" $value
         "context" $templateContext
         "scope" $data
         "vars" $templateVars
       ) -}}
-      {{- $_ := include "tenant.utils.dynamic-set" (dict "map" $data "keys" (splitList "." $nameField) "value" $templatedName) -}}
+      {{- $_ := include "tenant.utils.dynamic-set" (dict
+        "map" $data
+        "keys" (splitList "." $key)
+        "value" $valueTemplated)
+      -}}
     {{- end -}}
 
     {{- /* Template the resource's data using itself */ -}}
@@ -85,9 +91,9 @@
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
   {{- $context := ternary .context $.Values (ne .context nil) -}}
-  {{- $defaults := .defaults | default dict -}}
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
+  {{- $defaults := .defaults | default dict -}}
   {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude -}}
   {{- $nameField := .nameField | default "name" -}}
@@ -137,7 +143,9 @@
         (dict "id" $key)
       ) | fromYaml)
       "templateExclude" $templateExclude
-      "nameField" $nameField
+      "templateFirst" (list
+        $nameField
+      )
     ) | fromYaml -}}
 
     {{- /* If the resource is enabled, append it to the list of enabled resources */ -}}

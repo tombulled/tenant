@@ -71,7 +71,7 @@
 {{- end -}}
 
 {{- define "tenant.utils.dynamic-set" -}}
-  {{- $map := .map -}}
+  {{- $map := ternary .map (dict) (ne .map nil) -}}
   {{- $keys := .keys | default list -}}
   {{- $value := .value -}}
 
@@ -90,6 +90,8 @@
   {{- end -}}
 
   {{- $_ := set $obj (last $keys) $value -}}
+
+  {{- $map | toYaml -}}
 {{- end -}}
 
 {{- define "tenant.utils.map-to-list" -}}
