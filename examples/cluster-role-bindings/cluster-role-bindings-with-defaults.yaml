@@ -1,6 +1,6 @@
 clusterRoleBindingDefaults:
   # Disable cluster role bindings by default
-  enabled: false
+  $enabled: false
   # Assign a default name (in this case, all cluster role bindings will be prefixed with `crb-` by default)
   name: "crb-{{.id}}"
   # Default annotations
@@ -21,11 +21,11 @@ clusterRoleBindings:
 
   # This cluster role binding will get created, as it enables itself
   bar:
-    enabled: true
+    $enabled: true
 
   # This cluster role binding will get created, and overrides some of the defaults
   baz:
-    enabled: true
+    $enabled: true
     name: baz # Overrides the name to remove the `crb-` prefix
     annotations:
       is-baz: "true"

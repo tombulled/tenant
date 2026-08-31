@@ -1,6 +1,6 @@
 roleBindingDefaults:
   # Disable role bindings by default
-  enabled: false
+  $enabled: false
   # Assign a default name (in this case, all role bindings will be prefixed with `binding-` by default)
   name: "binding-{{.id}}"
   # Assign a default namespace
@@ -23,11 +23,11 @@ roleBindings:
 
   # This role binding will get created, as it enables itself
   bar:
-    enabled: true
+    $enabled: true
 
   # This role binding will get created, and overrides some of the defaults
   baz:
-    enabled: true
+    $enabled: true
     name: baz # Overrides the name to remove the `binding-` prefix
     namespace: some-namespace
     annotations:

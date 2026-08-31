@@ -11,7 +11,7 @@ clusterRoles:
   c: ~
   # ... Using `enabled`
   d:
-    enabled: false
+    $enabled: false
 
   # Create a cluster role with a list of rules
   e:
@@ -30,7 +30,7 @@ clusterRoles:
         resources: ["pods"]
         verbs: ["get", "watch", "list"]
       deployments-read:
-        enabled: false
+        $enabled: false
         apiGroups: [""]
         resources: ["deployments"]
         verbs: ["get", "watch", "list"]
@@ -46,7 +46,7 @@ clusterRoles:
 
   # Cluster role with all fields populated
   h:
-    enabled: true # If omitted, defaults to true
+    $enabled: true # If omitted, defaults to true
     name: fully-populated # If omitted, defaults to the resource ID
     annotations:
       owning-team: some-cool-team

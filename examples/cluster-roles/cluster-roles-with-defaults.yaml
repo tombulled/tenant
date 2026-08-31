@@ -1,6 +1,6 @@
 roleDefaults:
   # Disable roles by default
-  enabled: false
+  $enabled: false
   # Assign a default name (in this case, all roles will be prefixed with `role-` by default)
   name: "role-{{.id}}"
   # Assign a default namespace
@@ -23,11 +23,11 @@ roles:
 
   # This role will get created, as it enables itself
   bar:
-    enabled: true
+    $enabled: true
 
   # This role will get created, and overrides some of the defaults
   baz:
-    enabled: true
+    $enabled: true
     name: baz # Overrides the name to remove the `role-` prefix
     namespace: some-namespace
     annotations:
