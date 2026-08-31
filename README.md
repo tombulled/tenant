@@ -12,18 +12,9 @@ helm install my-tenant tenant -f path/to/values.yaml
 
 ## Resource Data
 
-### Core
+### Bitnami
 
-#### Namespace
-
-| Name          | Description                       | Example                                      |
-| ------------- | --------------------------------- | -------------------------------------------- |
-| `annotations` | Populates: `metadata.annotations` | `{"is-cool": "true"}`                        |
-| `labels`      | Populates: `metadata.labels`      | `{"is-cool": "true"}`                        |
-| `name`        | Populates: `metadata.name`        | `"some-name"`                                |
-| `finalizers`  | Populates: `spec.finalizers`      | `["resources-finalizer.argocd.argoproj.io"]` |
-
-### Sealed Secret Fields
+### SealedSecret
 
 | Name            | Description                       | Example                                        |
 | --------------- | --------------------------------- | ---------------------------------------------- |
@@ -35,3 +26,14 @@ helm install my-tenant tenant -f path/to/values.yaml
 | `data`          | Populates: `spec.data`            | `"some-data"`                                  |
 | `encryptedData` | Populates: `spec.encryptedData`   | `{"password": "Ag..."}`                        |
 | `template`      | Populates: `spec.template`        | `{metadata: {annotations: {is-cool: "true"}}}` |
+
+### Core
+
+#### Namespace
+
+| Name          | Description                       | Example                                      |
+| ------------- | --------------------------------- | -------------------------------------------- |
+| `annotations` | Populates: `metadata.annotations` | `{"is-cool": "true"}`                        |
+| `labels`      | Populates: `metadata.labels`      | `{"is-cool": "true"}`                        |
+| `name`        | Populates: `metadata.name`        | `"some-name"`                                |
+| `finalizers`  | Populates: `spec.finalizers`      | `["resources-finalizer.argocd.argoproj.io"]` |
