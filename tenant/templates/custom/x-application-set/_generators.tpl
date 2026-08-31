@@ -1,4 +1,4 @@
-{{- define "tenant.application-set.generators" -}}
+{{- define "tenant.x-application-set.generators" -}}
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
 
@@ -10,7 +10,7 @@
     {{- $newGenerators := list -}}
     {{- range $generator := $generators -}}
       {{- range $generatorTemplate := $generatorTemplates -}}
-        {{- $generatorTemplateName := printf "tenant.application-set.generator.%s" $generatorTemplate -}}
+        {{- $generatorTemplateName := printf "tenant.x-application-set.generator.%s" $generatorTemplate -}}
         {{- $generator = include $generatorTemplateName (dict "root" $ "appSet" $appSet "generator" $generator) | fromYaml -}}
       {{- end -}}
 
@@ -22,7 +22,7 @@
 {{- end -}}
 
 {{- /* Add a match expression to the selector of all generators that filters out disabled applications */ -}}
-{{- define "tenant.application-set.generator.add-selector" -}}
+{{- define "tenant.x-application-set.generator.add-selector" -}}
   {{- $matchExpression := (dict
     "key" "enabled"
     "operator" "NotIn"
@@ -38,7 +38,7 @@
 {{- end -}}
 
 {{- /* Wrap each generator in a 'matrix' generator to set necessary defaults upfront (e.g. $enabled) */ -}}
-{{- define "tenant.application-set.generator.wrap-with-matrix" -}}
+{{- define "tenant.x-application-set.generator.wrap-with-matrix" -}}
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
   {{- $generator := .generator -}}
@@ -92,7 +92,7 @@
       mergeKey: path.path
       idKey: path.basename
 */ -}}
-{{- define "tenant.application-set.generator.convert-x-git" -}}
+{{- define "tenant.x-application-set.generator.convert-x-git" -}}
   {{- $xGitKey := "x-git" -}}
   {{- $generator := .generator | deepCopy -}}
 
