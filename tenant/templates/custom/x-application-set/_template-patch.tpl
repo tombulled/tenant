@@ -13,6 +13,7 @@
   {{- $appSet := .appSet -}}
 
   {{- include "tenant.utils.merge" (list
+    (dict "name" "{{$id}}")
     (include "tenant.resource.get-defaults" (dict
       "context" $.Values
       "key" "application"
@@ -32,9 +33,6 @@
   {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
   {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | printf "%s\n" }}
   {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
-
-  {{- "{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}" | printf "%s\n" -}}
-  {{- `{{- $_ := set . "name" (.name | default (get . "$id")) -}}` | printf "%s\n\n" -}}
 
   {{- include "tenant.x-application-set.template-patch.template-self" $ | printf "%s\n\n" }}
 

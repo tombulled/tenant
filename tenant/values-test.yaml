@@ -1,0 +1,11 @@
+xApplicationSet:
+  name: test
+  template:
+    spec:
+      project: default
+  generators:
+    - list:
+        elements:
+          - name: foo
+          - name: bar
+          - $id: baz
