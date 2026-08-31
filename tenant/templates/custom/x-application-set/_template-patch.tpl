@@ -30,8 +30,9 @@
   {{- /* Merge together all of the application's defaults */ -}}
   {{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
+  {{- printf "{{- $defaults := `\n%s\n` | fromJson -}}" ($defaults | toPrettyJson) | printf "%s\n\n" }}
+
   {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
-  {{- printf "{{- $defaults := `%s` | fromJson -}}" ($defaults | toJson) | printf "%s\n" }}
   {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
 
   {{- include "tenant.x-application-set.template-patch.template-self" $ | printf "%s\n\n" }}
