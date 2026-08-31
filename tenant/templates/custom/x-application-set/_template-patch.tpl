@@ -19,10 +19,6 @@
   ) -}}
 {{- end -}}
 
-{{- define "tenant.x-application-set.template-patch.template-self" -}}
-TODO: TEMPLATE SELF HERE
-{{- end -}}
-
 {{- define "tenant.x-application-set.template-patch" -}}
   {{- /* Extract arguments */ -}}
   {{- $ := .root -}}
