@@ -1,7 +1,7 @@
-testDefaults:
-  apiVersion: v1
-  kind: Test
+namespaceDefaults:
+  annotations:
+    release-name: "{{$.Release.Name}}"
 
-tests:
+namespaces:
   foo: {}
   bar: {}
