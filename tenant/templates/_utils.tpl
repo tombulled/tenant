@@ -1,3 +1,30 @@
+{{- define "tenant.utils.entries" -}}
+  {{- $entries := list -}}
+
+  {{- range $key, $val := . | default dict -}}
+    {{- $entries = append $entries (dict
+      "key" $key
+      "val" $val
+    ) -}}
+  {{- end -}}
+
+  {{- $entries | toYaml -}}
+{{- end -}}
+
+{{- define "tenant.utils.merge" -}}
+  {{- $merged := dict -}}
+
+  {{- range $map := . -}}
+    {{- if eq $map nil -}}
+      {{- continue -}}
+    {{- end -}}
+
+    {{- $merged = mustMergeOverwrite $merged (deepCopy $map) -}}
+  {{- end -}}
+
+  {{- $merged | toYaml -}}
+{{- end -}}
+
 {{- define "tenant.utils.filter-map" -}}
   {{- $map := dict -}}
 
@@ -44,7 +71,7 @@
 {{- end -}}
 
 {{- define "tenant.utils.dynamic-set" -}}
-  {{- $map := .map -}}
+  {{- $map := ternary .map (dict) (ne .map nil) -}}
   {{- $keys := .keys | default list -}}
   {{- $value := .value -}}
 
@@ -63,6 +90,8 @@
   {{- end -}}
 
   {{- $_ := set $obj (last $keys) $value -}}
+
+  {{- $map | toYaml -}}
 {{- end -}}
 
 {{- define "tenant.utils.map-to-list" -}}
