@@ -1,18 +1,22 @@
 # tenant
 
-A Helm chart to represent a _tenant_ of a Kubernetes cluster.
+A Helm chart to represent a tenant of a Kubernetes cluster.
 
 ## Installing the Chart
 
 To install the chart with the release name `my-tenant`:
 
 ```sh
-helm install my-tenant tenant
+helm install my-tenant tenant -f path/to/values.yaml
 ```
 
-> Note: No resources are configured by default, so the above command **won't actually install any resources**
-
 ## Resource Data
+
+### Argo Project
+
+#### AppProject
+
+TODO
 
 ### Common Fields
 
@@ -26,7 +30,9 @@ helm install my-tenant tenant
 | `annotations` | Resource annotations. Allows you to specify the resource's `metadata.annotations`.                                                | `{is-cool: "true"}`                          |
 | `finalizers`  | Resource finalizers. Allows you to specify the resource's `metadata.finalizers` (or `spec.finalizers` in the case of `Namespace`) | `["resources-finalizer.argocd.argoproj.io"]` |
 
-### Namespace Fields
+### Core
+
+#### Namespace
 
 The `Namespace` template uses the following common fields:
 

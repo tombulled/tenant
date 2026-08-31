@@ -1,0 +1,10 @@
+namespaces:
+  # <namespace resource>
+  gitlab: # <-- resource ID
+    name: cool-gitlab # <-- resource name
+    annotations:
+      resource-id: "{{ $id }}"
+      resource-name: "{{ .name }}"
+      resource-data: |
+        {{- toPrettyJson . | nindent 6 }}
+  # </namespace resource>

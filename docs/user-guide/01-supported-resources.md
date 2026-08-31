@@ -13,5 +13,5 @@ The `tenant` chart supports deploying the following resource types:
 * [`ResourceQuota`](https://kubernetes.io/docs/concepts/policy/resource-quotas/) - Provide constraints that limit aggregate resource consumption per namespace.
 * [`RoleBinding`](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#rolebinding-example) - A role binding grants the permissions defined in a role to a user or set of users. It holds a list of subjects (users, groups, or service accounts), and a reference to the role being granted. A RoleBinding grants permissions within a specific namespace.
 * [`Role`](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-example) - An RBAC Role contains rules that represent a set of permissions. Permissions are purely additive (there are no "deny" rules). A Role always sets permissions within a particular namespace; when you create a Role, you have to specify the namespace it belongs in.
-* [`SealedSecret`](#) - A safe-to-store (even inside public repositories) Secret, which can only be decrypted by the controller running in the target cluster.
+* [`SealedSecret`](https://github.com/bitnami/sealed-secrets#overview) - A safe-to-store (even inside public repositories) Secret, which can only be decrypted by the controller running in the target cluster.
 * Any additional resources, via *Extra Resources*.

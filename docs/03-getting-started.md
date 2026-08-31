@@ -18,12 +18,12 @@ As a *tenant* is just a logical grouping of resources, you can start configuring
 For example:
 
 ```sh
-helm template . --set-json '{"namespaces": {"foo": {}}}'
+helm template . --set-json '{"namespace": {"name": "foo"}}'
 ```
 
+outputs:
+
 ```yaml
----
-# Source: tenant/templates/namespaces.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -33,7 +33,7 @@ metadata:
 Which could then be installed into a cluster using `helm install`:
 
 ```sh
-$ helm install tenant-foo . --set-json '{"namespaces": {"foo": {}}}'
+$ helm install tenant-foo . --set-json '{"namespace": {"name": "foo"}}'
 NAME: tenant-foo
 LAST DEPLOYED: Sat Aug 22 20:18:44 2026
 NAMESPACE: default
