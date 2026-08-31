@@ -29,6 +29,17 @@ helm install my-tenant tenant -f path/to/values.yaml
 
 ### Core
 
+#### LimitRange
+
+| Name          | Description                       | Example                                               |
+| ------------- | --------------------------------- | ----------------------------------------------------- |
+| `annotations` | Populates: `metadata.annotations` | `{"is-cool": "true"}`                                 |
+| `finalizers`  | Populates: `metadata.finalizers`  | `["resources-finalizer.argocd.argoproj.io"]`          |
+| `labels`      | Populates: `metadata.labels`      | `{"is-cool": "true"}`                                 |
+| `name`        | Populates: `metadata.name`        | `"some-name"`                                         |
+| `namespace`   | Populates: `metadata.namespace`   | `"some-namespace"`                                    |
+| `limits`      | Populates: `spec.limits`          | `[{"type": "Container", "default": {"cpu": "500m"}}]` |
+
 #### Namespace
 
 | Name          | Description                       | Example                                      |
@@ -37,3 +48,16 @@ helm install my-tenant tenant -f path/to/values.yaml
 | `labels`      | Populates: `metadata.labels`      | `{"is-cool": "true"}`                        |
 | `name`        | Populates: `metadata.name`        | `"some-name"`                                |
 | `finalizers`  | Populates: `spec.finalizers`      | `["resources-finalizer.argocd.argoproj.io"]` |
+
+#### ResourceQuota
+
+| Name            | Description                       | Example                                                                                          |
+| --------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `annotations`   | Populates: `metadata.annotations` | `{"is-cool": "true"}`                                                                            |
+| `finalizers`    | Populates: `metadata.finalizers`  | `["resources-finalizer.argocd.argoproj.io"]`                                                     |
+| `labels`        | Populates: `metadata.labels`      | `{"is-cool": "true"}`                                                                            |
+| `name`          | Populates: `metadata.name`        | `"some-name"`                                                                                    |
+| `namespace`     | Populates: `metadata.namespace`   | `"some-namespace"`                                                                               |
+| `hard`          | Populates: `spec.hard`            | `{"limits.cpu": "2", "limits.memory": "2Gi"}`                                                    |
+| `scopeSelector` | Populates: `spec.scopeSelector`   | `{"matchExpressions": [{"scopeName": "PriorityClass", "operator": "In", "values": ["middle"]}]}` |
+| `scopes`        | Populates: `spec.scopes`          | `["BestEffort"]`                                                                                 |
