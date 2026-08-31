@@ -22,7 +22,7 @@ spec:
   {{- end }}
   {{- with .limitsObject }}
   {{- $limits := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  limits: {{ include "tenant.utils.render-object" (dict "value" $limits "indent" 4) }}
+  limits: {{ include "tenant.utils.to-yaml" (dict "value" $limits "indent" 4) }}
   {{- else with .limits }}
   limits: {{- . | toYaml | nindent 4 }}
   {{- else }}

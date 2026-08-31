@@ -37,7 +37,7 @@
   {{- $map | toYaml -}}
 {{- end -}}
 
-{{- define "tenant.utils.render-object" -}}
+{{- define "tenant.utils.to-yaml" -}}
   {{- $value := .value -}}
   {{- $indent := .indent -}}
 
