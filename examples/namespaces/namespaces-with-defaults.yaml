@@ -1,8 +1,8 @@
 namespaceDefaults:
   # Disable namespaces by default
-  enabled: false
+  $enabled: false
   # Assign a default name (in this case, all namespaces will be prefixed with `ns-` by default)
-  name: "ns-{{.id}}"
+  name: "ns-{{$id}}"
   # Default annotations
   annotations:
     my-name-is: "{{.name}}"
@@ -21,11 +21,11 @@ namespaces:
 
   # This namespace will get created, as it enables itself
   bar:
-    enabled: true
+    $enabled: true
 
   # This namespace will get created, and overrides some of the defaults
   baz:
-    enabled: true
+    $enabled: true
     name: baz # Overrides the name to remove the `ns-` prefix
     annotations:
       is-baz: "true"

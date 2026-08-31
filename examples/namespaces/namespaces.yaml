@@ -11,11 +11,11 @@ namespaces:
   c: ~
   # ... Using `enabled`
   d:
-    enabled: false
+    $enabled: false
 
   # Namespace with all fields populated
   e:
-    enabled: true # If omitted, defaults to true
+    $enabled: true # If omitted, defaults to true
     name: fully-populated # If omitted, defaults to the resource ID
     annotations:
       owning-team: some-cool-team

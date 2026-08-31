@@ -7,3 +7,5 @@ Before effectively using the `tenant` chart, it is necessary to understand the u
 * [Introduction to Kubernetes](https://www.edx.org/learn/kubernetes/the-linux-foundation-introduction-to-kubernetes)
 * [Introduction to Helm](https://helm.sh/docs/intro/introduction)
 * [Overview of Argo CD](https://argo-cd.readthedocs.io/en/stable/)
+
+It's also worth being familiar with the Go [`text/template`](https://pkg.go.dev/text/template) package, and the [`sprig`](https://masterminds.github.io/sprig/) template function library.

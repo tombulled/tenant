@@ -11,7 +11,7 @@ clusterRoleBindings:
   c: ~
   # ... Using `enabled`
   d:
-    enabled: false
+    $enabled: false
 
   # Create a populated cluster role binding with a list of subjects
   e:
@@ -33,7 +33,7 @@ clusterRoleBindings:
         kind: Group
         apiGroup: rbac.authorization.k8s.io
       staff:
-        enabled: false
+        $enabled: false
         kind: Group
         apiGroup: rbac.authorization.k8s.io
       guest: ~
@@ -44,7 +44,7 @@ clusterRoleBindings:
 
   # Cluster role binding with all fields populated
   g:
-    enabled: true # If omitted, defaults to true
+    $enabled: true # If omitted, defaults to true
     name: fully-populated # If omitted, defaults to the resource ID
     annotations:
       owning-team: some-cool-team
