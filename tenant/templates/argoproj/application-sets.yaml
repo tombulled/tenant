@@ -1,4 +1,4 @@
-{{- define "tenant.template.application-set" -}}
+{{- define "tenant.application-set.template" -}}
 {{- `
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -66,5 +66,5 @@ spec:
 
 {{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
 ---
-{{ tpl (include "tenant.template.application-set" $) . }}
+{{ tpl (include "tenant.application-set.template" $) . }}
 {{- end }}

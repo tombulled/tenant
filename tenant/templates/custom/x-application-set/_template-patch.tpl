@@ -39,5 +39,5 @@
   {{- include "tenant.x-application-set.template-patch.template-self" $ | printf "%s\n\n" }}
 
   {{- /* Insert the application template */ -}}
-  {{- include "tenant.template.application" $ -}}
+  {{- include "tenant.application.template" $ -}}
 {{- end -}}
