@@ -2,7 +2,7 @@ namespaceDefaults:
   # Disable namespaces by default
   $enabled: false
   # Assign a default name (in this case, all namespaces will be prefixed with `ns-` by default)
-  name: "ns-{{.id}}"
+  name: "ns-{{$id}}"
   # Default annotations
   annotations:
     my-name-is: "{{.name}}"

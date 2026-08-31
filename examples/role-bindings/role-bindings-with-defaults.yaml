@@ -2,7 +2,7 @@ roleBindingDefaults:
   # Disable role bindings by default
   $enabled: false
   # Assign a default name (in this case, all role bindings will be prefixed with `binding-` by default)
-  name: "binding-{{.id}}"
+  name: "binding-{{$id}}"
   # Assign a default namespace
   namespace: default
   # Default annotations

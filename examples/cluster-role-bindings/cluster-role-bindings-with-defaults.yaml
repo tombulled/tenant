@@ -2,7 +2,7 @@ clusterRoleBindingDefaults:
   # Disable cluster role bindings by default
   $enabled: false
   # Assign a default name (in this case, all cluster role bindings will be prefixed with `crb-` by default)
-  name: "crb-{{.id}}"
+  name: "crb-{{$id}}"
   # Default annotations
   annotations:
     my-name-is: "{{.name}}"

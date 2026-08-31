@@ -2,7 +2,7 @@ roleDefaults:
   # Disable roles by default
   $enabled: false
   # Assign a default name (in this case, all roles will be prefixed with `role-` by default)
-  name: "role-{{.id}}"
+  name: "role-{{$id}}"
   # Assign a default namespace
   namespace: default
   # Default annotations
