@@ -1,0 +1,6 @@
+defaults: {}
+
+xApplicationSetDefaults: {}
+
+xApplicationSets:
+  foo: {}

@@ -46,6 +46,10 @@
   {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "sealedSecret") -}}
 {{- end -}}
 
+{{- define "tenant.resources.x-application-sets" -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "xApplicationSet") -}}
+{{- end -}}
+
 {{- define "tenant.resources.extra-resources" -}}
   {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "extraResource" "nameField" "metadata.name") -}}
 {{- end -}}
