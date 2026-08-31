@@ -98,7 +98,7 @@
 
   {{- with get $generator $xGitKey -}}
     {{- /* Git generator fields */ -}}
-    {{- $directories := .directories | default list -}}
+    {{- $directories := .directories | required "Must provide at least one directory" -}}
     {{- $pathParamPrefix := .pathParamPrefix -}}
     {{- $repoURL := .repoURL -}}
     {{- $requeueAfterSeconds := .requeueAfterSeconds -}}

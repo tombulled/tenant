@@ -1,8 +1,8 @@
 {{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
 {{- $_ := set . "goTemplate" true }}
-{{- /* {{- $_ := set . "generators" (include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray) }}
+{{- $_ := set . "generators" (include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray) }}
 {{- $_ := unset . "generatorsObject" }}
-{{- $_ := set . "templatePatch" (include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .)) }} */ -}}
+{{- $_ := set . "templatePatch" (include "tenant.application.template" (dict "root" $ "appSet" .)) }}
 ---
 {{ tpl (include "tenant.template.application-set" $) . }}
 {{- end }}

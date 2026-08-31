@@ -1,6 +1,13 @@
 defaults: {}
 
-xApplicationSetDefaults: {}
+xApplicationSetDefaults:
+  generators:
+    - x-git:
+        repoURL: bob.com
+        directories:
+          - path: "{{.name}}"
+        valueFiles:
+          - values.yaml
 
 xApplicationSets:
   foo: {}
