@@ -1,0 +1,18 @@
+applicationDefaults:
+  annotations:
+    is-cool: "true"
+  sources:
+    main:
+      repoURL: github.com
+      helm:
+        valueFiles:
+          - values.yamk
+          - values-foo.yaml
+    values:
+      repoURL: gitlab.com
+  syncPolicy:
+    syncOptions:
+      - foo=bar
+
+xApplicationSet:
+  name: test
