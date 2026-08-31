@@ -13,8 +13,10 @@
   {{- $appSet := .appSet -}}
 
   {{- include "tenant.utils.merge" (list
-    $.Values.defaults
-    $.Values.applicationDefaults
+    (include "tenant.resource.get-defaults" (dict
+      "context" $.Values
+      "key" "application"
+    ) | fromYaml)
     $appSet.defaults
   ) -}}
 {{- end -}}
