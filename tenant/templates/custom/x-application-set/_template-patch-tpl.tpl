@@ -1,6 +1,5 @@
-{{- /* Default the application's name to its ID (if a name hasn't been specified) */ -}}
-{{- $_ := set . "name" (.name | default (get . "$id")) -}}
-
+{{- define "tenant.x-application-set.template-patch.template-self" -}}
+{{- `
 {{- /*
   The below nested-template is a best-effort implementation of the Helm 'tpl' function (which is not currently available for ApplicationSets).
 
@@ -94,4 +93,6 @@
   {{- range $key, $val := $outValue | fromYaml -}}
     {{- $_ := set $ $key $val -}}
   {{- end -}}
+{{- end -}}
+` | trim -}}
 {{- end -}}
