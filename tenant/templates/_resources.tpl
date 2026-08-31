@@ -1,13 +1,13 @@
 {{- define "tenant.resources.applications" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "application") -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "application") -}}
 {{- end -}}
 
 {{- define "tenant.resources.application-sets" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "applicationSet") -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "applicationSet") -}}
 {{- end -}}
 
 {{- define "tenant.resources.app-projects" -}}
-  {{- include "tenant.resource.list-with-namespaced" (dict "root" $ "key" "project") -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "project") -}}
 {{- end -}}
 
 {{- define "tenant.resources.cluster-role-bindings" -}}
