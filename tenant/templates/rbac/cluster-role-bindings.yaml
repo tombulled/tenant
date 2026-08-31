@@ -21,7 +21,7 @@ roleRef: {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- with .subjectsObject }}
 {{- $subjects := include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
-subjects: {{ include "tenant.utils.render-object" (dict "value" $subjects "indent" 2) }}
+subjects: {{ include "tenant.utils.to-yaml" (dict "value" $subjects "indent" 2) }}
 {{- else with .subjects }}
 subjects: {{- . | toYaml | nindent 2 }}
 {{- end }}

@@ -21,7 +21,7 @@ metadata:
 {{- end }}
 {{- with .rulesObject }}
 {{- $rules := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-rules: {{ include "tenant.utils.render-object" (dict "value" $rules "indent" 2) }}
+rules: {{ include "tenant.utils.to-yaml" (dict "value" $rules "indent" 2) }}
 {{- else with .rules }}
 rules: {{- . | toYaml | nindent 2 }}
 {{- end }}
