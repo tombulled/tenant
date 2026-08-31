@@ -1,5 +1,9 @@
 defaults: {}
 
+applicationDefaults:
+  annotations:
+    is-cool: "true"
+
 xApplicationSetDefaults:
   generators:
     - x-git:

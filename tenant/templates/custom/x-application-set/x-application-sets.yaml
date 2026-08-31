@@ -1,0 +1,10 @@
+{{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
+{{- $_ := mustMergeOverwrite . (dict
+  "goTemplate" true
+  "generators" (include "tenant.application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray)
+  "generatorsObject" nil
+  "templatePatch" (include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .))
+) }}
+---
+{{ tpl (include "tenant.template.application-set" $) . }}
+{{- end }}
