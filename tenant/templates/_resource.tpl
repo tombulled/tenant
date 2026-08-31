@@ -101,46 +101,38 @@
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
 
+  {{- $valuesEntries := include "tenant.utils.entries" $values | fromYamlArray -}}
+  {{- if ne $value nil -}}
+    {{- $valuesEntries = append $valuesEntries (dict "key" "" "val" $value) -}}
+  {{- end -}}
+
   {{- $contextDefaults := include "tenant.resource.get-defaults" (dict
     "context" $context
     "key" $key
   ) | fromYaml -}}
 
-  {{- $valuesEntries := include "tenant.utils.entries" $values | fromYamlArray -}}
-
-  {{- if ne $value nil -}}
-    {{- $valuesEntries = append $valuesEntries (dict "key" nil "val" $value) -}}
-  {{- end -}}
-
   {{- $resourceDatas := list -}}
 
   {{- /* Iterate over each configured resource */ -}}
   {{- range $valuesEntries -}}
-    {{- $key := .key -}}
-    {{- $val := .val -}}
-
-    {{- $resourceDefaults := dict -}}
-
-    {{- if and (ne $nameField nil) (ne $key nil) -}}
-      {{- include "tenant.utils.dynamic-set" (dict
-        "map" $resourceDefaults
-        "keys" (splitList "." $nameField)
-        "value" $key
-      ) -}}
-    {{- end -}}
+    {{- $id := .key -}}
+    {{- $data := .val -}}
 
     {{- /* Build the resource's data */ -}}
     {{- $data := include "tenant.resource.data" (dict
-      "data" $val
+      "data" $data
       "defaults" (list
-        $resourceDefaults
+        (include "tenant.utils.dynamic-set" (dict
+          "keys" (splitList "." $nameField)
+          "value" $id
+        ) | fromYaml)
         $defaults
         $contextDefaults
       )
       "templateContext" $
       "templateVars" (include "tenant.utils.merge" (list
         $templateVars
-        (dict "id" $key)
+        (dict "id" $id)
       ) | fromYaml)
       "templateExclude" $templateExclude
       "templateFirst" (list
