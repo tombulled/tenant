@@ -1,0 +1,73 @@
+clusterRoleBindings:
+  # Create an empty cluster role binding with name `a` (the name is inferred from the resource ID)
+  a: {}
+
+  # Create an empty cluster role binding with name `bee`
+  b:
+    name: "bee"
+
+  # Disable a cluster role binding
+  # ... Using nil data
+  c: ~
+  # ... Using `enabled`
+  d:
+    enabled: false
+
+  # Create a populated cluster role binding with a list of subjects
+  e:
+    name: read-secrets-global
+    subjects:
+      - kind: Group
+        name: manager
+        apiGroup: rbac.authorization.k8s.io
+    roleRef:
+      kind: ClusterRole
+      name: secret-reader
+      apiGroup: rbac.authorization.k8s.io
+
+  # Create a populated cluster role binding with a map of subjects
+  f:
+    name: read-deployments-global
+    subjectsObject:
+      manager:
+        kind: Group
+        apiGroup: rbac.authorization.k8s.io
+      staff:
+        enabled: false
+        kind: Group
+        apiGroup: rbac.authorization.k8s.io
+      guest: ~
+    roleRef:
+      kind: ClusterRole
+      name: deployment-reader
+      apiGroup: rbac.authorization.k8s.io
+
+  # Cluster role binding with all fields populated
+  g:
+    enabled: true # If omitted, defaults to true
+    name: fully-populated # If omitted, defaults to the resource ID
+    annotations:
+      owning-team: some-cool-team
+    labels:
+      is-system: "true"
+    finalizers:
+      - some-finalizer
+    subjects:
+      - kind: User
+        name: jane
+        apiGroup: rbac.authorization.k8s.io
+    # Only `subjects` or `subjectsObject` can be specified, so the above could also be declared as:
+    # subjectsObject:
+    #   sally:
+    #     kind: User
+    #     apiGroup: rbac.authorization.k8s.io
+    roleRef:
+      kind: ClusterRole
+      name: pod-reader
+      apiGroup: rbac.authorization.k8s.io
+
+  # Cluster role binding with templated field
+  h:
+    name: foo
+    annotations:
+      my-name-is: "{{.name}}"

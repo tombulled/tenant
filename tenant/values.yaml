@@ -1,44 +1,59 @@
 defaults: {}
 
 applicationDefaults: {}
+application: ~
 applications: {}
 
-applicationSetDefaults:
+applicationSetDefaults: {}
+applicationSet: ~
+applicationSets: {}
+
+projectDefaults: {}
+project: ~
+projects: {}
+
+clusterRoleBindingDefaults: {}
+clusterRoleBinding: ~
+clusterRoleBindings: {}
+
+clusterRoleDefaults: {}
+clusterRole: ~
+clusterRoles: {}
+
+limitRangeDefaults: {}
+limitRange: ~
+limitRanges: {}
+
+namespaceDefaults: {}
+namespace: ~
+namespaces: {}
+
+networkPolicyDefaults: {}
+networkPolicy: ~
+networkPolicies: {}
+
+resourceQuotaDefaults: {}
+resourceQuota: ~
+resourceQuotas: {}
+
+roleBindingDefaults: {}
+roleBinding: ~
+roleBindings: {}
+
+roleDefaults: {}
+role: ~
+roles: {}
+
+sealedSecretDefaults: {}
+sealedSecret: ~
+sealedSecrets: {}
+
+xApplicationSetDefaults:
   template:
     metadata: {}
     spec:
       destination: {}
-      project: default
-applicationSets: {}
-
-projectDefaults: {}
-projects: {}
-
-clusterRoleBindingDefaults: {}
-clusterRoleBindings: {}
-
-clusterRoleDefaults: {}
-clusterRoles: {}
-
-limitRangeDefaults: {}
-limitRanges: {}
-
-namespaceDefaults: {}
-namespaces: {}
-
-networkPolicyDefaults: {}
-networkPolicies: {}
-
-resourceQuotaDefaults: {}
-resourceQuotas: {}
-
-roleBindingDefaults: {}
-roleBindings: {}
-
-roleDefaults: {}
-roles: {}
-
-sealedSecretDefaults: {}
-sealedSecrets: {}
+xApplicationSet: ~
+xApplicationSets: {}
 
 extraResources: {}

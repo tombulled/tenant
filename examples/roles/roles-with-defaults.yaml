@@ -1,0 +1,40 @@
+roleDefaults:
+  # Disable roles by default
+  enabled: false
+  # Assign a default name (in this case, all roles will be prefixed with `role-` by default)
+  name: "role-{{.id}}"
+  # Assign a default namespace
+  namespace: default
+  # Default annotations
+  annotations:
+    my-name-is: "{{.name}}"
+  # Default labels
+  labels:
+    is-role: "true"
+  # Default finalizers
+  finalizers:
+    - some-finalizer
+
+# All of the below roles will inherit the defaults, and can optionally
+# override fields as required.
+roles:
+  # This role won't get created as they're disabled by default
+  foo: {}
+
+  # This role will get created, as it enables itself
+  bar:
+    enabled: true
+
+  # This role will get created, and overrides some of the defaults
+  baz:
+    enabled: true
+    name: baz # Overrides the name to remove the `role-` prefix
+    namespace: some-namespace
+    annotations:
+      is-baz: "true"
+    labels: ~
+    finalizers: ~
+    rules:
+      - apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["get", "watch", "list"]

@@ -1,8 +1,4 @@
-{{- range include "tenant.resource.list" (dict
-  "root" $
-  "values" .Values.clusterRoles
-  "defaults" .Values.clusterRoleDefaults
-) | fromYamlArray }}
+{{- range include "tenant.resources.cluster-roles" $ | fromYamlArray }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -20,8 +16,12 @@ metadata:
 {{- with .aggregationRule }}
 aggregationRule: {{- . | toYaml | nindent 4 }}
 {{- end }}
+{{- if and .rulesObject .rules }}
+  {{- fail "Specify either 'rulesObject' or 'rules', not both." }}
+{{- end }}
 {{- with .rulesObject }}
-rules: {{- . | values | toYaml | nindent 2 }}
+{{- $rules := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+rules: {{ include "tenant.utils.to-yaml" (dict "value" $rules "indent" 2) }}
 {{- else with .rules }}
 rules: {{- . | toYaml | nindent 2 }}
 {{- end }}

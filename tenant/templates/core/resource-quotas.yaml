@@ -1,8 +1,4 @@
-{{- range include "tenant.resource.list-with-namespaced" (dict
-  "root" $
-  "key" "resourceQuotas"
-  "defaults" $.Values.resourceQuotaDefaults
-) | fromYamlArray }}
+{{- range include "tenant.resources.resource-quotas" $ | fromYamlArray }}
 ---
 apiVersion: v1
 kind: ResourceQuota
@@ -21,8 +17,10 @@ metadata:
   namespace: {{ . }}
   {{- end }}
 spec:
-  {{- with .hard }}
+  {{- with .hard | include "tenant.utils.filter-map" | fromYaml }}
   hard: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  hard: {}
   {{- end }}
   {{- with .scopeSelector }}
   scopeSelector: {{- . | toYaml | nindent 4 }}

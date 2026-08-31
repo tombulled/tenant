@@ -1,0 +1,98 @@
+{{- define "tenant.x-application-set.template-patch.template-self" -}}
+{{- `
+{{- /*
+  The below nested-template is a best-effort implementation of the Helm 'tpl' function (which is not currently available for ApplicationSets).
+
+  The below nested-template accepts an input dictionary with the following fields:
+    'template' - A string template, e.g. "Hello {{.name}}"
+    'data'     - A map of data to evaluate the template using, e.g. {"name": "Bob"}
+    'out'      - An output map, allowing the evaluated template to be captured. A 'value' field will be populated.
+
+  Example:
+    {{- $out := dict -}}
+    {{- template "tpl" (dict "template" "Hello {{.name}}" "data" (dict "name" "Bob") "out" $out) -}}
+    {{- printf "Output was: %s" $out.value -}}
+
+  If/when https://github.com/argoproj/argo-cd/pull/26614 gets merged, the 'tpl' function can be used instead.
+*/ -}}
+{{- define "tpl" -}}
+  {{- /* Extract arguments */ -}}
+  {{- $template := .template -}}
+  {{- $data := .data -}}
+  {{- $out := .out -}}
+
+  {{- /* Find everything that looks like a template, e.g. "{{.name}}", and loop over each of them */ -}}
+  {{- range $match := regexFindAll "{{ *[\\.\\$].*? *}}" $template -1 -}}
+    {{- /* Extract all of the keys from the match, e.g: "{{.foo.bar}}" -> ["foo", "bar"] */ -}}
+    {{- $keys := $match | trimAll "{} ." | splitList "." -}}
+
+    {{- /* Traverse the application data, using the match's keys. If a value is not found, an empty string is used. */ -}}
+    {{- /* Unfortunately we can't use the sprig 'dig' function as it doesn't accept a dynamic list of values. */ -}}
+    {{- $obj := $data -}}
+    {{- range $key := $keys -}}
+      {{- /* If the current object isn't a map, abort as we can't traverse any deeper */ -}}
+      {{- if ne (kindOf $obj) "map" -}}
+        {{- $obj = "" -}}
+        {{- break -}}
+      {{- end -}}
+
+      {{- /* Update the object to use the value of the current key. After the last iteration, '$obj' will contain the final value */ -}}
+      {{- $obj = get $obj $key -}}
+    {{- end -}}
+
+    {{- /* Replace the match (e.g. "{{.name}}") in the template with the digged value */ -}}
+    {{- $template = replace $match (toString $obj) $template -}}
+  {{- end -}}
+
+  {{- /* Store the output of the evaluated template in a 'value' field in the '$out' map */ -}}
+  {{- $_ := set $out "value" $template -}}
+{{- end -}}
+
+{{- /*
+  Template the application's name first. This is done to reduce the risk of nested dependencies.
+
+  For example, consider the following example:
+    id: gitlab-runner
+    name: "{{.id}}-test"
+    annotations:
+      my-name-is: "{{.name}}"
+
+  In the above example, 'annotations.my-name-is' has a transitive dependency of 'id' ('annotations.my-name-is' -> 'name' -> 'id').
+  If the application's 'name' wasn't templated first, then 'annotations.my-name-is' is at risk of being assigned a literal value of '{{.id}}-test'.
+  As the application's name is a base truth, it is important it is evaluated first (as it is commonly depended on).
+*/ -}}
+{{- block "template-name-first" . -}}
+  {{- /* Template the application's 'name' field using the entire application data */ -}}
+  {{- $out := dict -}}
+  {{- template "tpl" (dict "template" .name "data" . "out" $out) -}}
+  {{- $outValue := $out.value -}}
+
+  {{- /* Update the application's 'name' field to use the templated value */ -}}
+  {{- $_ := set . "name" $outValue -}}
+{{- end -}}
+
+{{- /*
+  Template the application's data using itself.
+
+  For example, consider the following application data:
+    name: some-awesome-app
+    annotations:
+      my-name-is: "{{.name}}"
+
+  In the above example, 'annotations.my-name-is' will successfully be assigned a value of "some-awesome-app" (derived from the 'name' field)
+
+  WARN: Avoid transitive dependencies! As a general rule of thumb, only depend on fields where the value is known (non-templated).
+*/ -}}
+{{- block "template-self" . -}}
+  {{- /* Template the application's data using itself */ -}}
+  {{- $out := dict -}}
+  {{- template "tpl" (dict "template" (. | toYaml) "data" . "out" $out) -}}
+  {{- $outValue := $out.value -}}
+
+  {{- /* Update every field of the application's data to use the new templated values */ -}}
+  {{- range $key, $val := $outValue | fromYaml -}}
+    {{- $_ := set $ $key $val -}}
+  {{- end -}}
+{{- end -}}
+` | trim -}}
+{{- end -}}

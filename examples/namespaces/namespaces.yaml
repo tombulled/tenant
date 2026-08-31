@@ -1,0 +1,31 @@
+namespaces:
+  # Create a namespace with name `a` (the name is inferred from the resource ID)
+  a: {}
+
+  # Create a namespace with name `bee`
+  b:
+    name: "bee"
+
+  # Disable a namespace
+  # ... Using nil data
+  c: ~
+  # ... Using `enabled`
+  d:
+    enabled: false
+
+  # Namespace with all fields populated
+  e:
+    enabled: true # If omitted, defaults to true
+    name: fully-populated # If omitted, defaults to the resource ID
+    annotations:
+      owning-team: some-cool-team
+    labels:
+      is-system: "true"
+    finalizers:
+      - some-finalizer
+
+  # Namespace with templated field
+  f:
+    name: foo
+    annotations:
+      my-name-is: "{{.name}}"
