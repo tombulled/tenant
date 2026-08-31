@@ -1,7 +1,0 @@
-namespaceDefaults:
-  annotations:
-    release-name: "{{$.Release.Name}}"
-
-namespaces:
-  foo: {}
-  bar: {}
