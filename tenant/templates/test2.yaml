@@ -1,0 +1,13 @@
+{{- range include "tenant.resources.sealed-secrets" $ | fromYamlArray }}
+---
+{{ (dict
+  "apiVersion" "bitnami.com/v1alpha1"
+  "kind" "SealedSecret"
+  "metadata" (dict)
+  "spec" (dict
+    "data" .data
+    "encryptedData" .encryptedData
+    "template" .template
+  )
+) | toYaml }}
+{{- end }}
