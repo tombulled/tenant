@@ -1,0 +1,12 @@
+sealedSecret:
+  name: foo
+#   data: |
+#     some
+#     data
+  data: "true"
+  template:
+    age: 12
+    food: ~
+  encryptedData:
+    username: ~
+    password: ~

@@ -1,0 +1,45 @@
+{{- define "tenant.field" -}}
+  {{- $field := .field -}}
+  {{- $value := .value -}}
+  {{- $indent := .indent | default 0 -}}
+
+  {{- $valueString := "" -}}
+  {{- if eq (kindOf $value) "string" -}}
+    {{- $valueString = $value | toYaml | nindent $indent | trim -}}
+  {{- else if eq (kindOf $value) "map" -}}
+    {{- $value = include "tenant.utils.filter-map" $value | fromYaml -}}
+    {{- $valueString = include "tenant.utils.to-yaml" (dict "value" $value "indent" $indent) -}}
+  {{- else -}}
+    {{- $valueString = "todo" -}}
+  {{- end -}}
+
+  {{- if ne $value nil -}}
+    {{- (dict $field $value) | toYaml | nindent $indent -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range include "tenant.resources.sealed-secrets" $ | fromYamlArray }}
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+{{ template "tenant.metadata" (dict "data" .) }}
+spec:
+  {{- include "tenant.field" (dict
+    "field" "data"
+    "value" .data
+    "indent" 2
+  ) }}
+  {{- with .encryptedData }}
+  encryptedData: {{- . | toYaml | nindent 4 }}
+  {{- else }}
+  encryptedData: {}
+  {{- end }}
+  {{ include "tenant.field" (dict
+    "field" "template"
+    "value" .template
+    "indent" 4
+  ) }}
+  name: sam
+  {{- "bob" }}
+  age: 12
+{{- end }}

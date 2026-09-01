@@ -101,10 +101,10 @@
   {{- $value := index $context $key -}}
   {{- $values := index $context $keyPlural | default dict -}}
 
-  {{- $valuesEntries := include "tenant.utils.entries" $values | fromYamlArray -}}
-  {{- if ne $value nil -}}
-    {{- $valuesEntries = append $valuesEntries (dict "key" "" "val" $value) -}}
-  {{- end -}}
+  {{- $valuesEntries := append
+    (include "tenant.utils.entries" $values | fromYamlArray)
+    (dict "key" "" "val" $value)
+  -}}
 
   {{- $contextDefaults := include "tenant.resource.get-defaults" (dict
     "context" $context
