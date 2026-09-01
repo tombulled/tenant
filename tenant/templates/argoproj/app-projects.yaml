@@ -2,20 +2,7 @@
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
-  {{- with .finalizers }}
-  finalizers: {{- . | toYaml | nindent 4 }}
-  {{- end }}
+{{ template "tenant.metadata" (dict "data" .) }}
 spec:
   {{- if ne .permitOnlyProjectScopedClusters nil }}
   permitOnlyProjectScopedClusters: {{ .permitOnlyProjectScopedClusters }}

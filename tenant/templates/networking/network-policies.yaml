@@ -2,20 +2,7 @@
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .finalizers }}
-  finalizers: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
+{{ template "tenant.metadata" (dict "data" .) }}
 spec:
   {{- with .egress }}
   egress: {{- . | toYaml | nindent 4 }}

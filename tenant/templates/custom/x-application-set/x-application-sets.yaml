@@ -6,5 +6,5 @@
   "templatePatch" (include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .))
 ) }}
 ---
-{{ tpl (include "tenant.application-set.template" $) . }}
+{{ include "tenant.application-set.tpl" . }}
 {{- end }}

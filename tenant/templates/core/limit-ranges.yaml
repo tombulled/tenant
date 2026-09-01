@@ -2,20 +2,7 @@
 ---
 apiVersion: v1
 kind: LimitRange
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .finalizers }}
-  finalizers: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
+{{ template "tenant.metadata" (dict "data" .) }}
 spec:
   {{- if and .limitsObject .limits }}
     {{- fail "Specify either 'limitsObject' or 'limits', not both."}}
