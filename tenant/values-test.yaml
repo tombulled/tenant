@@ -1,0 +1,22 @@
+# applicationSets:
+#   foo:
+#     generators:
+#       - list:
+#           elements:
+#             - name: foo
+#             - name: bar
+
+# limitRange:
+#   name: bob
+#   annotations:
+#     is-cool: "true"
+
+namespace:
+  name: foo
+  namespace: bob
+  finalizers:
+    - finish
+
+clusterRoleBinding:
+  name: test
+  namespace: foo

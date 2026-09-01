@@ -2,14 +2,7 @@
 ---
 apiVersion: v1
 kind: Namespace
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
+{{ template "tenant.metadata" (dict "data" . "finalizers" false "namespace" false) }}
 {{- with .finalizers }}
 spec:
   finalizers: {{- . | toYaml | nindent 4 }}

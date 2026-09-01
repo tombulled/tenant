@@ -1,18 +1,7 @@
-{{- define "tenant.application-set.template" -}}
-{{- `
+{{- define "tenant.application-set.tpl" -}}
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
-metadata:
-  {{- with .annotations }}
-  annotations: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .labels }}
-  labels: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  name: {{ .name }}
-  {{- with .namespace }}
-  namespace: {{ . }}
-  {{- end }}
+{{ template "tenant.metadata" (dict "data" .) }}
 spec:
   {{- if ne .applyNestedSelectors nil }}
   applyNestedSelectors: {{ .applyNestedSelectors }}
@@ -61,10 +50,9 @@ spec:
   templatePatch: |
     {{- . | nindent 4 }}
   {{- end }}
-` | trim -}}
 {{- end -}}
 
 {{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
 ---
-{{ tpl (include "tenant.application-set.template" $) . }}
+{{ include "tenant.application-set.tpl" . }}
 {{- end }}
