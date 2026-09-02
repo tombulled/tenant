@@ -1,0 +1,14 @@
+{{- $badYaml := `
+name: bob:
+`}}
+{{- $badJson := `
+{"name: "bob"}
+`}}
+{{- $badYamlArray := `
+- name: bob:
+`}}
+
+a: {{ $badYaml | fromYaml }}
+b: {{ $badJson | fromJson }}
+d: {{ $badYamlArray | fromYamlArray }}
+e: {{ "" | fromYaml }}
