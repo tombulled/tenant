@@ -3,16 +3,17 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 {{ template "tenant.metadata" (dict "data" . "namespace" false) }}
-{{- with .roleRef }}
-roleRef: {{- . | toYaml | nindent 2 }}
+{{- if ne .roleRef nil }}
+roleRef: {{ include "tenant.utils.to-yaml" (dict "value" .roleRef "indent" 2) }}
 {{- end }}
 {{- if and .subjectsObject .subjects }}
   {{- fail "Specify either 'subjectsObject' or 'subjects', not both." }}
 {{- end }}
-{{- with .subjectsObject }}
-{{- $subjects := include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
+{{- $subjects := .subjects }}
+{{- if ne .subjectsObject nil }}
+  {{- $subjects = include "tenant.utils.map-to-list" (dict "map" .subjectsObject "field" "name") | fromYamlArray }}
+{{- end }}
+{{- if ne $subjects nil }}
 subjects: {{ include "tenant.utils.to-yaml" (dict "value" $subjects "indent" 2) }}
-{{- else with .subjects }}
-subjects: {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}

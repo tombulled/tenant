@@ -3,16 +3,17 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 {{ template "tenant.metadata" (dict "data" . "namespace" false) }}
-{{- with .aggregationRule }}
-aggregationRule: {{- . | toYaml | nindent 4 }}
+{{- if ne .aggregationRule nil }}
+aggregationRule: {{ include "tenant.utils.to-yaml" (dict "value" .aggregationRule "indent" 2) }}
 {{- end }}
 {{- if and .rulesObject .rules }}
   {{- fail "Specify either 'rulesObject' or 'rules', not both." }}
 {{- end }}
-{{- with .rulesObject }}
-{{- $rules := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
+{{- $rules := .rules }}
+{{- if ne .rulesObject nil }}
+  {{- $rules = include "tenant.utils.map-to-list" (dict "map" .rulesObject "field" "name") | fromYamlArray }}
+{{- end }}
+{{- if ne $rules nil }}
 rules: {{ include "tenant.utils.to-yaml" (dict "value" $rules "indent" 2) }}
-{{- else with .rules }}
-rules: {{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
