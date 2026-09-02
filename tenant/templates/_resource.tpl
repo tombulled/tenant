@@ -65,7 +65,7 @@
       "context" $templateContext
       "scope" $data
       "vars" $templateVars
-    ) | fromYaml -}}
+    ) | include "tenant.utils.ensure-from-yaml" | fromYaml -}}
 
     {{- /* Re-add any fields that were excluded from templating */ -}}
     {{- range $key, $val := $templateExcluded -}}
