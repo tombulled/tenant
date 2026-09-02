@@ -1,0 +1,11 @@
+namespace:
+  name: "this\nbob"
+
+sealedSecret:
+  namespace: "some\nnamespace"
+  data: "\nthis\n\ntest"
+#   data: true
+#   data: |
+#     this
+#     is
+#     test
