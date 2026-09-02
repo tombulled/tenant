@@ -16,10 +16,10 @@ metadata:
   {{- with .labels }}
   labels: {{- . | toYaml | nindent 4 }}
   {{- end }}
-  name: {{ .name }}
+  name: {{ .name | quote }}
   {{- if $namespace }}
   {{- with .namespace }}
-  namespace: {{ . }}
+  namespace: {{ . | quote }}
   {{- end }}
   {{- end }}
 {{- end -}}
