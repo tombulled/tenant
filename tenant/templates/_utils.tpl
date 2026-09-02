@@ -1,11 +1,11 @@
-{{- define "tenant.utils.must-from-yaml" -}}
+{{- define "tenant.utils.ensure-from-yaml" -}}
   {{- $map := . | fromYaml -}}
 
   {{- if $map.Error | default "" | hasPrefix "error converting YAML to JSON" -}}
-    {{- fail $map.Error -}}
+    {{- fail (printf "%s. For: %s" $map.Error (quote .)) -}}
   {{- end -}}
 
-  {{- $map}}
+  {{- . -}}
 {{- end -}}
 
 {{- define "tenant.utils.entries" -}}
