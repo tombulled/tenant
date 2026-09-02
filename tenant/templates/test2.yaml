@@ -4,10 +4,10 @@
   "apiVersion" "bitnami.com/v1alpha1"
   "kind" "SealedSecret"
   "metadata" (dict)
-  "spec" (dict
+  "spec" ((dict
     "data" .data
     "encryptedData" .encryptedData
     "template" .template
-  )
+  ) | include "tenant.utils.filter-map" | fromYaml)
 ) | toYaml }}
 {{- end }}

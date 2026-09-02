@@ -4,8 +4,9 @@ sealedSecret:
     some
     data
 #   data: "true"
-  template:
-    age: 12
+  template: ~
+#   template:
+#     age: 12
 #     food: ~
   encryptedData:
     username: ~
