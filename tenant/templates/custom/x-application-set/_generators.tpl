@@ -90,7 +90,7 @@
           annotations:
             some-annotation: some-val
       mergeKey: path.path
-      idKey: path.basename
+      id: .path.basename
 */ -}}
 {{- define "tenant.x-application-set.generator.convert-x-git" -}}
   {{- $xGitKey := "x-git" -}}
@@ -113,7 +113,7 @@
 
     {{- /* X-Git generator fields */ -}}
     {{- $valueFiles := .valueFiles | required "Must provide at least one value file" -}}
-    {{- $idKey := .idKey | default "path.basename" -}}
+    {{- $id := .id | default ".path.basename" -}}
 
     {{- $isMerge := gt (len $valueFiles) 1 }}
 
@@ -131,7 +131,7 @@
       {{- end -}}
     {{- end -}}
 
-    {{- $_ := set $values "id" (printf "{{ $_ := set . \"$id\" .%s }}" $idKey) -}}
+    {{- $_ := set $values "id" (printf "{{ $_ := set . \"$id\" %s }}" $id) -}}
 
     {{- $gitGenerators := list -}}
     {{- range $valueFile := $valueFiles -}}
