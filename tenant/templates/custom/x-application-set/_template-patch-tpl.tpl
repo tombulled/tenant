@@ -37,7 +37,11 @@
       {{- end -}}
 
       {{- /* Update the object to use the value of the current key. After the last iteration, '$obj' will contain the final value */ -}}
-      {{- $obj = get $obj $key -}}
+      {{- $obj = index $obj $key -}}
+    {{- end -}}
+
+    {{- if eq $obj nil -}}
+      {{- $obj = "" -}}
     {{- end -}}
 
     {{- /* Replace the match (e.g. "{{.name}}") in the template with the digged value */ -}}
