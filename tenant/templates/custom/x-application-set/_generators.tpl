@@ -131,7 +131,7 @@
       {{- end -}}
     {{- end -}}
 
-    {{- $_ := set $values "id" (printf "{{ $_ := set . \"$id\" %s }}" $id) -}}
+    {{- $_ := set $values "id" (printf "{{ $_ := set . \"$id\" (%s) }}" $id) -}}
 
     {{- $gitGenerators := list -}}
     {{- range $valueFile := $valueFiles -}}
