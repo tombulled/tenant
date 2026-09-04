@@ -1,0 +1,8 @@
+applicationSet:
+  name: test
+  template:
+    spec:
+      project: test
+  generators:
+    - list:
+        elements: []

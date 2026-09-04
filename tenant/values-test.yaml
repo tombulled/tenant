@@ -1,0 +1,13 @@
+project:
+  name: test
+  description: oidc:{{.role}}a
+
+namespaces:
+  foo: {}
+  bar: {}
+
+application:
+  name: tenant-metrics
+  source:
+    helm:
+      namespaces: '{{ dict "namespaces" (list) | toYaml | nindent 4 }}'
