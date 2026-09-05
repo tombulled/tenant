@@ -11,7 +11,7 @@ defaults:
   namespace: some-namespace
   rules: ~
 
-roles:
+clusterRoles:
   foo: {}
   bar: {}
 
