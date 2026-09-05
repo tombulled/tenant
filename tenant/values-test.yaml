@@ -9,9 +9,10 @@ defaults:
     is-cool: "true"
     has-food: ~
   namespace: some-namespace
-  rules: ~
+  limits:
+    - foo
 
-networkPolicies:
+limitRanges:
   foo: {}
   bar: {}
 
