@@ -1,21 +1,14 @@
 {{- range include "tenant.resources.network-policies" $ | fromYamlArray }}
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-{{ template "tenant.metadata" (dict "data" .) }}
-spec:
-  {{- with .egress }}
-  egress: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .ingress }}
-  ingress: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .podSelector }}
-  podSelector: {{ . | toYaml | nindent 4 }}
-  {{- else }}
-  podSelector: {}
-  {{- end }}
-  {{- with .policyTypes }}
-  policyTypes: {{- . | toYaml | nindent 4 }}
-  {{- end }}
+{{ (dict
+  "apiVersion" "networking.k8s.io/v1"
+  "kind" "NetworkPolicy"
+  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "spec" (dict
+    "egress" .egress
+    "ingress" .ingress
+    "podSelector" (.podSelector | default (dict))
+    "policyTypes" .policyTypes
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}
