@@ -7,6 +7,17 @@ applicationSetDefaults:
   goTemplate: true
   ignoreApplicationDifferences:
     - {name: doo}
+  preservedFields:
+    foo: bar
+  strategy:
+    foo: bar
+  syncPolicy:
+    foo: bar
+  template:
+    foo: bar
+  templatePatch: |
+    some
+    patch
 
 applicationSets:
   foo: {}

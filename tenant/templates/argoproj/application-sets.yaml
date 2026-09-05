@@ -1,55 +1,22 @@
 {{- define "tenant.application-set.tpl" -}}
-apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
-{{ template "tenant.metadata" (dict "data" .) }}
-spec:
-  {{- if ne .applyNestedSelectors nil }}
-  applyNestedSelectors: {{ .applyNestedSelectors }}
-  {{- end }}
-  {{- if and .generatorsObject .generators }}
-    {{- fail "Specify either 'generatorsObject' or 'generators', not both." }}
-  {{- end }}
-  {{- with .generatorsObject }}
-  {{- $generators := include "tenant.utils.map-to-list" (dict "map" .) | fromYamlArray }}
-  generators: {{ include "tenant.utils.to-yaml" (dict "value" $generators "indent" 4) }}
-  {{- else with .generators }}
-  generators: {{- . | toYaml | nindent 4 }}
-  {{- else }}
-  generators: []
-  {{- end }}
-  {{- if ne .goTemplate nil }}
-  goTemplate: {{ .goTemplate }}
-  {{- end }}
-  {{- if and .goTemplateOptionsObject .goTemplateOptions }}
-    {{- fail "Specify either 'goTemplateOptionsObject' or 'goTemplateOptions', not both." }}
-  {{- end }}
-  {{- with .goTemplateOptionsObject }}
-  goTemplateOptions:
-    {{- range $key, $val := . }}
-    - {{ printf "%s=%s" $key (toString $val) }}
-    {{- end }}
-  {{- else with .goTemplateOptions }}
-  goTemplateOptions: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .ignoreApplicationDifferences }}
-  ignoreApplicationDifferences: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .preservedFields }}
-  preservedFields: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .strategy }}
-  strategy: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .syncPolicy }}
-  syncPolicy: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .template }}
-  template: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .templatePatch }}
-  templatePatch: |
-    {{- . | nindent 4 }}
-  {{- end }}
+{{ (dict
+  "apiVersion" "argoproj.io/v1alpha1"
+  "kind" "ApplicationSet"
+  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "spec" (dict
+    "applyNestedSelectors" .applyNestedSelectors
+    "generators" (include "tenant.utils.list-or-map" (dict
+      "value" .generators
+    ) | fromYamlArray)
+    "goTemplate" .goTemplate
+    "ignoreApplicationDifferences" .ignoreApplicationDifferences
+    "preservedFields" .preservedFields
+    "strategy" .strategy
+    "syncPolicy" .syncPolicy
+    "template" .template
+    "templatePatch" .templatePatch
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end -}}
 
 {{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
