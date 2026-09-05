@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "ClusterRole"
-  "metadata" (include "tenant.metadata2" (dict "data" . "namespace" false) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" . "namespace" false) | fromYaml)
   "aggregationRule" .aggregationRule
   "rules" (ternary
     .rules

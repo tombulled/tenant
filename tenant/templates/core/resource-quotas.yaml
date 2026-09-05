@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "v1"
   "kind" "ResourceQuota"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "spec" (dict
     "hard" (.hard | default (dict))
     "scopeSelector" .scopeSelector

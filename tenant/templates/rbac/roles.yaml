@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "Role"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "rules" (ternary
     .rules
     (include "tenant.utils.list-or-map" (dict

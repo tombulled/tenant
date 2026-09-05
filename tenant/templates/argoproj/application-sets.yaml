@@ -2,7 +2,7 @@
 {{ (dict
   "apiVersion" "argoproj.io/v1alpha1"
   "kind" "ApplicationSet"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "spec" (dict
     "applyNestedSelectors" .applyNestedSelectors
     "generators" (include "tenant.utils.list-or-map" (dict

@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "v1"
   "kind" "LimitRange"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "spec" (dict
     "limits" (include "tenant.utils.list-or-map" (dict
       "value" .limits

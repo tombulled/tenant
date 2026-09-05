@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "v1"
   "kind" "Namespace"
-  "metadata" (include "tenant.metadata2" (dict "data" . "finalizers" false "namespace" false) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" . "finalizers" false "namespace" false) | fromYaml)
   "spec" (dict
     "finalizers" .finalizers
   )

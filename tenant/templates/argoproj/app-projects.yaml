@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "argoproj.io/v1alpha1"
   "kind" "AppProject"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "spec" (dict
     "permitOnlyProjectScopedClusters" .permitOnlyProjectScopedClusters
     "description" .description

@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "networking.k8s.io/v1"
   "kind" "NetworkPolicy"
-  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "metadata" (include "tenant.metadata" (dict "data" .) | fromYaml)
   "spec" (dict
     "egress" .egress
     "ingress" .ingress
