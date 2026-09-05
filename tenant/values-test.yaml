@@ -1,16 +1,16 @@
-# sealedSecrets:
-#   foo:
-#     annotations:
-#       is-cool: ~
-#       name: sam
+sealedSecrets:
+  foo:
+    annotations:
+      is-cool: ~
+      name: sam
 
 
-namespace:
-  name: test
-  annotations:
-    is-cool:
-      you-know: it
----
-namespace:
-  annotations:
-    is-cool: ~
+# namespace:
+#   name: test
+#   annotations:
+#     is-cool:
+#       you-know: it
+# ---
+# namespace:
+#   annotations:
+#     is-cool: ~

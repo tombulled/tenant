@@ -1,4 +1,0 @@
-x: {{ "1" | fromYaml }}
-a: {{ kindOf list }}
-b: {{ typeOf list }}
-c: {{ "true" | fromJson }}
