@@ -1,9 +1,19 @@
-sealedSecrets:
-  foo:
-    annotations:
-      is-cool: ~
-      name: sam
+# sealedSecrets:
+#   foo:
+#     annotations:
+#       is-cool: ~
+#       name: sam
 
+defaults:
+  annotations:
+    is-cool: "true"
+    has-food: ~
+  namespace: some-namespace
+  rules: ~
+
+roles:
+  foo: {}
+  bar: {}
 
 # namespace:
 #   name: test
@@ -14,3 +24,14 @@ sealedSecrets:
 # namespace:
 #   annotations:
 #     is-cool: ~
+
+# extraResource:
+#   names:
+#     foo: {}
+# ---
+# extraResource:
+#   names: [foo]
+# ---
+# extraResource:
+#   names:
+#     bar: {}

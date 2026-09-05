@@ -1,3 +1,17 @@
+{{- define "tenant.utils.list-or-map" -}}
+  {{- $value := .value -}}
+  {{- $propagateMapKeyToField := .propagateMapKeyToField -}}
+
+  {{- if kindIs "map" $value }}
+    {{- $list = include "tenant.utils.map-to-list" (dict
+      "map" $value
+      "field" $propagateMapKeyToField
+    ) | fromYamlArray }}
+  {{- end }}
+
+  {{- $value | toYaml }}
+{{- end -}}
+
 {{- define "tenant.utils.filter-map" -}}
   {{- $map := dict -}}
 
@@ -19,7 +33,7 @@
 {{- end -}}
 
 {{- define "tenant.utils.filter-list" -}}
-  {{- $list := dict -}}
+  {{- $list := list -}}
 
   {{- range $val := . | default list -}}
     {{- if eq $val nil -}}

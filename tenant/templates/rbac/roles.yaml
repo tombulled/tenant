@@ -1,16 +1,16 @@
 {{- range include "tenant.resources.roles" $ | fromYamlArray }}
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-{{ template "tenant.metadata" (dict "data" .) }}
-{{- if and .rulesObject .rules }}
-  {{- fail "Specify either 'rulesObject' or 'rules', not both." }}
-{{- end }}
-{{- $rules := .rules }}
-{{- if ne .rulesObject nil }}
-  {{- $rules = include "tenant.utils.map-to-list" (dict "map" .rulesObject "field" "name") | fromYamlArray }}
-{{- end }}
-{{- if ne $rules nil }}
-rules: {{ include "tenant.utils.to-yaml" (dict "value" $rules "indent" 2) }}
-{{- end }}
+{{ (dict
+  "apiVersion" "rbac.authorization.k8s.io/v1"
+  "kind" "Role"
+  "metadata" (include "tenant.metadata2" . | fromYaml)
+  "rules" (ternary
+    .rules
+    (include "tenant.utils.list-or-map" (dict
+      "value" .rules
+      "propagateMapKeyToField" "name"
+    ) | fromYamlArray)
+    (eq .rules nil)
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}
