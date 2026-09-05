@@ -1,48 +1,38 @@
-# sealedSecrets:
-#   foo:
-#     annotations:
-#       is-cool: ~
-#       name: sam
-
-defaults:
+projectDefaults:
+  namespace: argocd
   annotations:
-    is-cool: "true"
-    has-food: ~
-  namespace: some-namespace
-  limits:
-    - foo
-  finalizers:
-    - some-fin
-  hard:
-    cpu: 10
-    memory: ~
-  subjects:
-    sally:
-      kind: User
-  roleRef:
-    name: some-sec
+    is-project: "true"
+    has-chips: ~
+  description: "{{$id}} is cool"
+  permitOnlyProjectScopedClusters: false
+  sourceRepos:
+    - google.com
+    - null
+  destinations:
+    jenkins: {}
+    gitlab: {}
+  clusterResourceBlacklist:
+    all:
+      kind: "*"
+      name: "*"
+    namespace:
+      $enabled: false
+      kind: ""
+      name: "Namespace"
+  namespaceResourceWhitelist:
+    - kind: "*"
+      name: "*"
+  orphanedResources:
+    name: bob
+  roles:
+    foo:
+      description: some roles
+  syncWindows:
+    all-apps:
+      applications: "*"
+  signatureKeys:
+    0xabc: {}
 
-clusterRoleBindings:
+projects:
   foo: {}
   bar: {}
-
-# namespace:
-#   name: test
-#   annotations:
-#     is-cool:
-#       you-know: it
-# ---
-# namespace:
-#   annotations:
-#     is-cool: ~
-
-# extraResource:
-#   names:
-#     foo: {}
-# ---
-# extraResource:
-#   names: [foo]
-# ---
-# extraResource:
-#   names:
-#     bar: {}

@@ -1,120 +1,74 @@
 {{- range include "tenant.resources.app-projects" $ | fromYamlArray }}
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: AppProject
-{{ template "tenant.metadata" (dict "data" .) }}
-spec:
-  {{- if ne .permitOnlyProjectScopedClusters nil }}
-  permitOnlyProjectScopedClusters: {{ .permitOnlyProjectScopedClusters }}
-  {{- end }}
-
-  {{- if ne .description nil }}
-  description: {{ .description | quote }}
-  {{- end }}
-
-  {{- if ne .sourceRepos nil }}
-  sourceRepos: {{ include "tenant.utils.to-yaml" (dict "value" .sourceRepos "indent" 4) }}
-  {{- end }}
-
-  {{- if and .destinationsObject .destinations }}
-    {{- fail "Specify either 'destinationsObject' or 'destinations', not both." }}
-  {{- end }}
-  {{- $destinations := .destinations }}
-  {{- if ne .destinationsObject nil }}
-    {{- $destinations = list }}
-    {{- range include "tenant.utils.map-to-list" (dict "map" .destinationsObject "field" "namespace") | fromYamlArray }}
-      {{- if and (eq .name nil) (eq .server nil) }}
-        {{- $_ := set . "name" "in-cluster" }}
-      {{- end }}
-      {{- $destinations = append $destinations . }}
-    {{- end }}
-  {{- end }}
-  {{- if ne $destinations nil }}
-  destinations: {{ include "tenant.utils.to-yaml" (dict "value" $destinations "indent" 4) }}
-  {{- end }}
-
-  {{- if and (ne .clusterResourceBlacklistObject nil) (ne .clusterResourceBlacklist nil) }}
-    {{- fail "Specify either 'clusterResourceBlacklistObject' or 'clusterResourceBlacklist', not both." }}
-  {{- end }}
-  {{- $clusterResourceBlacklist := .clusterResourceBlacklist }}
-  {{- if ne .clusterResourceBlacklistObject nil }}
-    {{- $clusterResourceBlacklist = include "tenant.utils.map-to-list" (dict "map" .clusterResourceBlacklistObject) | fromYamlArray }}
-  {{- end }}
-  {{- if ne $clusterResourceBlacklist nil }}
-  clusterResourceBlacklist: {{ include "tenant.utils.to-yaml" (dict "value" $clusterResourceBlacklist "indent" 4) }}
-  {{- end }}
-
-  {{- if and (ne .clusterResourceWhitelistObject nil) (ne .clusterResourceWhitelist nil) }}
-    {{- fail "Specify either 'clusterResourceWhitelistObject' or 'clusterResourceWhitelist', not both." }}
-  {{- end }}
-  {{- $clusterResourceWhitelist := .clusterResourceWhitelist }}
-  {{- if ne .clusterResourceWhitelistObject nil }}
-    {{- $clusterResourceWhitelist = include "tenant.utils.map-to-list" (dict "map" .clusterResourceWhitelistObject) | fromYamlArray }}
-  {{- end }}
-  {{- if ne $clusterResourceWhitelist nil }}
-  clusterResourceWhitelist: {{ include "tenant.utils.to-yaml" (dict "value" $clusterResourceWhitelist "indent" 4) }}
-  {{- end }}
-
-  {{- if and (ne .namespaceResourceBlacklistObject nil) (ne .namespaceResourceBlacklist nil) }}
-    {{- fail "Specify either 'namespaceResourceBlacklistObject' or 'namespaceResourceBlacklist', not both." }}
-  {{- end }}
-  {{- $namespaceResourceBlacklist := .namespaceResourceBlacklist }}
-  {{- if ne .namespaceResourceBlacklistObject nil }}
-    {{- $namespaceResourceBlacklist = include "tenant.utils.map-to-list" (dict "map" .namespaceResourceBlacklistObject) | fromYamlArray }}
-  {{- end }}
-  {{- if ne $namespaceResourceBlacklist nil }}
-  namespaceResourceBlacklist: {{ include "tenant.utils.to-yaml" (dict "value" $namespaceResourceBlacklist "indent" 4) }}
-  {{- end }}
-
-  {{- if and (ne .namespaceResourceWhitelistObject nil) (ne .namespaceResourceWhitelist nil) }}
-    {{- fail "Specify either 'namespaceResourceWhitelistObject' or 'namespaceResourceWhitelist', not both." }}
-  {{- end }}
-  {{- $namespaceResourceWhitelist := .namespaceResourceWhitelist }}
-  {{- if ne .namespaceResourceWhitelistObject nil }}
-    {{- $namespaceResourceWhitelist = include "tenant.utils.map-to-list" (dict "map" .namespaceResourceWhitelistObject) | fromYamlArray }}
-  {{- end }}
-  {{- if ne $namespaceResourceWhitelist nil }}
-  namespaceResourceWhitelist: {{ include "tenant.utils.to-yaml" (dict "value" $namespaceResourceWhitelist "indent" 4) }}
-  {{- end }}
-
-  {{- if ne .orphanedResources nil }}
-  orphanedResources: {{ include "tenant.utils.to-yaml" (dict "value" .orphanedResources "indent" 4) }}
-  {{- end }}
-
-  {{- if and .rolesObject .roles }}
-    {{- fail "Specify either 'rolesObject' or 'roles', not both." }}
-  {{- end }}
-  {{- with .rolesObject }}
-  {{- with include "tenant.utils.map-to-list" (dict "map" . "field" "name") | fromYamlArray }}
-  roles: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- else with .roles }}
-  roles: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-
-  {{- if and .syncWindowsObject .syncWindows }}
-    {{- fail "Specify either 'syncWindowsObject' or 'syncWindows', not both." }}
-  {{- end }}
-  {{- $syncWindows := .syncWindows }}
-  {{- if ne .syncWindowsObject nil }}
-    {{- $syncWindows = include "tenant.utils.map-to-list" (dict "map" .syncWindowsObject) | fromYamlArray }}
-  {{- end }}
-  {{- if ne $syncWindows nil }}
-  syncWindows: {{ include "tenant.utils.to-yaml" (dict "value" $syncWindows "indent" 4) }}
-  {{- end }}
-
-  {{- if and .signatureKeysObject .signatureKeys }}
-    {{- fail "Specify either 'signatureKeysObject' or 'signatureKeys', not both." }}
-  {{- end }}
-  {{- $signatureKeys := .signatureKeys }}
-  {{- if ne .signatureKeysObject nil }}
-    {{- $signatureKeys = include "tenant.utils.map-to-list" (dict "map" .signatureKeysObject "field" "keyID") | fromYamlArray }}
-  {{- end }}
-  {{- if ne $signatureKeys nil }}
-  signatureKeys: {{ include "tenant.utils.to-yaml" (dict "value" $signatureKeys "indent" 4) }}
-  {{- end }}
-
-  {{- if ne .sourceNamespaces nil }}
-  sourceNamespaces: {{ include "tenant.utils.to-yaml" (dict "value" .sourceNamespaces "indent" 4) }}
-  {{- end }}
+{{ (dict
+  "apiVersion" "argoproj.io/v1alpha1"
+  "kind" "AppProject"
+  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "spec" (dict
+    "permitOnlyProjectScopedClusters" .permitOnlyProjectScopedClusters
+    "description" .description
+    "sourceRepos" .sourceRepos
+    "destinations" (ternary
+      .destinations
+      (include "tenant.utils.list-or-map" (dict
+        "value" .destinations
+        "propagateMapKeyToField" "namespace"
+      ) | fromYamlArray)
+      (eq .destinations nil)
+    )
+    "clusterResourceBlacklist" (ternary
+      .clusterResourceBlacklist
+      (include "tenant.utils.list-or-map" (dict
+        "value" .clusterResourceBlacklist
+      ) | fromYamlArray)
+      (eq .clusterResourceBlacklist nil)
+    )
+    "clusterResourceWhitelist" (ternary
+      .clusterResourceWhitelist
+      (include "tenant.utils.list-or-map" (dict
+        "value" .clusterResourceWhitelist
+      ) | fromYamlArray)
+      (eq .clusterResourceWhitelist nil)
+    )
+    "namespaceResourceBlacklist" (ternary
+      .namespaceResourceBlacklist
+      (include "tenant.utils.list-or-map" (dict
+        "value" .namespaceResourceBlacklist
+      ) | fromYamlArray)
+      (eq .namespaceResourceBlacklist nil)
+    )
+    "namespaceResourceWhitelist" (ternary
+      .namespaceResourceWhitelist
+      (include "tenant.utils.list-or-map" (dict
+        "value" .namespaceResourceWhitelist
+      ) | fromYamlArray)
+      (eq .namespaceResourceWhitelist nil)
+    )
+    "orphanedResources" .orphanedResources
+    "roles" (ternary
+      .roles
+      (include "tenant.utils.list-or-map" (dict
+        "value" .roles
+        "propagateMapKeyToField" "name"
+      ) | fromYamlArray)
+      (eq .roles nil)
+    )
+    "syncWindows" (ternary
+      .syncWindows
+      (include "tenant.utils.list-or-map" (dict
+        "value" .syncWindows
+      ) | fromYamlArray)
+      (eq .syncWindows nil)
+    )
+    "signatureKeys" (ternary
+      .signatureKeys
+      (include "tenant.utils.list-or-map" (dict
+        "value" .signatureKeys
+        "propagateMapKeyToField" "keyID"
+      ) | fromYamlArray)
+      (eq .signatureKeys nil)
+    )
+    "sourceNamespaces" .sourceNamespaces
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}
