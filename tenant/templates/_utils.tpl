@@ -3,7 +3,7 @@
   {{- $propagateMapKeyToField := .propagateMapKeyToField -}}
 
   {{- if kindIs "map" $value }}
-    {{- $list = include "tenant.utils.map-to-list" (dict
+    {{- $value = include "tenant.utils.map-to-list" (dict
       "map" $value
       "field" $propagateMapKeyToField
     ) | fromYamlArray }}

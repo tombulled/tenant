@@ -16,8 +16,13 @@ defaults:
   hard:
     cpu: 10
     memory: ~
+  subjects:
+    sally:
+      kind: User
+  roleRef:
+    name: some-sec
 
-resourceQuotas:
+roleBindings:
   foo: {}
   bar: {}
 
