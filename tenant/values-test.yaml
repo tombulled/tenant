@@ -11,8 +11,10 @@ defaults:
   namespace: some-namespace
   limits:
     - foo
+  finalizers:
+    - some-fin
 
-limitRanges:
+namespaces:
   foo: {}
   bar: {}
 

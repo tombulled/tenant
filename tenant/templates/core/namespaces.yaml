@@ -1,10 +1,11 @@
 {{- range include "tenant.resources.namespaces" $ | fromYamlArray }}
 ---
-apiVersion: v1
-kind: Namespace
-{{ template "tenant.metadata" (dict "data" . "finalizers" false "namespace" false) }}
-{{- with .finalizers }}
-spec:
-  finalizers: {{- . | toYaml | nindent 4 }}
-{{- end }}
+{{ (dict
+  "apiVersion" "v1"
+  "kind" "Namespace"
+  "metadata" (include "tenant.metadata2" (dict "data" . "finalizers" false "namespace" false) | fromYaml)
+  "spec" (dict
+    "finalizers" .finalizers
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}
