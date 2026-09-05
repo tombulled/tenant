@@ -7,7 +7,7 @@
 {{- end -}}
 
 {{- define "tenant.resources.app-projects" -}}
-  {{- include "tenant.resource.list" (dict "root" $ "key" "project") -}}
+  {{- include "tenant.resource.list" (dict "root" $ "key" "appProject") -}}
 {{- end -}}
 
 {{- define "tenant.resources.cluster-role-bindings" -}}

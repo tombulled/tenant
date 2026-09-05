@@ -1,5 +1,9 @@
 defaults: {}
 
+appProjectDefaults: {}
+appProject: ~
+appProjects: {}
+
 applicationDefaults: {}
 application: ~
 applications: {}
@@ -7,10 +11,6 @@ applications: {}
 applicationSetDefaults: {}
 applicationSet: ~
 applicationSets: {}
-
-projectDefaults: {}
-project: ~
-projects: {}
 
 clusterRoleBindingDefaults: {}
 clusterRoleBinding: ~

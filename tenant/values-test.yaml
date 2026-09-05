@@ -1,4 +1,4 @@
-projectDefaults:
+appProjectDefaults:
   namespace: argocd
   annotations:
     is-project: "true"
@@ -33,6 +33,6 @@ projectDefaults:
   signatureKeys:
     0xabc: {}
 
-projects:
+appProjects:
   foo: {}
   bar: {}
