@@ -1,3 +1,62 @@
+{{- /* {{- define "tenant.utils.is-object" -}}
+	{{- if or (kindIs "map" .) (kindIs "slice" .) -}}
+		{{- "true" -}}
+	{{- end -}}
+{{- end -}} */ -}}
+
+{{- /* {{- define "tenant.utils.filter" -}}
+  {{- $obj := . -}}
+
+	{{- $objKind := kindOf $obj -}}
+	{{- if eq $objKind "map" -}}
+		{{- include "tenant.utils.filter-map" . | toYaml -}}
+	{{- else if eq $objKind "slice" -}}
+		{{- include "tenant.utils.filter-list" . | toYaml -}}
+	{{- else -}}
+		{{- fail (printf "Expected map of list, got '%s'" $objKind) -}}
+	{{- end -}}
+{{- end -}} */ -}}
+
+{{- define "tenant.utils.filter-map" -}}
+  {{- $map := dict -}}
+
+  {{- range $key, $val := . | default dict -}}
+    {{- if eq $val nil -}}
+			{{- continue -}}
+		{{- end -}}
+
+		{{- if kindIs "map" $val -}}
+			{{- $val = include "tenant.utils.filter-map" $val | fromYaml -}}
+		{{- else if kindIs "slice" $val -}}
+			{{- $val = include "tenant.utils.filter-list" $val | fromYamlArray -}}
+		{{- end -}}
+
+    {{- $_ := set $map $key $val -}}
+  {{- end -}}
+
+  {{- $map | toYaml -}}
+{{- end -}}
+
+{{- define "tenant.utils.filter-list" -}}
+  {{- $list := dict -}}
+
+  {{- range $val := . | default list -}}
+    {{- if eq $val nil -}}
+			{{- continue -}}
+		{{- end -}}
+
+		{{- if kindIs "map" $val -}}
+			{{- $val = include "tenant.utils.filter-map" $val | fromYaml -}}
+		{{- else if kindIs "slice" $val -}}
+			{{- $val = include "tenant.utils.filter-list" $val | fromYamlArray -}}
+		{{- end -}}
+
+    {{- $list = append $list $val -}}
+  {{- end -}}
+
+  {{- $list | toYamlArray -}}
+{{- end -}}
+
 {{- define "tenant.utils.ensure-from-yaml" -}}
   {{- $map := . | fromYaml -}}
 
@@ -33,18 +92,6 @@
   {{- end -}}
 
   {{- $merged | toYaml -}}
-{{- end -}}
-
-{{- define "tenant.utils.filter-map" -}}
-  {{- $map := dict -}}
-
-  {{- range $key, $val := . | default dict -}}
-    {{- if ne $val nil -}}
-      {{- $_ := set $map $key $val -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- $map | toYaml -}}
 {{- end -}}
 
 {{- define "tenant.utils.to-yaml" -}}
