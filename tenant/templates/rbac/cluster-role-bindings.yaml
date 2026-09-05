@@ -1,19 +1,17 @@
 {{- range include "tenant.resources.cluster-role-bindings" $ | fromYamlArray }}
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-{{ template "tenant.metadata" (dict "data" . "namespace" false) }}
-{{- if ne .roleRef nil }}
-roleRef: {{ include "tenant.utils.to-yaml" (dict "value" .roleRef "indent" 2) }}
-{{- end }}
-{{- if and .subjectsObject .subjects }}
-  {{- fail "Specify either 'subjectsObject' or 'subjects', not both." }}
-{{- end }}
-{{- $subjects := .subjects }}
-{{- if ne .subjectsObject nil }}
-  {{- $subjects = include "tenant.utils.map-to-list" (dict "map" .subjectsObject "field" "name") | fromYamlArray }}
-{{- end }}
-{{- if ne $subjects nil }}
-subjects: {{ include "tenant.utils.to-yaml" (dict "value" $subjects "indent" 2) }}
-{{- end }}
+{{ (dict
+  "apiVersion" "rbac.authorization.k8s.io/v1"
+  "kind" "ClusterRoleBinding"
+  "metadata" (include "tenant.metadata2" (dict "data" . "namespace" false) | fromYaml)
+  "roleRef" .roleRef
+  "subjects" (ternary
+    .subjects
+    (include "tenant.utils.list-or-map" (dict
+      "value" .subjects
+      "propagateMapKeyToField" "name"
+    ) | fromYamlArray)
+    (eq .subjects nil)
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}

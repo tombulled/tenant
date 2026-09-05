@@ -22,7 +22,7 @@ defaults:
   roleRef:
     name: some-sec
 
-roleBindings:
+clusterRoleBindings:
   foo: {}
   bar: {}
 
