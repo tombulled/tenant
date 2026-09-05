@@ -1,38 +1,13 @@
-appProjectDefaults:
-  namespace: argocd
-  annotations:
-    is-project: "true"
-    has-chips: ~
-  description: "{{$id}} is cool"
-  permitOnlyProjectScopedClusters: false
-  sourceRepos:
-    - google.com
-    - null
-  destinations:
-    jenkins: {}
-    gitlab: {}
-  clusterResourceBlacklist:
-    all:
-      kind: "*"
-      name: "*"
-    namespace:
-      $enabled: false
-      kind: ""
-      name: "Namespace"
-  namespaceResourceWhitelist:
-    - kind: "*"
-      name: "*"
-  orphanedResources:
-    name: bob
-  roles:
-    foo:
-      description: some roles
-  syncWindows:
-    all-apps:
-      applications: "*"
-  signatureKeys:
-    0xabc: {}
+applicationSetDefaults:
+  applyNestedSelectors: false
+  generators:
+    - list:
+        elements:
+          - name: foo
+  goTemplate: true
+  ignoreApplicationDifferences:
+    - {name: doo}
 
-appProjects:
+applicationSets:
   foo: {}
   bar: {}

@@ -1,0 +1,20 @@
+{{- define "tenant.application-set.tpl" -}}
+{{ (dict
+  "apiVersion" "argoproj.io/v1alpha1"
+  "kind" "ApplicationSet"
+  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "spec" (dict
+    "applyNestedSelectors" .applyNestedSelectors
+    "generators" (include "tenant.utils.list-or-map" (dict
+      "value" .generators
+    ) | fromYamlArray)
+    "goTemplate" .goTemplate
+    "ignoreApplicationDifferences" .ignoreApplicationDifferences
+  )
+) | include "tenant.utils.filter-map" }}
+{{- end -}}
+
+{{- range include "tenant.resources.application-sets" $ | fromYamlArray }}
+---
+{{ include "tenant.application-set.tpl" . }}
+{{- end }}
