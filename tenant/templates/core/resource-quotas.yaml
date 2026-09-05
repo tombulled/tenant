@@ -1,18 +1,13 @@
 {{- range include "tenant.resources.resource-quotas" $ | fromYamlArray }}
 ---
-apiVersion: v1
-kind: ResourceQuota
-{{ template "tenant.metadata" (dict "data" .) }}
-spec:
-  {{- with .hard | include "tenant.utils.filter-map" | fromYaml }}
-  hard: {{- . | toYaml | nindent 4 }}
-  {{- else }}
-  hard: {}
-  {{- end }}
-  {{- with .scopeSelector }}
-  scopeSelector: {{- . | toYaml | nindent 4 }}
-  {{- end }}
-  {{- with .scopes }}
-  scopes: {{- . | toYaml | nindent 4 }}
-  {{- end }}
+{{ (dict
+  "apiVersion" "v1"
+  "kind" "ResourceQuota"
+  "metadata" (include "tenant.metadata2" (dict "data" .) | fromYaml)
+  "spec" (dict
+    "hard" (.hard | default (dict))
+    "scopeSelector" .scopeSelector
+    "scopes" .scopes
+  )
+) | include "tenant.utils.filter-map" }}
 {{- end }}

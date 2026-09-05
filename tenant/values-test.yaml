@@ -13,8 +13,11 @@ defaults:
     - foo
   finalizers:
     - some-fin
+  hard:
+    cpu: 10
+    memory: ~
 
-namespaces:
+resourceQuotas:
   foo: {}
   bar: {}
 
