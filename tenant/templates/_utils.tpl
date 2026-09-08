@@ -52,7 +52,7 @@
   {{- $list | toYaml -}}
 {{- end -}}
 
-{{- define "tenant.utils.ensure-from-yaml" -}}
+{{- define "tenant.utils.validate-yaml" -}}
   {{- $map := . | fromYaml -}}
 
   {{- if $map.Error | default "" | hasPrefix "error converting YAML to JSON" -}}
