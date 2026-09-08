@@ -89,19 +89,6 @@
   {{- $merged | toYaml -}}
 {{- end -}}
 
-{{- define "tenant.utils.to-yaml" -}}
-  {{- $value := .value -}}
-  {{- $indent := .indent -}}
-
-  {{- if ne $value nil -}}
-    {{- if $value -}}
-      {{- $value | toYaml | nindent $indent -}}
-    {{- else -}}
-      {{- $value | toYaml -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
 {{- define "tenant.utils.dynamic-get" -}}
   {{- $map := .map | default dict -}}
   {{- $keys := .keys | default list -}}
