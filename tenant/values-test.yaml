@@ -1,5 +1,6 @@
-roles:
+clusterRoles:
   foo:
+    namespace: ns
     annotations:
       name: bob
       age: ~
