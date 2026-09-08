@@ -1,22 +1,22 @@
 {{- define "tenant.application-set.tpl" -}}
-{{ (dict
-  "apiVersion" "argoproj.io/v1alpha1"
-  "kind" "ApplicationSet"
-  "metadata" (include "tenant.metadata" . | fromYaml)
-  "spec" (dict
-    "applyNestedSelectors" .applyNestedSelectors
-    "generators" (include "tenant.utils.list-or-map" (dict
-      "value" .generators
-    ) | fromYamlArray)
-    "goTemplate" .goTemplate
-    "ignoreApplicationDifferences" .ignoreApplicationDifferences
-    "preservedFields" .preservedFields
-    "strategy" .strategy
-    "syncPolicy" .syncPolicy
-    "template" .template
-    "templatePatch" .templatePatch
-  )
-) | toYaml | include "tenant.utils.post-render" }}
+  {{- (dict
+    "apiVersion" "argoproj.io/v1alpha1"
+    "kind" "ApplicationSet"
+    "metadata" (include "tenant.metadata" . | fromYaml)
+    "spec" (dict
+      "applyNestedSelectors" .applyNestedSelectors
+      "generators" (include "tenant.utils.list-or-map" (dict
+        "value" .generators
+      ) | fromYamlArray)
+      "goTemplate" .goTemplate
+      "ignoreApplicationDifferences" .ignoreApplicationDifferences
+      "preservedFields" .preservedFields
+      "strategy" .strategy
+      "syncPolicy" .syncPolicy
+      "template" .template
+      "templatePatch" .templatePatch
+    )
+  ) | toYaml | include "tenant.utils.post-render" -}}
 {{- end -}}
 
 {{- range include "tenant.resources.application-sets" $ | fromYamlArray }}

@@ -1,8 +1,2 @@
-extraResources:
-  foo:
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      annotations:
-        is-cool: "true"
-        name: ~
+applicationSet:
+  name: test
