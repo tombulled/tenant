@@ -1,0 +1,5 @@
+roles:
+  foo:
+    annotations:
+      name: bob
+      age: ~

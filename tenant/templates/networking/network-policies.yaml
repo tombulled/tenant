@@ -10,5 +10,5 @@
     "podSelector" (.podSelector | default (dict))
     "policyTypes" .policyTypes
   )
-) | include "tenant.utils.filter-map" }}
+) | toYaml | include "tenant.utils.post-render" }}
 {{- end }}

@@ -9,5 +9,5 @@
     "scopeSelector" .scopeSelector
     "scopes" .scopes
   )
-) | include "tenant.utils.filter-map" }}
+) | toYaml | include "tenant.utils.post-render" }}
 {{- end }}

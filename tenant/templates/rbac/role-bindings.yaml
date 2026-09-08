@@ -13,5 +13,5 @@
     ) | fromYamlArray)
     (eq .subjects nil)
   )
-) | include "tenant.utils.filter-map" }}
+) | toYaml | include "tenant.utils.post-render" }}
 {{- end }}

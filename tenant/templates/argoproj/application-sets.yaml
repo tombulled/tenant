@@ -16,7 +16,7 @@
     "template" .template
     "templatePatch" .templatePatch
   )
-) | include "tenant.utils.filter-map" }}
+) | toYaml | include "tenant.utils.post-render" }}
 {{- end -}}
 
 {{- range include "tenant.resources.application-sets" $ | fromYamlArray }}

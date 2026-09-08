@@ -7,5 +7,5 @@
   "spec" (dict
     "finalizers" .finalizers
   )
-) | include "tenant.utils.filter-map" }}
+) | toYaml | include "tenant.utils.post-render" }}
 {{- end }}
