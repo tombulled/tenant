@@ -1,6 +1,8 @@
-clusterRoles:
+extraResources:
   foo:
-    namespace: ns
-    annotations:
-      name: bob
-      age: ~
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      annotations:
+        is-cool: "true"
+        name: ~
