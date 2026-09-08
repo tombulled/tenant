@@ -1,36 +1,21 @@
-{{- define "tenant.metadata._build" -}}
-  {{- $data := .data -}}
-  {{- $finalizers := ternary .finalizers true (ne .finalizers nil) -}}
-  {{- $namespace := ternary .namespace true (ne .namespace nil) -}}
-
-  {{- with $data -}}
-    {{- (dict
-      "annotations" .annotations
-      "finalizers" (ternary .finalizers nil $finalizers)
-      "labels" .labels
-      "name" .name
-      "namespace" (ternary .namespace nil $namespace)
-    ) | include "tenant.utils.filter-map" -}}
-  {{- end -}}
-{{- end -}}
-
 {{- define "tenant.metadata" -}}
-  {{- include "tenant.metadata._build" (dict
-    "data" .
-  ) -}}
+  {{- (dict
+    "annotations" .annotations
+    "finalizers" .finalizers
+    "labels" .labels
+    "name" .name
+    "namespace" .namespace
+  ) | include "tenant.utils.filter-map" -}}
 {{- end -}}
 
 {{- define "tenant.metadata.no-namespace" -}}
-  {{- include "tenant.metadata._build" (dict
-    "data" .
-    "namespace" false
-  ) -}}
+  {{- $metadata := include "tenant.metadata" . | fromYaml -}}
+  {{- $_ := unset $metadata "namespace" -}}
+  {{- $metadata | toYaml -}}
 {{- end -}}
 
 {{- define "tenant.metadata.no-namespace-or-finalizers" -}}
-  {{- include "tenant.metadata._build" (dict
-    "data" .
-    "finalizers" false
-    "namespace" false
-  ) -}}
+  {{- $metadata := include "tenant.metadata.no-namespace" . | fromYaml -}}
+  {{- $_ := unset $metadata "finalizers" -}}
+  {{- $metadata | toYaml -}}
 {{- end -}}

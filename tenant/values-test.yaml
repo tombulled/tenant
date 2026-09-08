@@ -1,2 +1,5 @@
-applicationSet:
+namespace:
   name: test
+  namespace: bob
+  finalizers:
+    - foo
