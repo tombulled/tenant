@@ -1,0 +1,4 @@
+{{ include "tenant.role.tpl" (dict
+  "name" "test"
+  "annotations" (dict "is-cool" "true")
+) }}
