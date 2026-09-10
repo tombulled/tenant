@@ -27,3 +27,14 @@ xApplicationSet:
         matchExpressions:
           - operator: Eq
             value: bob
+    - list:
+        elements:
+          - name: a
+          - name: b
+          - name: c
+      selector:
+        matchLabels:
+          is-bad: "true"
+        matchExpressions:
+          - operator: Ne
+            value: sally

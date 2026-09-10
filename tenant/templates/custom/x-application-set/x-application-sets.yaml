@@ -1,22 +1,26 @@
 {{- define "tenant.x-aplication-set.overrides" -}}
-{{- $ := .root }}
-{{- $appSet := .appSet }}
+{{- $ := .root -}}
+{{- $appSet := .appSet -}}
+
+{{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
+{{- $defaultEnabled := ne (index $defaults "$enabled") false -}}
 
 spec:
   goTemplate: true
   {{- with $appSet.generators }}
   generators:
     {{- range . }}
-    {{- $selectorMatchExpressions := dig "selector" "matchExpressions" (list) . }}
-    - {{- . | mustMerge (dict
-        "selector" (dict
-          "matchExpressions" (append $selectorMatchExpressions (dict
-            "key" "enabled"
-            "operator" "NotIn"
-            "values" (list "false")
-          ))
-        )
-      ) | toYaml | nindent 6 }}
+    - matrix:
+        generators:
+          - {{- . | toYaml | nindent 12 }}
+          - list:
+              elements:
+                - enabled: {{ printf `{{ ternary (index . "$enabled") %t (hasKey . "$enabled") }}` $defaultEnabled | quote }}
+        selector:
+          matchExpressions:
+            key: enabled
+            operator: NotIn
+            values: ["false"]
     {{- end }}
   {{- else }}
   generators: []
@@ -28,11 +32,6 @@ spec:
 {{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
 {{- $appSet := include "tenant.application-set.tpl" . | fromYaml }}
 {{- $overrides := include "tenant.x-aplication-set.overrides" (dict "root" $ "appSet" .) | fromYaml }}
-{{- /*{{- $_ := mustMergeOverwrite . (dict
-  "goTemplate" true
-  "generators" (include "tenant.x-application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray)
-  "templatePatch" (include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .))
-) }} */ -}}
 ---
 {{ mustMergeOverwrite $appSet $overrides | toYaml }}
 {{- end }}
