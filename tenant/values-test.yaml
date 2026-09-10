@@ -1,5 +1,17 @@
-namespace:
+# namespace:
+#   name: test
+#   namespace: bob
+#   finalizers:
+#     - foo
+
+applicationDefaults:
+  sources:
+    - repoURL: google.com
+      chart: foo
+      targetRevision: 1.2.3
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+
+xApplicationSet:
   name: test
-  namespace: bob
-  finalizers:
-    - foo

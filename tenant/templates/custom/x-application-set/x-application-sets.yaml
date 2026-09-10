@@ -1,10 +1,24 @@
+{{- define "tenant.x-aplication-set.overrides" -}}
+spec:
+  goTemplate: true
+  generators: []
+  templatePatch: ""
+{{- end -}}
+
 {{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
-{{- $_ := mustMergeOverwrite . (dict
+{{- $appSet := include "tenant.application-set.tpl" . | fromYaml }}
+{{- $overrides := include "tenant.x-aplication-set.overrides" . | fromYaml }}
+{{- /*{{- $overrides := (dict
+  "spec" (dict
+    "goTemplate" true
+  )
+) }} */ -}}
+{{- /*{{- $_ := mustMergeOverwrite . (dict
   "goTemplate" true
   "generators" (include "tenant.x-application-set.generators" (dict "root" $ "appSet" .) | fromYamlArray)
-  "generatorsObject" nil
   "templatePatch" (include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .))
-) }}
+) }} */ -}}
 ---
-{{ include "tenant.application-set.tpl" . }}
+{{- /*{{ include "tenant.application-set.tpl" . }}*/ -}}
+{{ mustMergeOverwrite $appSet $overrides | toYaml }}
 {{- end }}
