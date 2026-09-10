@@ -15,3 +15,15 @@ applicationDefaults:
 
 xApplicationSet:
   name: test
+  generators:
+    - list:
+        elements:
+          - name: foo
+          - name: bar
+          - name: baz
+      selector:
+        matchLabels:
+          is-cool: "true"
+        matchExpressions:
+          - operator: Eq
+            value: bob

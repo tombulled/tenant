@@ -4,9 +4,25 @@
 
 spec:
   goTemplate: true
+  {{- with $appSet.generators }}
+  generators:
+    {{- range . }}
+    {{- $selectorMatchExpressions := dig "selector" "matchExpressions" (list) . }}
+    - {{- . | mustMerge (dict
+        "selector" (dict
+          "matchExpressions" (append $selectorMatchExpressions (dict
+            "key" "enabled"
+            "operator" "NotIn"
+            "values" (list "false")
+          ))
+        )
+      ) | toYaml | nindent 6 }}
+    {{- end }}
+  {{- else }}
   generators: []
+  {{- end }}
   templatePatch: |
-    {{ include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .) }}
+    {{- include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .) | nindent 4 }}
 {{- end -}}
 
 {{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}
