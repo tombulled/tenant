@@ -21,11 +21,11 @@ spec:
           - list:
               elements:
                 - enabled: {{ printf `{{ ternary (index . "$enabled") %t (hasKey . "$enabled") }}` $defaultEnabled | quote }}
-        selector:
-          matchExpressions:
-            key: enabled
-            operator: NotIn
-            values: ["false"]
+      selector:
+        matchExpressions:
+          key: enabled
+          operator: NotIn
+          values: ["false"]
     {{- end }}
   {{- else }}
   generators: []
