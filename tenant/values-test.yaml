@@ -54,3 +54,7 @@ xApplicationSet:
         valueFiles:
           - values.yamk
           - values.-dev.uaml
+
+clusterRole:
+  name: test
+  namespace: bob

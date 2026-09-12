@@ -12,19 +12,11 @@
   {{- $data := . | first -}}
   {{- $excludeFields := . | rest -}}
 
-  {{- $metadata := include "tenant.metadata" . | fromYaml -}}
-  {{- $_ := unset $metadata "namespace" -}}
-  {{- $metadata | toYaml -}}
-{{- end -}}
+  {{- $metadata := include "tenant.metadata" $data | fromYaml -}}
 
-{{- define "tenant.metadata.no-namespace" -}}
-  {{- $metadata := include "tenant.metadata" . | fromYaml -}}
-  {{- $_ := unset $metadata "namespace" -}}
-  {{- $metadata | toYaml -}}
-{{- end -}}
+  {{- range $excludeFields -}}
+    {{- $_ := unset $metadata . -}}
+  {{- end -}}
 
-{{- define "tenant.metadata.no-namespace-or-finalizers" -}}
-  {{- $metadata := include "tenant.metadata.no-namespace" . | fromYaml -}}
-  {{- $_ := unset $metadata "finalizers" -}}
   {{- $metadata | toYaml -}}
 {{- end -}}

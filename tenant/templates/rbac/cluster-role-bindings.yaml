@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "ClusterRoleBinding"
-  "metadata" (include "tenant.metadata.no-namespace" . | fromYaml)
+  "metadata" (include "tenant.metadata.excluding" (list . "namespace") | fromYaml)
   "roleRef" .roleRef
   "subjects" (ternary
     .subjects
