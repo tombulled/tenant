@@ -23,7 +23,7 @@
       id: .path.basename
 */ -}}
 {{- define "tenant.x-application-set.x-git-generator.convert" -}}
-  {{- $generators := .generators | default list -}}
+  {{- $generators := . | default list -}}
 
   {{- $xGitKey := "x-git" -}}
 

@@ -5,7 +5,10 @@
 {{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 {{- $defaultEnabled := ne (index $defaults "$enabled") false -}}
 
-{{- $generators := include "tenant.x-application-set.x-git-generator.convert" (dict "generators" $appSet.generators) | fromYamlArray }}
+{{- $generators := include "tenant.utils.list-or-map" (dict
+  "value" $appSet.generators
+) | fromYamlArray -}}
+{{- $generators = include "tenant.x-application-set.x-git-generator.convert" $generators | fromYamlArray -}}
 
 spec:
   goTemplate: true
