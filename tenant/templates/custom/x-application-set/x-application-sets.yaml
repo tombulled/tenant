@@ -23,9 +23,9 @@ spec:
                 - enabled: {{ printf `{{ ternary (index . "$enabled") %t (hasKey . "$enabled") }}` $defaultEnabled | quote }}
       selector:
         matchExpressions:
-          key: enabled
-          operator: NotIn
-          values: ["false"]
+          - key: enabled
+            operator: NotIn
+            values: ["false"]
     {{- end }}
   {{- else }}
   generators: []
