@@ -38,3 +38,10 @@ xApplicationSet:
         matchExpressions:
           - operator: Ne
             value: sally
+    - x-git:
+        repoURL: google.com
+        directories:
+          - path: "*"
+        valueFiles:
+          - values.yamk
+          - values.-dev.uaml
