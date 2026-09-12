@@ -31,7 +31,7 @@ spec:
   generators: []
   {{- end }}
   templatePatch: |
-    {{- include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" .) | nindent 4 }}
+    {{- include "tenant.x-application-set.template-patch" (dict "root" $ "appSet" $appSet) | nindent 4 }}
 {{- end -}}
 
 {{- range include "tenant.resources.x-application-sets" $ | fromYamlArray }}

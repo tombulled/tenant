@@ -1,0 +1,8 @@
+defaults:
+  foo: bar
+applicationDefaults:
+  bar: baz
+xApplicationSet:
+  name: test
+  defaults:
+    baz: bat
