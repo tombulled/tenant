@@ -8,6 +8,15 @@
   ) | include "tenant.utils.filter-map" -}}
 {{- end -}}
 
+{{- define "tenant.metadata.excluding" -}}
+  {{- $data := . | first -}}
+  {{- $excludeFields := . | rest -}}
+
+  {{- $metadata := include "tenant.metadata" . | fromYaml -}}
+  {{- $_ := unset $metadata "namespace" -}}
+  {{- $metadata | toYaml -}}
+{{- end -}}
+
 {{- define "tenant.metadata.no-namespace" -}}
   {{- $metadata := include "tenant.metadata" . | fromYaml -}}
   {{- $_ := unset $metadata "namespace" -}}

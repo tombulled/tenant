@@ -63,7 +63,9 @@
 {{- end -}}
 
 {{- define "tenant.utils.post-render" -}}
-  {{- . | fromYaml | include "tenant.utils.filter-map" -}}
+  {{- $map := ternary (fromYaml .) . (typeIs "string" .) -}}
+
+  {{- $map | include "tenant.utils.filter-map" -}}
 {{- end -}}
 
 {{- define "tenant.utils.entries" -}}

@@ -1,4 +1,4 @@
 {{- range include "tenant.resources.extra-resources" $ | fromYamlArray }}
 ---
-{{ . | toYaml | include "tenant.utils.post-render" }}
+{{ . | include "tenant.utils.post-render" }}
 {{- end }}

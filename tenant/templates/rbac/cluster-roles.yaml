@@ -3,7 +3,7 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "ClusterRole"
-  "metadata" (include "tenant.metadata.no-namespace" . | fromYaml)
+  "metadata" (omit (include "tenant.metadata" . | fromYaml) "namespace")
   "aggregationRule" .aggregationRule
   "rules" (ternary
     .rules
@@ -13,5 +13,5 @@
     ) | fromYamlArray)
     (eq .rules nil)
   )
-) | toYaml | include "tenant.utils.post-render" }}
+) | include "tenant.utils.post-render" }}
 {{- end }}
