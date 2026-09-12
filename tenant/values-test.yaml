@@ -4,6 +4,15 @@
 #   finalizers:
 #     - foo
 
+extraResource:
+  metadata:
+    name: test
+    annotations:
+      name: ~
+  spec:
+    enabled: true
+    fish: ~
+
 applicationDefaults:
   sources:
     - repoURL: google.com
