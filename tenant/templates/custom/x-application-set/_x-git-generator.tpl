@@ -22,7 +22,7 @@
       mergeKey: path.path
       id: .path.basename
 */ -}}
-{{- define "tenant.x-application-set.generator.convert-x-git" -}}
+{{- define "tenant.x-application-set.x-git-generator.convert" -}}
   {{- $generators := .generators | default list -}}
 
   {{- $xGitKey := "x-git" -}}
