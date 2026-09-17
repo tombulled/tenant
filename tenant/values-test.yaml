@@ -13,3 +13,4 @@ xApplicationSet:
           - name: foo
           - name: bar
           - name: baz
+          - {}
