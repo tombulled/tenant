@@ -35,6 +35,9 @@
   {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
   {{- "{{- $data := mustMergeOverwrite (dict) $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
 
+  {{- "{{- /* Template name */ -}}" | printf "%s\n" }}
+  {{- `{{- $_ := set $data "name" (tpl $data.name $data) -}}` | printf "%s\n\n" }}
+
   {{- "{{- /* Template self */ -}}" | printf "%s\n" }}
   {{- "{{- $data = tpl (toYaml $data) $data | fromYaml -}}" | printf "%s\n\n" }}
 

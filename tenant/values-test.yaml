@@ -1,3 +1,6 @@
+# TODO:
+#   * Remove "variable fields" :'(
+
 applicationDefaults:
   annotations:
     my-name-is: "{{.name}}"
@@ -13,4 +16,5 @@ xApplicationSet:
           - name: foo
           - name: bar
           - name: baz
-          - {}
+          - id: cat
+            name: "app-{{ `{{.id}}` }}"
