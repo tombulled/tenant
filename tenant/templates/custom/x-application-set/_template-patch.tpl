@@ -33,10 +33,15 @@
   {{- printf "{{- $defaults := `\n%s\n` | fromYaml -}}" ($defaults | toYaml) | printf "%s\n\n" }}
 
   {{- "{{- /* Apply defaults */ -}}" | printf "%s\n" }}
-  {{- "{{- $_ := mustMergeOverwrite . $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
+  {{- "{{- $data := mustMergeOverwrite (dict) $defaults (deepCopy .) -}}" | printf "%s\n\n" }}
 
-  {{- include "tenant.x-application-set.template-patch.template-self" $ | printf "%s\n\n" }}
+  {{- "{{- /* Template self */ -}}" | printf "%s\n" }}
+  {{- "{{- $data = tpl (toYaml $data) $data | fromYaml -}}" | printf "%s\n\n" }}
+
+  {{- "{{- with $data -}}" | printf "%s\n" }}
 
   {{- /* Insert the application template */ -}}
-  {{- include "tenant.application.template" $ -}}
+  {{- include "tenant.application.template" $ | printf "%s\n" }}
+
+  {{- "{{- end -}}" -}}
 {{- end -}}

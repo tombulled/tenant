@@ -1,0 +1,15 @@
+applicationDefaults:
+  annotations:
+    my-name-is: "{{.name}}"
+
+xApplicationSet:
+  name: test
+  template:
+    spec:
+      project: default
+  generators:
+    - list:
+        elements:
+          - name: foo
+          - name: bar
+          - name: baz
