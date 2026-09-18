@@ -46,6 +46,7 @@ xApplicationSet:
             sources:
               extras:
                 $enabled: true
+              values: ~
           - id: cat
             name: "app-{{ `{{.id}}` }}"
             annotations:

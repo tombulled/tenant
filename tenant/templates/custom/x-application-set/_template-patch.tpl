@@ -27,6 +27,50 @@
   {{- $ := .root -}}
   {{- $appSet := .appSet -}}
 
+    {{- `
+{{- define "tenant.utils.list-or-map" -}}
+  {{- $value := .value -}}
+  {{- $propagateMapKeyToFields := .propagateMapKeyToFields | default list -}}
+  {{- $priorityMapKey := .priorityMapKey -}}
+
+  {{- if kindIs "map" $value }}
+    {{- $maps := list $value -}}
+    {{- if ne $priorityMapKey nil -}}
+      {{- $maps = list (pick $value $priorityMapKey) (omit $value $priorityMapKey) -}}
+    {{- end -}}
+
+    {{- $values := list -}}
+    {{- range $maps -}}
+      {{- range $key, $val := . -}}
+        {{- if eq . nil -}}
+          {{- continue -}}
+        {{- end -}}
+
+        {{- $enabledVal := index . "$enabled" -}}
+        {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
+        {{- $_ := unset . "$enabled" -}}
+
+        {{- if not $enabled -}}
+          {{- continue -}}
+        {{- end -}}
+
+        {{- range $field := $propagateMapKeyToFields -}}
+          {{- if not (get $val $field) -}}
+            {{- $_ := set $val $field $key -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $values = append $values . -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- $value = $values -}}
+  {{- end -}}
+
+  {{- $value | toYaml -}}
+{{- end -}}
+  ` | trim | printf "%s\n\n" }}
+
   {{- /* Merge together all of the application's defaults */ -}}
   {{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
 
@@ -40,59 +84,6 @@
 
   {{- "{{- /* Template self */ -}}" | printf "%s\n" }}
   {{- "{{- $data = tpl (toYaml $data) $data | fromYaml -}}" | printf "%s\n\n" }}
-
-  {{- `
-{{- define "tenant.utils.map-to-list" -}}
-  {{- $map := .map | default dict -}}
-  {{- $propagateKeyToFields := .propagateKeyToFields -}}
-  {{- $priorityKey := .priorityKey -}}
-
-  {{- $maps := list $map -}}
-  {{- if ne $priorityKey nil -}}
-    {{- $maps = list (pick $map $priorityKey) (omit $map $priorityKey) -}}
-  {{- end -}}
-
-  {{- $values := list -}}
-
-  {{- range $maps -}}
-    {{- range $key, $val := . -}}
-      {{- $enabledVal := index . "$enabled" -}}
-      {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
-
-      {{- if not $enabled -}}
-        {{- continue -}}
-      {{- end -}}
-
-      {{- range $field := $propagateKeyToFields -}}
-        {{- if not (get $val $field) -}}
-          {{- $_ := set $val $field $key -}}
-        {{- end -}}
-      {{- end -}}
-
-      {{- $_ := unset . "$enabled" -}}
-      {{- $values = append $values . -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{- $values | toYaml -}}
-{{- end -}}
-
-{{- define "tenant.utils.list-or-map" -}}
-  {{- $value := .value -}}
-  {{- $propagateMapKeyToFields := .propagateMapKeyToFields -}}
-  {{- $priorityMapKey := .priorityMapKey -}}
-
-  {{- if kindIs "map" $value }}
-    {{- $value = include "tenant.utils.map-to-list" (dict
-      "map" $value
-      "propagateKeyToFields" $propagateMapKeyToFields
-      "priorityKey" $priorityMapKey
-    ) | fromYamlArray }}
-  {{- end }}
-
-  {{- $value | toYaml }}
-{{- end -}}
-  ` | trim | printf "%s\n\n" }}
 
   {{- "{{- with $data -}}" | printf "%s\n" }}
 

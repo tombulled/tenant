@@ -1,20 +1,5 @@
 {{- define "tenant.application.template" -}}
 {{- `
-{{- $sources := (ternary
-  .sources
-  (include "tenant.utils.list-or-map" (dict
-    "value" .sources
-    "propagateMapKeyToFields" (list "name" "ref")
-    "priorityMapKey" "main"
-  ) | fromYamlArray)
-  (eq .sources nil)
-) -}}
-{{- range $sources -}}
-  {{- if (ne .chart nil) -}}
-    {{- $_ := unset . "ref" -}}
-  {{- end -}}
-{{- end -}}
-
 {{ (dict
   "apiVersion" "argoproj.io/v1alpha1"
   "kind" "Application"
@@ -30,7 +15,7 @@
     "ignoreDifferences" .ignoreDifferences
     "info" (ternary
       .info
-      (include "tenant.utils.list-or-map" (dict
+      (tpl "{{ template \"tenant.utils.list-or-map\" . }}" (dict
         "value" .info
         "propagateMapKeyToFields" (list "name")
       ) | fromYamlArray)
@@ -40,7 +25,15 @@
     "revisionHistoryLimit" .revisionHistoryLimit
     "source" .source
     "sourceHydrator" .sourceHydrator
-    "sources" $sources
+    "sources" (ternary
+      .sources
+      (tpl "{{ template \"tenant.utils.list-or-map\" . }}" (dict
+        "value" .sources
+        "propagateMapKeyToFields" (list "name")
+        "priorityMapKey" "main"
+      ) | fromYamlArray)
+      (eq .sources nil)
+    )
     "syncPolicy" .syncPolicy
   )
 ) | toYaml }}
