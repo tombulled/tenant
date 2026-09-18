@@ -3,13 +3,13 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "ClusterRoleBinding"
-  "metadata" (include "tenant.metadata.excluding" (list . "namespace") | fromYaml)
+  "metadata" (omit (include "tenant.metadata" . | fromYaml) "namespace")
   "roleRef" .roleRef
   "subjects" (ternary
     .subjects
     (include "tenant.utils.list-or-map" (dict
       "value" .subjects
-      "propagateMapKeyToField" "name"
+      "propagateMapKeyToFields" (list "name")
     ) | fromYamlArray)
     (eq .subjects nil)
   )

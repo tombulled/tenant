@@ -3,13 +3,13 @@
 {{ (dict
   "apiVersion" "rbac.authorization.k8s.io/v1"
   "kind" "ClusterRole"
-  "metadata" (include "tenant.metadata.excluding" (list . "namespace") | fromYaml)
+  "metadata" (omit (include "tenant.metadata" . | fromYaml) "namespace")
   "aggregationRule" .aggregationRule
   "rules" (ternary
     .rules
     (include "tenant.utils.list-or-map" (dict
       "value" .rules
-      "propagateMapKeyToField" "name"
+      "propagateMapKeyToFields" (list "name")
     ) | fromYamlArray)
     (eq .rules nil)
   )
