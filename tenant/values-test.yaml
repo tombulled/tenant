@@ -1,6 +1,7 @@
 # TODO:
 #   * Remove "variable fields" :'(
 #     * Breaks extra resources
+#   * Figure out a way x-appset and helm can share utils.list-or-map
 
 applicationDefaults:
   annotations:

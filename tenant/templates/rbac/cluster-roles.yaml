@@ -9,7 +9,7 @@
     .rules
     (include "tenant.utils.list-or-map" (dict
       "value" .rules
-      "propagateMapKeyToField" "name"
+      "propagateMapKeyToFields" (list "name")
     ) | fromYamlArray)
     (eq .rules nil)
   )
