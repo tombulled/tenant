@@ -41,6 +41,62 @@
   {{- "{{- /* Template self */ -}}" | printf "%s\n" }}
   {{- "{{- $data = tpl (toYaml $data) $data | fromYaml -}}" | printf "%s\n\n" }}
 
+  {{- `
+{{- define "map-to-list" -}}
+  {{- $map := .map | default dict -}}
+  {{- $field := .field -}}
+
+  {{- $values := list -}}
+
+  {{- range $key, $_ := $map -}}
+    {{- $enabledVal := index . "$enabled" -}}
+    {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
+
+    {{- if not $enabled -}}
+      {{- continue -}}
+    {{- end -}}
+
+    {{- if and $field (not (get . $field)) -}}
+      {{- $_ := set . $field $key -}}
+    {{- end -}}
+
+    {{- $_ := unset . "$enabled" -}}
+    {{- $values = append $values . -}}
+  {{- end -}}
+
+  {{- $values | toYaml -}}
+{{- end -}}
+
+{{- block "patch-info" $data -}}
+  {{- if kindIs "map" .info -}}
+    {{- set . "info" (tpl "{{ template \"map-to-list\" . }}" (dict "map" .info "field" "name") | fromYamlArray) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- block "patch-sources" $data -}}
+  {{- if kindIs "map" .sources -}}
+    {{- $sources := tpl "{{ template \"map-to-list\" . }}" (dict "map" .sources "field" "name") | fromYamlArray -}}
+
+    {{- range $sources -}}
+      {{- if and (eq .ref nil) (eq .chart nil) (ne .name nil) -}}
+        {{- $_ := set . "ref" .name -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- $mainSource := (dict) -}}
+    {{- range $index, $_ := $sources -}}
+      {{- if eq .name "main" -}}
+        {{- $mainSource = . -}}
+        {{- break -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $sources = concat (list $mainSource) (without $sources $mainSource) -}}
+
+    {{- $_ := set . "sources" $sources -}}
+  {{- end -}}
+{{- end -}}
+  ` | trim | printf "%s\n\n" }}
+
   {{- "{{- with $data -}}" | printf "%s\n" }}
 
   {{- /* Insert the application template */ -}}
