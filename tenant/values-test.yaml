@@ -78,6 +78,23 @@
 #   foo: {}
 #   bar: {}
 
-clusterRole:
+# clusterRole:
+#   name: test
+#   namespace: bob
+
+applicationSet:
   name: test
-  namespace: bob
+  goTemplate: true
+  template:
+    metadata:
+      name: "{{ `{{.name}}` }}"
+      annotations:
+        data: "{{ `{{ $ | toJson }}` }}"
+    spec:
+      project: default
+  generators:
+    - list:
+        elements:
+          - name: foo
+          - name: bar
+          - name: baz
