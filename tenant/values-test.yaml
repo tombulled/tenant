@@ -1,13 +1,6 @@
 applicationSet:
   name: my-apps
   goTemplate: true
-  template:
-    metadata:
-      name: "{{ `{{.name}}` }}"
-      annotations:
-        data: "{{ `{{. | toJson}}` }}"
-    spec:
-      project: default
   generators:
     - matrix:
         generators:
@@ -15,7 +8,7 @@ applicationSet:
               generators:
                 - list:
                     elements:
-                      - values: {}
+                      - VALUES: {}
                 - list:
                     elements:
                       - name: foo
@@ -23,49 +16,15 @@ applicationSet:
                       - name: baz
           - list:
               elements:
-                - index: "{{ `{{ len .values | toString }}` }}"
-                  _: "{{ `{{ $_ := set .values (uuidv4) (omit . \"values\" | toJson) }}` }}"
+                - INDEX: "{{ `{{ len .VALUES | toString }}` }}"
+                  VALUES: "{{ `{{ set .VALUES (uuidv4) (omit . \"VALUES\" | toJson) }}` }}"
       selector:
         matchLabels:
-          index: "1"
-#     - merge:
-#         mergeKeys:
-#           - name
-#         generators:
-#           - list:
-#               elements:
-#                 - values: []
-#                   name: foo
-#           - list:
-#               elements:
-#                 - name: foo
-#                   _: "{{ `{{ $_ := set . \"test\" \"test\" }}` }}"
-#                 - name: bar
-#                 - name: baz
-
-    # - matrix:
-    #     generators:
-    #       - list:
-    #           elements:
-    #             - name: foo
-    #             - name: bar
-    #             - name: baz
-    #       - list:
-    #           elements:
-    #             - {}
-
-#     - merge:
-#         mergeKeys:
-#           - name
-#         generators:
-#           - list:
-#               elements:
-#                 - name: foo
-#                   age: 12
-#                   base-data: "{{ `{{. | toJson}}` }}"
-#           - list:
-#               elements:
-#                 - name: foo
-#                   foo-data: "{{ `{{. | toJson}}` }}"
-#                 - name: bar
-#                 - name: baz
+          INDEX: "1"
+  template:
+    metadata:
+      name: test
+      annotations:
+        data: "{{ `{{. | toJson}}` }}"
+    spec:
+      project: default
