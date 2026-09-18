@@ -3,58 +3,59 @@
 #     * Breaks extra resources
 #   * Figure out a way x-appset and helm can share utils.list-or-map
 
-applicationDefaults:
-  annotations:
-    my-name-is: "{{.name}}"
-  sources:
-    main:
-      repoURL: github.com
-      chart: google
-    values:
-      repoURL: google.com
-    extras:
-      $enabled: false
-      repoURL: foo.com
-      ref: xtras
-
-xApplicationSet:
-#   $enabled: false
-  name: test
-  template:
-    spec:
-      project: default
-      info:
-        - name: food
-          value: pizza
-  generators:
-    - list:
-        elements:
-          - name: foo
-            info:
-              - name: food
-                value: pizza
-          - name: bar
-            info:
-              food:
-                # name: food
-                value: pizza
-              age:
-                $enabled: false
-                value: "12"
-              repoURL:
-                value: https://google.com
-          - name: baz
-            sources:
-              extras:
-                $enabled: true
-              values: ~
-          - id: cat
-            name: "app-{{ `{{.id}}` }}"
-            annotations:
-              food: ~
-            sources:
-              - repoURL: gogs.com
-                name: ~
+# applicationDefaults:
+#   annotations:
+#     my-name-is: "{{.name}}"
+#   sources:
+#     main:
+#       repoURL: github.com
+#       chart: google
+#     values:
+#       repoURL: google.com
+#     extras:
+#       $enabled: false
+#       repoURL: foo.com
+#       ref: xtras
+# 
+# xApplicationSet:
+# #   $enabled: false
+#   name: test
+#   template:
+#     spec:
+#       project: default
+#       info:
+#         - name: food
+#           value: pizza
+#   generators:
+#     - list:
+#         elements:
+#           - name: foo
+#             info:
+#               - name: food
+#                 value: pizza
+#           - name: bar
+#             info:
+#               food:
+#                 # name: food
+#                 value: pizza
+#               age:
+#                 $enabled: false
+#                 value: "12"
+#               repoURL:
+#                 value: https://google.com
+#           - name: baz
+#             sources:
+#               extras:
+#                 $enabled: true
+#               values: ~
+#           - id: cat
+#             name: "app-{{ `{{.id}}` }}"
+#             annotations:
+#               food: ~
+#             sources:
+#               - repoURL: gogs.com
+#                 name: ~
+#           - {}
 
 # applicationDefaults:
 #   annotations:
@@ -76,3 +77,7 @@ xApplicationSet:
 # applications:
 #   foo: {}
 #   bar: {}
+
+clusterRole:
+  name: test
+  namespace: bob
