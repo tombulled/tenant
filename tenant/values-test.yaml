@@ -1,100 +1,38 @@
-# TODO:
-#   * Remove "variable fields" :'(
-#     * Breaks extra resources
-#   * Figure out a way x-appset and helm can share utils.list-or-map
-
-# applicationDefaults:
-#   annotations:
-#     my-name-is: "{{.name}}"
-#   sources:
-#     main:
-#       repoURL: github.com
-#       chart: google
-#     values:
-#       repoURL: google.com
-#     extras:
-#       $enabled: false
-#       repoURL: foo.com
-#       ref: xtras
-# 
-# xApplicationSet:
-# #   $enabled: false
-#   name: test
-#   template:
-#     spec:
-#       project: default
-#       info:
-#         - name: food
-#           value: pizza
-#   generators:
-#     - list:
-#         elements:
-#           - name: foo
-#             info:
-#               - name: food
-#                 value: pizza
-#           - name: bar
-#             info:
-#               food:
-#                 # name: food
-#                 value: pizza
-#               age:
-#                 $enabled: false
-#                 value: "12"
-#               repoURL:
-#                 value: https://google.com
-#           - name: baz
-#             sources:
-#               extras:
-#                 $enabled: true
-#               values: ~
-#           - id: cat
-#             name: "app-{{ `{{.id}}` }}"
-#             annotations:
-#               food: ~
-#             sources:
-#               - repoURL: gogs.com
-#                 name: ~
-#           - {}
-
-# applicationDefaults:
-#   annotations:
-#     name: ~
-#   info:
-#     food:
-#       value: pizza
-#   sources:
-#     main:
-#       repoURL: github.com
-#       chart: google
-#     values:
-#       repoURL: google.com
-#     extras:
-#       # $enabled: false
-#       repoURL: foo.com
-#       ref: xtras
-# 
-# applications:
-#   foo: {}
-#   bar: {}
-
-# clusterRole:
-#   name: test
-#   namespace: bob
-
 applicationSet:
-  name: test
+  name: my-apps
   goTemplate: true
   template:
     metadata:
       name: "{{ `{{.name}}` }}"
       annotations:
-        data: "{{ `{{ $ | toJson }}` }}"
+        data: "{{ `{{. | toJson}}` }}"
     spec:
       project: default
   generators:
-    - list:
-        elements:
-          - name: foo
-          - name: bar
-          - name: baz
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - values: []
+          - list:
+              elements:
+                - name: foo
+                - name: bar
+                - name: baz
+#                   baz-data: "{{ `{{. | toJson}}` }}"
+#                   a: "{{ `{{ $_ := set . \"values\" (append .values .) }}` }}"
+#     - merge:
+#         mergeKeys:
+#           - name
+#         generators:
+#           - list:
+#               elements:
+#                 - name: foo
+#                   age: 12
+#                   base-data: "{{ `{{. | toJson}}` }}"
+#           - list:
+#               elements:
+#                 - name: foo
+#                   foo-data: "{{ `{{. | toJson}}` }}"
+#                 - name: bar
+#                 - name: baz
