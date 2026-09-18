@@ -17,14 +17,16 @@ applicationSet:
           - list:
               elements:
                 - INDEX: "{{ `{{ len .VALUES | toString }}` }}"
-                  VALUES: "{{ `{{ set .VALUES (uuidv4) (omit . \"VALUES\" | toJson) }}` }}"
+                  VALUES: "{{ `{{ set .VALUES (uuidv4) (omit . \"VALUES\") }}` }}"
       selector:
         matchLabels:
           INDEX: "1"
   template:
     metadata:
       name: test
-      annotations:
-        data: "{{ `{{. | toJson}}` }}"
     spec:
       project: default
+      source:
+        helm:
+          values: |
+            applications: {{ `{{- .VALUES | values | toYaml | nindent 2 }}` }}
