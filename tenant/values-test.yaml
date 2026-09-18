@@ -1,5 +1,6 @@
 applicationSet:
-  name: my-apps
+  name: app-of-apps
+  namespace: argocd
   goTemplate: true
   generators:
     - matrix:
@@ -11,9 +12,17 @@ applicationSet:
                       - VALUES: {}
                 - list:
                     elements:
-                      - name: foo
-                      - name: bar
-                      - name: baz
+                      - app:
+                          name: foo
+                      - app:
+                          name: bar
+                      - app:
+                          name: baz
+                # - git:
+                #     files:
+                #       - path: tenants/*/values.yaml
+                #     repoURL: git@github.com:tombulled/k8s.git
+                #     revision: HEAD
           - list:
               elements:
                 - INDEX: "{{ `{{ len .VALUES | toString }}` }}"
@@ -23,10 +32,28 @@ applicationSet:
           INDEX: "1"
   template:
     metadata:
-      name: test
+      name: app-of-apps
     spec:
-      project: default
+      project: tenants
+      destination:
+        name: in-cluster
+        namespace: argocd
       source:
+        repoURL: git@github.com:tombulled/tenant.git
+        path: tenant
+        targetRevision: main
         helm:
           values: |
-            applications: {{ `{{- .VALUES | values | toYaml | nindent 2 }}` }}
+            applicationDefaults:
+              source:
+                repoURL: git@github.com:tombulled/tenant.git
+                path: tenant
+                targetRevision: main
+              destination:
+                name: in-cluster
+                namespace: argocd
+              project: tenants
+            applications:
+              {{ `{{- range .VALUES }}` }}
+              {{ `{{ .app.name }}` }}: {{ `{{- omit . "app" | toYaml | nindent 4 }}` }}
+              {{ `{{- end }}` }}
