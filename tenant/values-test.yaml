@@ -53,3 +53,24 @@ xApplicationSet:
             sources:
               - repoURL: gogs.com
                 name: ~
+
+# applicationDefaults:
+#   annotations:
+#     name: ~
+#   info:
+#     food:
+#       value: pizza
+#   sources:
+#     main:
+#       repoURL: github.com
+#       chart: google
+#     values:
+#       repoURL: google.com
+#     extras:
+#       # $enabled: false
+#       repoURL: foo.com
+#       ref: xtras
+# 
+# applications:
+#   foo: {}
+#   bar: {}

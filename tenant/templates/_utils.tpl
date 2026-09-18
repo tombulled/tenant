@@ -1,11 +1,13 @@
 {{- define "tenant.utils.list-or-map" -}}
   {{- $value := .value -}}
-  {{- $propagateMapKeyToField := .propagateMapKeyToField -}}
+  {{- $propagateMapKeyToFields := .propagateMapKeyToFields -}}
+  {{- $priorityMapKey := .priorityMapKey -}}
 
   {{- if kindIs "map" $value }}
     {{- $value = include "tenant.utils.map-to-list" (dict
       "map" $value
-      "field" $propagateMapKeyToField
+      "propagateKeyToFields" $propagateMapKeyToFields
+      "priorityKey" $priorityMapKey
     ) | fromYamlArray }}
   {{- end }}
 
@@ -145,24 +147,34 @@
 
 {{- define "tenant.utils.map-to-list" -}}
   {{- $map := .map | default dict -}}
-  {{- $field := .field -}}
+  {{- $propagateKeyToFields := .propagateKeyToFields -}}
+  {{- $priorityKey := .priorityKey -}}
+
+  {{- $maps := list $map -}}
+  {{- if ne $priorityKey nil -}}
+    {{- $maps = list (pick $map $priorityKey) (omit $map $priorityKey) -}}
+  {{- end -}}
 
   {{- $values := list -}}
 
-  {{- range $key, $_ := include "tenant.utils.filter-map" $map | fromYaml -}}
-    {{- $enabledVal := index . "$enabled" -}}
-    {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
+  {{- range $maps -}}
+    {{- range $key, $val := . -}}
+      {{- $enabledVal := index . "$enabled" -}}
+      {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
 
-    {{- if not $enabled -}}
-      {{- continue -}}
+      {{- if not $enabled -}}
+        {{- continue -}}
+      {{- end -}}
+
+      {{- range $field := $propagateKeyToFields -}}
+        {{- if not (get $val $field) -}}
+          {{- $_ := set $val $field $key -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $_ := unset . "$enabled" -}}
+      {{- $values = append $values . -}}
     {{- end -}}
-
-    {{- if and $field (not (get . $field)) -}}
-      {{- $_ := set . $field $key -}}
-    {{- end -}}
-
-    {{- $_ := unset . "$enabled" -}}
-    {{- $values = append $values . -}}
   {{- end -}}
 
   {{- $values | toYaml -}}

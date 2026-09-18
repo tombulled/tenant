@@ -1,5 +1,20 @@
 {{- define "tenant.application.template" -}}
 {{- `
+{{- $sources := (ternary
+  .sources
+  (include "tenant.utils.list-or-map" (dict
+    "value" .sources
+    "propagateMapKeyToFields" (list "name" "ref")
+    "priorityMapKey" "main"
+  ) | fromYamlArray)
+  (eq .sources nil)
+) -}}
+{{- range $sources -}}
+  {{- if (ne .chart nil) -}}
+    {{- $_ := unset . "ref" -}}
+  {{- end -}}
+{{- end -}}
+
 {{ (dict
   "apiVersion" "argoproj.io/v1alpha1"
   "kind" "Application"
@@ -13,12 +28,19 @@
   "spec" (dict
     "destination" .destination
     "ignoreDifferences" .ignoreDifferences
-    "info" .info
+    "info" (ternary
+      .info
+      (include "tenant.utils.list-or-map" (dict
+        "value" .info
+        "propagateMapKeyToFields" (list "name")
+      ) | fromYamlArray)
+      (eq .info nil)
+    )
     "project" .project
     "revisionHistoryLimit" .revisionHistoryLimit
     "source" .source
     "sourceHydrator" .sourceHydrator
-    "sources" .sources
+    "sources" $sources
     "syncPolicy" .syncPolicy
   )
 ) | toYaml }}
@@ -27,5 +49,5 @@
 
 {{- range include "tenant.resources.applications" $ | fromYamlArray }}
 ---
-{{ tpl (include "tenant.application.template" $) . }}
+{{ tpl (include "tenant.application.template" $) . | include "tenant.utils.post-render" }}
 {{- end }}

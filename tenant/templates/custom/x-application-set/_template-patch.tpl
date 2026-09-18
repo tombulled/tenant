@@ -42,58 +42,55 @@
   {{- "{{- $data = tpl (toYaml $data) $data | fromYaml -}}" | printf "%s\n\n" }}
 
   {{- `
-{{- define "map-to-list" -}}
+{{- define "tenant.utils.map-to-list" -}}
   {{- $map := .map | default dict -}}
-  {{- $field := .field -}}
+  {{- $propagateKeyToFields := .propagateKeyToFields -}}
+  {{- $priorityKey := .priorityKey -}}
+
+  {{- $maps := list $map -}}
+  {{- if ne $priorityKey nil -}}
+    {{- $maps = list (pick $map $priorityKey) (omit $map $priorityKey) -}}
+  {{- end -}}
 
   {{- $values := list -}}
 
-  {{- range $key, $_ := $map -}}
-    {{- $enabledVal := index . "$enabled" -}}
-    {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
+  {{- range $maps -}}
+    {{- range $key, $val := . -}}
+      {{- $enabledVal := index . "$enabled" -}}
+      {{- $enabled := ternary $enabledVal true (ne $enabledVal nil) -}}
 
-    {{- if not $enabled -}}
-      {{- continue -}}
+      {{- if not $enabled -}}
+        {{- continue -}}
+      {{- end -}}
+
+      {{- range $field := $propagateKeyToFields -}}
+        {{- if not (get $val $field) -}}
+          {{- $_ := set $val $field $key -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $_ := unset . "$enabled" -}}
+      {{- $values = append $values . -}}
     {{- end -}}
-
-    {{- if and $field (not (get . $field)) -}}
-      {{- $_ := set . $field $key -}}
-    {{- end -}}
-
-    {{- $_ := unset . "$enabled" -}}
-    {{- $values = append $values . -}}
   {{- end -}}
 
   {{- $values | toYaml -}}
 {{- end -}}
 
-{{- block "patch-info" $data -}}
-  {{- if kindIs "map" .info -}}
-    {{- set . "info" (tpl "{{ template \"map-to-list\" . }}" (dict "map" .info "field" "name") | fromYamlArray) -}}
-  {{- end -}}
-{{- end -}}
+{{- define "tenant.utils.list-or-map" -}}
+  {{- $value := .value -}}
+  {{- $propagateMapKeyToFields := .propagateMapKeyToFields -}}
+  {{- $priorityMapKey := .priorityMapKey -}}
 
-{{- block "patch-sources" $data -}}
-  {{- if kindIs "map" .sources -}}
-    {{- $sources := tpl "{{ template \"map-to-list\" . }}" (dict "map" .sources "field" "name") | fromYamlArray -}}
+  {{- if kindIs "map" $value }}
+    {{- $value = include "tenant.utils.map-to-list" (dict
+      "map" $value
+      "propagateKeyToFields" $propagateMapKeyToFields
+      "priorityKey" $priorityMapKey
+    ) | fromYamlArray }}
+  {{- end }}
 
-    {{- range $sources -}}
-      {{- if and (eq .ref nil) (eq .chart nil) (ne .name nil) -}}
-        {{- $_ := set . "ref" .name -}}
-      {{- end -}}
-    {{- end -}}
-
-    {{- $mainSource := (dict) -}}
-    {{- range $index, $_ := $sources -}}
-      {{- if eq .name "main" -}}
-        {{- $mainSource = . -}}
-        {{- break -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $sources = concat (list $mainSource) (without $sources $mainSource) -}}
-
-    {{- $_ := set . "sources" $sources -}}
-  {{- end -}}
+  {{- $value | toYaml }}
 {{- end -}}
   ` | trim | printf "%s\n\n" }}
 
