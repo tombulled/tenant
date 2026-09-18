@@ -11,16 +11,49 @@ applicationSet:
   generators:
     - matrix:
         generators:
+          - matrix:
+              generators:
+                - list:
+                    elements:
+                      - values: {}
+                - list:
+                    elements:
+                      - name: foo
+                      - name: bar
+                      - name: baz
           - list:
               elements:
-                - values: []
-          - list:
-              elements:
-                - name: foo
-                - name: bar
-                - name: baz
-#                   baz-data: "{{ `{{. | toJson}}` }}"
-#                   a: "{{ `{{ $_ := set . \"values\" (append .values .) }}` }}"
+                - index: "{{ `{{ len .values | toString }}` }}"
+                  _: "{{ `{{ $_ := set .values (uuidv4) (omit . \"values\" | toJson) }}` }}"
+      selector:
+        matchLabels:
+          index: "1"
+#     - merge:
+#         mergeKeys:
+#           - name
+#         generators:
+#           - list:
+#               elements:
+#                 - values: []
+#                   name: foo
+#           - list:
+#               elements:
+#                 - name: foo
+#                   _: "{{ `{{ $_ := set . \"test\" \"test\" }}` }}"
+#                 - name: bar
+#                 - name: baz
+
+    # - matrix:
+    #     generators:
+    #       - list:
+    #           elements:
+    #             - name: foo
+    #             - name: bar
+    #             - name: baz
+    #       - list:
+    #           elements:
+    #             - {}
+
 #     - merge:
 #         mergeKeys:
 #           - name
