@@ -1,17 +1,14 @@
-defaults:
-  $test: test
-  metadata:
-    cluster:
-      id: foo
-      type: dev
-
-namespaces:
-  foo: {}
-  bar:
-    enabled: false
-
-extraResourceDefaults:
-  metadata: ~
-
-extraResource:
-  name: test
+xApplicationSets:
+  foo:
+    generators:
+      - list:
+          elements:
+            - name: bob
+      - list:
+          elements:
+            - name: sally
+        selector:
+          matchLabels:
+            name: cool
+          matchExpressions:
+            - thing

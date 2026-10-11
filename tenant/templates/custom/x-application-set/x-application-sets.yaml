@@ -15,17 +15,17 @@ spec:
   {{- with $generators }}
   generators:
     {{- range . }}
-    - matrix:
-        generators:
-          - {{- . | toYaml | nindent 12 }}
-          - list:
-              elements:
-                - enabled: {{ printf `{{ ternary (index . "enabled") %t (hasKey . "enabled") }}` $defaultEnabled | quote }}
-      selector:
-        matchExpressions:
-          - key: enabled
-            operator: NotIn
-            values: ["false"]
+    {{- $_ := set . "selector" (.selector | default (dict)) }}
+    {{- $matchExpressions := append
+      (.selector.matchExpressions | default (list))
+      (dict
+        "key" "enabled"
+        "operator" "NotIn"
+        "values" (list "false")
+      )
+    }}
+    {{- $_ := set .selector "matchExpressions" $matchExpressions }}
+    - {{- . | toYaml | nindent 6 }}
     {{- end }}
   {{- else }}
   generators: []
