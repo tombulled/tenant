@@ -113,6 +113,7 @@
     {{- $data := include "tenant.resource.data" (dict
       "data" $data
       "defaults" (list
+        (dict "id" $id)
         (include "tenant.utils.dynamic-set" (dict
           "keys" (splitList "." $nameField)
           "value" $id
