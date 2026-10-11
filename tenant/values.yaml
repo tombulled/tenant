@@ -55,5 +55,3 @@ xApplicationSetDefaults:
       destination: {}
 xApplicationSet: ~
 xApplicationSets: {}
-
-extraResources: {}

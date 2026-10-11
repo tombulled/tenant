@@ -17,7 +17,6 @@
   {{- /* Only create the resource if it is enabled (defaults to enabled) */ -}}
   {{- $enabled := index $data "enabled" -}}
   {{- if ne $enabled false -}}
-
     {{- /* Temporarily remove any fields that should be excluded from templating */ -}}
     {{- $templateExcluded := dict -}}
     {{- range $key := $templateExclude -}}
