@@ -1,0 +1,11 @@
+defaults:
+  metadata:
+    cluster:
+      id: foo
+      type: dev
+
+extraResourceDefaults:
+  metadata: ~
+
+extraResource:
+  name: test
