@@ -3,29 +3,20 @@
   {{- $data := .data -}}
   {{- $defaults := .defaults | default list -}}
   {{- $templateContext := .templateContext -}}
-  {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude | default list -}}
   {{- $templateFirst := .templateFirst | default list -}}
 
   {{- /* If the resource data is nil, disable the resource */ -}}
   {{- if eq $data nil -}}
-    {{- $data = dict "$enabled" false -}}
+    {{- $data = dict "enabled" false -}}
   {{- end -}}
 
   {{- /* Apply defaults */ -}}
   {{- $data = include "tenant.utils.merge" (append $defaults $data) | fromYaml -}}
 
   {{- /* Only create the resource if it is enabled (defaults to enabled) */ -}}
-  {{- $enabled := index $data "$enabled" -}}
+  {{- $enabled := index $data "enabled" -}}
   {{- if ne $enabled false -}}
-    {{- /* Remove any fields prefixed with a '$' from the resource data, and add these as template variables */ -}}
-    {{- range $key, $val := $data -}}
-      {{- if hasPrefix "$" $key -}}
-        {{- $_ := set $templateVars (trimPrefix "$" $key) $val -}}
-        {{- $_ := unset $data $key -}}
-      {{- end -}}
-    {{- end -}}
-
     {{- /* Temporarily remove any fields that should be excluded from templating */ -}}
     {{- $templateExcluded := dict -}}
     {{- range $key := $templateExclude -}}
@@ -50,7 +41,6 @@
         "value" $value
         "context" $templateContext
         "scope" $data
-        "vars" $templateVars
       ) -}}
       {{- $_ := include "tenant.utils.dynamic-set" (dict
         "map" $data
@@ -64,7 +54,6 @@
       "value" $data
       "context" $templateContext
       "scope" $data
-      "vars" $templateVars
     ) | include "tenant.utils.validate-yaml" | fromYaml -}}
 
     {{- /* Re-add any fields that were excluded from templating */ -}}
@@ -97,7 +86,6 @@
   {{- $key := .key -}}
   {{- $keyPlural := .keyPlural | default (include "tenant.utils.pluralise" $key) -}}
   {{- $defaults := .defaults | default dict -}}
-  {{- $templateVars := .templateVars | default dict -}}
   {{- $templateExclude := .templateExclude -}}
   {{- $nameField := .nameField | default "name" -}}
 
@@ -133,10 +121,6 @@
         $contextDefaults
       )
       "templateContext" $
-      "templateVars" (include "tenant.utils.merge" (list
-        $templateVars
-        (dict "id" $id)
-      ) | fromYaml)
       "templateExclude" $templateExclude
       "templateFirst" (list
         $nameField
@@ -187,7 +171,6 @@
       "context" ($namespace.resources | default dict)
       "key" $key
       "keyPlural" $keyPlural
-      "templateVars" (dict "namespace" $namespace)
       "defaults" $namespacedDefaults
       "nameField" $nameField
     ) | fromYamlArray -}}
