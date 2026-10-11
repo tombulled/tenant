@@ -91,5 +91,5 @@ spec:
 
 {{- range include "tenant.resources.applications" $ | fromYamlArray }}
 ---
-{{ tpl (include "tenant.application.template" $) . }}
+{{ tpl (include "tenant.application.template" $) . | include "tenant.utils.post-render" }}
 {{- end }}
