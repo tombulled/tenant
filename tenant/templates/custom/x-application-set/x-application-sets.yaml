@@ -3,7 +3,7 @@
 {{- $appSet := .appSet -}}
 
 {{- $defaults := include "tenant.x-application-set.application-defaults" (dict "root" $ "appSet" $appSet) | fromYaml -}}
-{{- $defaultEnabled := ne (index $defaults "$enabled") false -}}
+{{- $defaultEnabled := ne (index $defaults "enabled") false -}}
 
 {{- $generators := include "tenant.utils.list-or-map" (dict
   "value" $appSet.generators
@@ -20,7 +20,7 @@ spec:
           - {{- . | toYaml | nindent 12 }}
           - list:
               elements:
-                - enabled: {{ printf `{{ ternary (index . "$enabled") %t (hasKey . "$enabled") }}` $defaultEnabled | quote }}
+                - enabled: {{ printf `{{ ternary (index . "enabled") %t (hasKey . "enabled") }}` $defaultEnabled | quote }}
       selector:
         matchExpressions:
           - key: enabled

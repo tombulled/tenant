@@ -4,6 +4,11 @@ defaults:
       id: foo
       type: dev
 
+namespaces:
+  foo: {}
+  bar:
+    enabled: false
+
 extraResourceDefaults:
   metadata: ~
 
