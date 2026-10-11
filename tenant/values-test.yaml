@@ -1,4 +1,5 @@
 defaults:
+  $test: test
   metadata:
     cluster:
       id: foo

@@ -13,7 +13,7 @@
   {{- $appSet := .appSet -}}
 
   {{- include "tenant.utils.merge" (list
-    (dict "name" "{{$id}}")
+    (dict "name" "{{.id}}")
     (include "tenant.resource.get-defaults" (dict
       "context" $.Values
       "key" "application"
