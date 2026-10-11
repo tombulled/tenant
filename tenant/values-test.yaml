@@ -1,0 +1,10 @@
+defaults:
+  metadata:
+    tenant: foo
+
+namespaceDefaults:
+  name: "{{.metadata.tenant}}-{{.id}}"
+
+namespaces:
+  foo: {}
+  bar: {}
