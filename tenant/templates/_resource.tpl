@@ -72,9 +72,6 @@
       {{- $_ := set $data $key $val -}}
     {{- end -}}
 
-    {{- /* Filter the resource data to remove any null values */ -}}
-    {{- $data = $data | include "tenant.utils.filter-map" | fromYaml -}}
-
     {{- /* Finally, output the new resource data */ -}}
     {{- $data | toYaml -}}
   {{- end -}}

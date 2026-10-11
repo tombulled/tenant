@@ -1,0 +1,59 @@
+applicationSet:
+  name: app-of-apps
+  namespace: argocd
+  goTemplate: true
+  generators:
+    - matrix:
+        generators:
+          - matrix:
+              generators:
+                - list:
+                    elements:
+                      - VALUES: {}
+                - list:
+                    elements:
+                      - app:
+                          name: foo
+                      - app:
+                          name: bar
+                      - app:
+                          name: baz
+                # - git:
+                #     files:
+                #       - path: tenants/*/values.yaml
+                #     repoURL: git@github.com:tombulled/k8s.git
+                #     revision: HEAD
+          - list:
+              elements:
+                - INDEX: "{{ `{{ len .VALUES | toString }}` }}"
+                  VALUES: "{{ `{{ set .VALUES (uuidv4) (omit . \"VALUES\") }}` }}"
+      selector:
+        matchLabels:
+          INDEX: "1"
+  template:
+    metadata:
+      name: app-of-apps
+    spec:
+      project: tenants
+      destination:
+        name: in-cluster
+        namespace: argocd
+      source:
+        repoURL: git@github.com:tombulled/tenant.git
+        path: tenant
+        targetRevision: main
+        helm:
+          values: |
+            applicationDefaults:
+              source:
+                repoURL: git@github.com:tombulled/tenant.git
+                path: tenant
+                targetRevision: main
+              destination:
+                name: in-cluster
+                namespace: argocd
+              project: tenants
+            applications:
+              {{ `{{- range .VALUES }}` }}
+              {{ `{{ .app.name }}` }}: {{ `{{- omit . "app" | toYaml | nindent 4 }}` }}
+              {{ `{{- end }}` }}
